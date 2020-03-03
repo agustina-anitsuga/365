@@ -169,7 +169,7 @@ public class BookScraperRobot extends BookRobot {
     private String getShortLinkFor(String link) {
         int from = link.indexOf("/dp/");
         int to = link.indexOf("/",from+5);
-        return link.substring(1, to);
+        return link.substring(0, to+1);
     }
 
     /**
