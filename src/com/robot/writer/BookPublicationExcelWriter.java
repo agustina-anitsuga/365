@@ -38,6 +38,7 @@ public class BookPublicationExcelWriter implements PublicationCSVWriter {
                    "Precio en USD",
                    "Peso",
                    "Disponibilidad",
+                   "Seller",
                    "Título",
                    "Imágenes",
                    "SKU",
@@ -85,7 +86,7 @@ public class BookPublicationExcelWriter implements PublicationCSVWriter {
             // write header
             Row headerRow = sheet.createRow(rowCount++);
             for (int i = 0; i < fields.length; i++) {
-                CellStyle cellstyle = (i<4)? getExtraFieldsStyle(workbook) : getRequiredFieldsStyle(workbook);
+                CellStyle cellstyle = (i<5)? getExtraFieldsStyle(workbook) : getRequiredFieldsStyle(workbook);
                 Cell cell = headerRow.createCell(columnCount++);
                 cell.setCellValue(fields[i]);
                 cell.setCellStyle(cellstyle);
@@ -103,6 +104,7 @@ public class BookPublicationExcelWriter implements PublicationCSVWriter {
                     writeField(row,book.getPrice(),columnCount++); // precio en usd
                     writeField(row,book.getWeight(),columnCount++); // peso
                     writeField(row,book.getAvailability(),columnCount++); // disponibilidad
+                    writeField(row,book.getSeller(),columnCount++); // seller   
                     writeField(row,publication.getTitle(),columnCount++); // titulo
                     writeField(row,toCommaSeparatedArray(publication.getImages()),columnCount++); // imagenes
                     writeField(row,"",columnCount++); // sku
@@ -125,7 +127,7 @@ public class BookPublicationExcelWriter implements PublicationCSVWriter {
                     writeField(row,book.getLanguage(),columnCount++); // idioma
                     writeField(row,book.getEditorial(),columnCount++); // editorial
                     writeField(row,book.getFormat(),columnCount++); // formato
-                    writeField(row,book.getCover(),columnCount++); // tapa     
+                    writeField(row,book.getCover(),columnCount++); // tapa       
                 } catch(Exception e) {
                     LOGGER.error(e.getMessage());
                 }

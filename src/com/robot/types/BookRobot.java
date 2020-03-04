@@ -99,6 +99,7 @@ public abstract class BookRobot implements Robot {
         ret.setType(bookPage.getType());
         ret.setDimensions(bookPage.getDimensions());
         ret.setImages(new String[]{bookPage.getImage()});
+        ret.setSeller(bookPage.getSeller());
         return ret;
     }
 

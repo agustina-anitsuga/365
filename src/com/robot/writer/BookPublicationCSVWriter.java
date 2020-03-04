@@ -32,6 +32,7 @@ public class BookPublicationCSVWriter implements PublicationCSVWriter {
                    "Precio en USD",
                    "Peso",
                    "Disponibilidad",
+                   "Vendido Por",
                    "Titulo",
                    "Imagenes",
                    "SKU",
@@ -84,6 +85,7 @@ public class BookPublicationCSVWriter implements PublicationCSVWriter {
                         writeField(book.getPrice())+ // precio en usd
                         writeField(book.getWeight())+ // peso
                         writeField(book.getAvailability())+ // disponibilidad
+                        writeField(book.getSeller())+ // vendedor
                         writeField(publication.getTitle())+ // titulo
                         writeField(toCommaSeparatedArray(publication.getImages())) + // imagenes
                         DELIMITER+ // sku
@@ -107,6 +109,7 @@ public class BookPublicationCSVWriter implements PublicationCSVWriter {
                         writeField(book.getEditorial())+ // editorial
                         writeField(book.getFormat())+ // formato
                         writeField(book.getCover()); // tapa
+
                 } catch (Exception e) {
                     LOGGER.error(e.getMessage());
                     data = writeField(publication.getUrl());

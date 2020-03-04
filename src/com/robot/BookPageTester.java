@@ -39,7 +39,9 @@ public class BookPageTester {
         // https://www.amazon.com/-/es/Simon-Rush/dp/1699451958/ref=zg_bs_books_38/142-3245467-8195831?_encoding=UTF8&psc=1&refRID=TYFSBX7RTH4HQWPFPAFE
         // https://www.amazon.com/-/es/Amy-Ramos/dp/1623158087/ref=zg_bs_books_29/142-3245467-8195831?_encoding=UTF8&psc=1&refRID=TYFSBX7RTH4HQWPFPAFE
         // https://www.amazon.com/-/es/Bill-Martin-Jr/dp/0805047905/ref=zg_bs_books_27/147-5971479-1215466?_encoding=UTF8&psc=1&refRID=VXNVB79VE3N9WZMK164J
-        String url = "https://www.amazon.com/-/es/G-Riddle/dp/1940026032/";
+        // https://www.amazon.com/-/es/Robert-Philips-Sean-Kirkman/dp/8498855152/
+        // https://www.amazon.com/-/es/G-Riddle/dp/1940026032/
+        String url = "https://www.amazon.com/-/es/Robert-Philips-Sean-Kirkman/dp/8498855152/";
         
         try {
             
@@ -56,6 +58,7 @@ public class BookPageTester {
                 System.out.println("type:"+bookPage.getType());
                 System.out.println("lang:"+bookPage.getLanguage());
                 System.out.println("type:"+bookPage.getType());
+                System.out.println("seller:"+bookPage.getSeller());
                 System.out.println("title:"+bookPage.getTitle());
                 System.out.println("title.len:"+bookPage.getTitle().length());
                 bookPage.openPhotoViewer();

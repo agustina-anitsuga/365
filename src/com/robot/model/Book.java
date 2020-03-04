@@ -23,6 +23,7 @@ public class Book extends Product {
     private String type;
     private String dimensions;
     private String[] images ;
+    private String seller;
     
     public String getIsbn() {
         return isbn;
@@ -107,6 +108,12 @@ public class Book extends Product {
     }
     public void setImages(String[] images) {
         this.images = images;
+    }
+    public String getSeller() {
+        return seller;
+    }
+    public void setSeller(String seller) {
+        this.seller = seller;
     }
     
     public Number getWeightInKilos() {

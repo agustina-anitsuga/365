@@ -84,6 +84,9 @@ public class BookPage extends Page {
     @FindBy(xpath = "//*[@id=\"sitbReaderPage-1\"]/img")
     private WebElement photoTarget1;
     
+    @FindBy(xpath = "//*[@id=\"merchant-info\"]")
+    private WebElement seller;
+    
     // map of book details
     private Map<String,String> detailMap = null ;
     
@@ -120,7 +123,8 @@ public class BookPage extends Page {
             ret = ret.replaceAll("\n", " ");
             ret = ret.replaceAll("›", ">");
             int firstLevel = ret.indexOf(">");
-            ret = ret.substring(firstLevel+1,ret.indexOf(">",firstLevel+1));
+            int end = ret.indexOf(">",firstLevel+1);
+            ret = ret.substring(firstLevel+1,(end>=0)?end:ret.length());
             ret = ret.trim();
         } catch (Exception e) {
             LOGGER.error(e.getMessage());
@@ -191,6 +195,8 @@ public class BookPage extends Page {
                      String key = (content.substring(0,content.indexOf(":")).trim());
                      String value = (content.substring(content.indexOf(":")+1,content.length())).trim();
                      detailMap.put(key, value);
+                 } else {
+                     detailMap.put(content, "");
                  }
             }
         }
@@ -396,6 +402,15 @@ public class BookPage extends Page {
         }
         */
         return ret;
+    }
+    
+    /**
+     * getSeller
+     * @return
+     */
+    public String getSeller(){
+        String ret = seller.getText();
+        return ret.trim();
     }
     
     /**
