@@ -40,9 +40,10 @@ public class BookAnalyzerRobot extends BookRobot {
         List<String> bookUrls = readBookURLs();
         WebDriver driver = SeleniumUtils.buildDriver(Browser.CHROME);
         
+        int total = bookUrls.size();
         int count = 0;
         for (String bookUrl : bookUrls) {
-            LOGGER.info("Reading book ["+(++count)+"] from url "+bookUrl);
+            LOGGER.info("Reading book ["+(++count)+"/"+total+"] from url "+bookUrl);
             Publication publication = super.getPublication(bookUrl, driver);
             ret.add(publication);
         }

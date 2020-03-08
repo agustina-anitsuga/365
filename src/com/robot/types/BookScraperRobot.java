@@ -32,7 +32,7 @@ public class BookScraperRobot extends BookRobot {
     /**
      * maximum pages to read at a time
      */
-    private static final int MAX_PAGES = 30;
+    private static final int MAX_PAGES = 40;
 
     /**
      * property that points to the file containing the existing publications
@@ -121,9 +121,10 @@ public class BookScraperRobot extends BookRobot {
             LOGGER.info("Read links "+links.size());
             
             // for each link, extract book
+            int total = links.size();
             int count=0;
             for (String link : links) {
-                LOGGER.info("Reading book ["+(++count)+"] from url "+link);
+                LOGGER.info("Reading book ["+(++count)+"/"+total+"] from url "+link);
                 Publication publication = getPublication(link, driver);
                 ret.add(publication);
             }

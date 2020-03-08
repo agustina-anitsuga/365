@@ -89,7 +89,8 @@ public abstract class BookRobot implements Robot {
      */
     private List<String> getImages(List<String> images) {
         if( images!=null && images.size()>0 ){
-            images.add("https://i.postimg.cc/0NsFBwvH/365cine-logo-2.png");
+            images.add("https://http2.mlstatic.com/4k-ultra-hd-blu-ray-harry-potter-collection-8-films-D_NQ_NP_821117-MLA40710388896_022020-F.webp");
+            //images.add("https://i.postimg.cc/0NsFBwvH/365cine-logo-2.png");
         }
         return images;
     }
