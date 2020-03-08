@@ -39,6 +39,12 @@ public class BookCategoryPage extends Page {
     @FindBy(xpath = "//*[@class=\"sg-col-inner\"]/div/span/a")
     private List<WebElement> bookLinks3;
     
+    @FindBy(xpath = "//*[@class=\"kc-horizontal-rank-card desktop-hide mobile-hide row\"]/div[1]/div[2]/div/a[1]")
+    private List<WebElement> bookLinks4;
+    
+    @FindBy(xpath = "//*[@class=\"kc-horizontal-rank-card mobile-hide row\"]/div[1]/div[2]/div/a[1]")
+    private List<WebElement> bookLinks5;
+    
     @FindBy(xpath = "//*[@class=\"a-pagination\"]/li[@class=\"a-last\"]/a")
     private WebElement next;
     
@@ -111,6 +117,19 @@ public class BookCategoryPage extends Page {
                     for (WebElement bookLink : bookLinks3) {
                         String url = bookLink.getAttribute("href");
                         ret.add(url);
+                    }
+                } else {
+                    if( bookLinks4.size() > 0 ){
+                        for (WebElement bookLink : bookLinks4) {
+                            String url = bookLink.getAttribute("href");
+                            ret.add(url);
+                        }
+                    }
+                    if( bookLinks5.size() > 0 ){
+                        for (WebElement bookLink : bookLinks5) {
+                            String url = bookLink.getAttribute("href");
+                            ret.add(url);
+                        }
                     }
                 }
             }

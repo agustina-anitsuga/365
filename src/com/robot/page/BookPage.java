@@ -90,6 +90,9 @@ public class BookPage extends Page {
     // map of book details
     private Map<String,String> detailMap = null ;
     
+    @FindBy(xpath = "*[@id=\"a-autoid-7-announce\"]")
+    private WebElement paperback;
+    
     
    /**
     * BookPage
@@ -378,6 +381,14 @@ public class BookPage extends Page {
         } catch (Exception e) {
             photoViewer1.click();
         }
+    }
+    
+    /**
+     * selectPaperbackEdition
+     */
+    public void selectPaperbackEdition(){
+        this.waitForPopups();
+        paperback.click();
     }
     
     /**

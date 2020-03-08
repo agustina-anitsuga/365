@@ -1,6 +1,7 @@
 package com.robot.types;
 
 import java.io.File;
+import java.util.List;
 
 import org.openqa.selenium.WebDriver;
 import org.slf4j.Logger;
@@ -21,7 +22,6 @@ import com.robot.utils.StringUtils;
  */
 public abstract class BookRobot implements Robot {
 
-
     /**
      * logger
      */
@@ -32,6 +32,7 @@ public abstract class BookRobot implements Robot {
     private static final String DOLLAR_OFFICIAL = "dolLar.official";
     private static final String DOLLAR_CREDIT_CARD = "dolLar.creditCard";
     private static final String LOCAL_PATH = "local.path";
+    private static final String FORCE_PAPERBACK = "force.paperback";
 
     
     /**
@@ -52,6 +53,10 @@ public abstract class BookRobot implements Robot {
                 
             if( bookPage != null )
             {
+                if( this.getPropertyAsBoolean(FORCE_PAPERBACK, false)) {
+                    bookPage.selectPaperbackEdition();
+                }
+                
                 Book book = getBook(bookPage);
                 ret.setProduct(book);
                 
@@ -60,7 +65,7 @@ public abstract class BookRobot implements Robot {
                 ret.setDescription(getPublicationDescription(book));
                 
                 bookPage.openPhotoViewer();
-                ret.setImages(bookPage.getImages());
+                ret.setImages(getImages(bookPage.getImages()));
                 //ret.setImages(getPublicationImages(book));
             }    
             
@@ -77,6 +82,17 @@ public abstract class BookRobot implements Robot {
         return ret;
     }
 
+    /**
+     * getImages
+     * @param images
+     * @return
+     */
+    private List<String> getImages(List<String> images) {
+        if( images!=null && images.size()>0 ){
+            images.add("https://i.postimg.cc/0NsFBwvH/365cine-logo-2.png");
+        }
+        return images;
+    }
 
     /**
      * getBook
@@ -98,7 +114,6 @@ public abstract class BookRobot implements Robot {
         ret.setLanguage(bookPage.getLanguage());
         ret.setType(bookPage.getType());
         ret.setDimensions(bookPage.getDimensions());
-        ret.setImages(new String[]{bookPage.getImage()});
         ret.setSeller(bookPage.getSeller());
         return ret;
     }
@@ -171,6 +186,22 @@ public abstract class BookRobot implements Robot {
         RobotProperties config = RobotProperties.getInstance();    
         String quotation = config.getProperty(property);
         return StringUtils.parse(quotation).doubleValue();
+    }
+    
+    /**
+     * getPropertyAsBoolean
+     * @param property
+     * @param defaultValue
+     * @return
+     */
+    private boolean getPropertyAsBoolean(String property,boolean defaultValue){
+        boolean ret = defaultValue;
+        RobotProperties config = RobotProperties.getInstance();    
+        String value = config.getProperty(property);
+        if( !StringUtils.isEmpty(value) ){
+            ret = Boolean.parseBoolean(value);
+        }
+        return ret;
     }
 
     /**
