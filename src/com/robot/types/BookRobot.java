@@ -50,11 +50,15 @@ public abstract class BookRobot implements Robot {
             
             // open browser to requested url
             BookPage bookPage = new BookPage(driver).go(url);
+            bookPage.waitForPopups();
                 
             if( bookPage != null )
             {
                 if( this.getPropertyAsBoolean(FORCE_PAPERBACK, false)) {
-                    bookPage.selectPaperbackEdition();
+                    if( !bookPage.isPaperbackEdition() ) {
+                        bookPage = bookPage.selectPaperbackEdition();
+                        bookPage.waitForPopups();
+                    }
                 }
                 
                 Book book = getBook(bookPage);
@@ -100,7 +104,6 @@ public abstract class BookRobot implements Robot {
      * @return
      */
     public Book getBook(BookPage bookPage){
-        bookPage.waitForPopups();
         Book ret = new Book();
         ret.setCover(bookPage.getCover());
         ret.setCoverFullData(bookPage.getCoverFullData());

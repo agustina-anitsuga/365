@@ -90,7 +90,7 @@ public class BookPage extends Page {
     // map of book details
     private Map<String,String> detailMap = null ;
     
-    @FindBy(xpath = "*[@id=\"a-autoid-7-announce\"]")
+    @FindBy(xpath = "//*[@id=\"a-autoid-7-announce\"]")
     private WebElement paperback;
     
     
@@ -126,9 +126,11 @@ public class BookPage extends Page {
             ret = ret.replaceAll("\n", " ");
             ret = ret.replaceAll("›", ">");
             int firstLevel = ret.indexOf(">");
-            int end = ret.indexOf(">",firstLevel+1);
-            ret = ret.substring(firstLevel+1,(end>=0)?end:ret.length());
-            ret = ret.trim();
+            if( firstLevel >= 0 ){
+                int end = ret.indexOf(">",firstLevel+1);
+                ret = ret.substring(firstLevel+1,(end>=0)?end:ret.length());
+                ret = ret.trim();
+            }
         } catch (Exception e) {
             LOGGER.error(e.getMessage());
         }
@@ -384,11 +386,25 @@ public class BookPage extends Page {
     }
     
     /**
+     * isPaperbackEdition
+     * @return
+     */
+    public boolean isPaperbackEdition(){
+        boolean ret = false;
+        try {
+            ret = paperback.isDisplayed() && paperback.isSelected();
+        } catch (Exception e){
+            LOGGER.error(e.getMessage());
+        }
+        return ret;
+    }
+    
+    /**
      * selectPaperbackEdition
      */
-    public void selectPaperbackEdition(){
-        this.waitForPopups();
+    public BookPage selectPaperbackEdition(){
         paperback.click();
+        return new BookPage(this.driver);
     }
     
     /**
