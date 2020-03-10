@@ -1,6 +1,7 @@
 package com.robot.types;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.openqa.selenium.WebDriver;
@@ -32,9 +33,53 @@ public abstract class BookRobot implements Robot {
     private static final String DOLLAR_OFFICIAL = "dolLar.official";
     private static final String DOLLAR_CREDIT_CARD = "dolLar.creditCard";
     private static final String LOCAL_PATH = "local.path";
-    private static final String FORCE_PAPERBACK = "force.paperback";
 
     
+    /**
+     * getPublication
+     * @param url
+     * @param driver
+     * @return
+     */
+    protected List<Publication> getPublications( String url, WebDriver driver ){
+        
+        List<Publication> list = new ArrayList<Publication>();
+        
+        try {
+            
+            // open browser to requested url
+            BookPage bookPage = new BookPage(driver).go(url);
+            bookPage.waitForPopups();
+            
+            if( bookPage != null )
+            {
+                String paperBackUrl = bookPage.getPaperbackUrl();
+                String hardcoverUrl = bookPage.getHardcoverUrl();
+                
+                if(paperBackUrl!=null){
+                    Publication ret = this.getPublication(paperBackUrl, driver);
+                    list.add(ret);
+                }
+        
+                if(hardcoverUrl!=null){
+                    Publication ret = this.getPublication(hardcoverUrl, driver);
+                    list.add(ret);
+                }            
+            }    
+            
+        } catch (Exception e) {
+            
+            // take screenshot of error
+            SeleniumUtils.captureScreenshot(driver);
+            
+            // log exception
+            LOGGER.error("Error reading URL "+url, e);
+            
+        } 
+       
+        return list;
+    }
+
     /**
      * getPublication
      * @param url
@@ -44,22 +89,17 @@ public abstract class BookRobot implements Robot {
     protected Publication getPublication( String url, WebDriver driver ){
         
         Publication ret = new Publication();
+        ret.setUrl(url);
         
         try {
-            ret.setUrl(url);
             
             // open browser to requested url
             BookPage bookPage = new BookPage(driver).go(url);
             bookPage.waitForPopups();
-                
+
+            
             if( bookPage != null )
             {
-                if( this.getPropertyAsBoolean(FORCE_PAPERBACK, false)) {
-                    if( !bookPage.isPaperbackEdition() ) {
-                        bookPage = bookPage.selectPaperbackEdition();
-                        bookPage.waitForPopups();
-                    }
-                }
                 
                 Book book = getBook(bookPage);
                 ret.setProduct(book);
@@ -192,22 +232,6 @@ public abstract class BookRobot implements Robot {
         return StringUtils.parse(quotation).doubleValue();
     }
     
-    /**
-     * getPropertyAsBoolean
-     * @param property
-     * @param defaultValue
-     * @return
-     */
-    private boolean getPropertyAsBoolean(String property,boolean defaultValue){
-        boolean ret = defaultValue;
-        RobotProperties config = RobotProperties.getInstance();    
-        String value = config.getProperty(property);
-        if( !StringUtils.isEmpty(value) ){
-            ret = Boolean.parseBoolean(value);
-        }
-        return ret;
-    }
-
     /**
      * getPricePerKilo
      * @return

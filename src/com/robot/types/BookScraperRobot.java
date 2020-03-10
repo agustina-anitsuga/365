@@ -125,8 +125,8 @@ public class BookScraperRobot extends BookRobot {
             int count=0;
             for (String link : links) {
                 LOGGER.info("Reading book ["+(++count)+"/"+total+"] from url "+link);
-                Publication publication = getPublication(link, driver);
-                ret.add(publication);
+                List<Publication> publications = getPublications(link, driver);
+                ret.addAll(publications);
             }
             
         } catch (Exception e) {
