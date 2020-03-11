@@ -84,6 +84,7 @@ public class SeleniumUtils {
      * @param driver
      */
     public static void captureScreenshot(WebDriver driver) {
+        if( isScreenshotEnabled() )
         try {
             // take screenshot and save it to file
             File screenshot = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
@@ -93,5 +94,13 @@ public class SeleniumUtils {
         } catch (Exception ioe) {
             LOGGER.info("Could not generate screenshot",ioe);
         }
+    }
+
+    /**
+     * isScreenshotEnabled
+     * @return
+     */
+    private static boolean isScreenshotEnabled() {
+        return false;
     }
 }

@@ -111,7 +111,7 @@ public class BookScraperRobot extends BookRobot {
                 LOGGER.info("Reading links from "+url);      
                 categoryPage = categoryPage.go(url);
                 categoryPage.waitForPopups();
-                links.addAll(filterExistingPublications(categoryPage.getLinks()));
+                links.addAll(categoryPage.getLinks());
                 pageCount++;
                 if(categoryPage.hasNextPage()){
                     url = categoryPage.getNextUrl();
@@ -147,10 +147,20 @@ public class BookScraperRobot extends BookRobot {
     }
 
     /**
+     * shouldIgnoreUrl
+     * @param url
+     * @return
+     */
+    protected boolean shouldIgnoreUrl(String url) {
+        return super.shouldIgnoreUrl(url) || existingPublications.contains(this.getShortLinkFor(url));
+    }
+    
+    /**
      * filterExistingPublications
      * @param links
      * @return
      */
+    /*
     private List<String> filterExistingPublications(List<String> links) {
         List<String> ret = new ArrayList<String>();
         for (String link : links) {
@@ -161,6 +171,7 @@ public class BookScraperRobot extends BookRobot {
         }
         return ret;
     }
+    */
 
     /**
      * getShortLinkFor

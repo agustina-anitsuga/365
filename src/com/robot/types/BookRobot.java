@@ -53,18 +53,30 @@ public abstract class BookRobot implements Robot {
             
             if( bookPage != null )
             {
-                String paperBackUrl = bookPage.getPaperbackUrl();
-                String hardcoverUrl = bookPage.getHardcoverUrl();
+                String paperbackUrl = validateUrl(bookPage.getPaperbackUrl(),url);
+                String hardcoverUrl = validateUrl(bookPage.getHardcoverUrl(),url);
                 
-                if(paperBackUrl!=null){
-                    Publication ret = this.getPublication(paperBackUrl, driver);
-                    list.add(ret);
+                List<String> urls = new ArrayList<String>();
+                if(url.equals(paperbackUrl)){
+                    urls.add(paperbackUrl);
+                    urls.add(hardcoverUrl);
+                }
+                else if(url.equals(hardcoverUrl)){
+                    urls.add(hardcoverUrl);
+                    urls.add(paperbackUrl);
+                } else {
+                    urls.add(url);
+                    urls.add(paperbackUrl);
+                    urls.add(hardcoverUrl);
+                }
+                
+                for (String anUrl : urls) {
+                    if(!shouldIgnoreUrl(anUrl)){
+                        Publication ret = this.getPublication(anUrl, driver, bookPage, !url.equals(anUrl));
+                        list.add(ret);
+                    }
                 }
         
-                if(hardcoverUrl!=null){
-                    Publication ret = this.getPublication(hardcoverUrl, driver);
-                    list.add(ret);
-                }            
             }    
             
         } catch (Exception e) {
@@ -79,6 +91,29 @@ public abstract class BookRobot implements Robot {
        
         return list;
     }
+    
+    /**
+     * validateUrl
+     * @param editionUrl
+     * @param url
+     * @return
+     */
+    private String validateUrl(String editionUrl, String url) {
+        String ret = editionUrl;
+        if( editionUrl!=null && editionUrl.startsWith("javascript")){
+            ret = url;
+        }
+        return ret;
+    }
+
+    /**
+     * shouldIgnoreUrl
+     * @param url
+     * @return
+     */
+    protected boolean shouldIgnoreUrl(String url) {
+        return StringUtils.isEmpty(url);
+    }
 
     /**
      * getPublication
@@ -86,7 +121,7 @@ public abstract class BookRobot implements Robot {
      * @param driver
      * @return
      */
-    protected Publication getPublication( String url, WebDriver driver ){
+    protected Publication getPublication( String url, WebDriver driver, BookPage aBookPage , boolean shouldReload ){
         
         Publication ret = new Publication();
         ret.setUrl(url);
@@ -94,13 +129,14 @@ public abstract class BookRobot implements Robot {
         try {
             
             // open browser to requested url
-            BookPage bookPage = new BookPage(driver).go(url);
-            bookPage.waitForPopups();
-
+            BookPage bookPage = aBookPage;
+            if( shouldReload ){
+                bookPage = new BookPage(driver).go(url);
+                bookPage.waitForPopups();
+            }
             
             if( bookPage != null )
             {
-                
                 Book book = getBook(bookPage);
                 ret.setProduct(book);
                 
@@ -110,7 +146,6 @@ public abstract class BookRobot implements Robot {
                 
                 bookPage.openPhotoViewer();
                 ret.setImages(getImages(bookPage.getImages()));
-                //ret.setImages(getPublicationImages(book));
             }    
             
         } catch (Exception e) {

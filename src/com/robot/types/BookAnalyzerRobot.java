@@ -44,7 +44,7 @@ public class BookAnalyzerRobot extends BookRobot {
         int count = 0;
         for (String bookUrl : bookUrls) {
             LOGGER.info("Reading book ["+(++count)+"/"+total+"] from url "+bookUrl);
-            Publication publication = super.getPublication(bookUrl, driver);
+            Publication publication = super.getPublication(bookUrl, driver, null, true);
             ret.add(publication);
         }
         
