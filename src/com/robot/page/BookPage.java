@@ -294,8 +294,16 @@ public class BookPage extends Page {
         String isHardcover = (String) details.get("Hardcover");
         if( isHardcover!=null ){
             ret = "Dura";
-        } 
+        }
+        isHardcover = (String) details.get("Library Binding");
+        if( isHardcover!=null ){
+            ret = "Dura";
+        }
         String isPaperback = (String) details.get("Paperback");
+        if( isPaperback!=null ){
+            ret = "Blanda";
+        }
+        isPaperback = (String) details.get("Mass Market Paperback");
         if( isPaperback!=null ){
             ret = "Blanda";
         }
@@ -309,7 +317,7 @@ public class BookPage extends Page {
     public String getCoverFullData() {
         String ret = "";
         Map<String,String> details = getDetailMap();
-        String[] keys = {"Hardcover","Paperback","Board book","Mass Market Paperback"};
+        String[] keys = {"Hardcover","Paperback","Library Binding","Board book","Mass Market Paperback"};
         for (int i = 0; i < keys.length; i++) {
             String key = keys[i];
             String value = (String) details.get(key);
