@@ -431,7 +431,7 @@ public class BookPage extends Page {
     public String getSeller(){
         String ret = "Unable to retrieve seller";
         try {
-            seller.getText();
+            ret = seller.getText();
             ret = ret.trim();
         } catch (Exception e) {
             LOGGER.error("Unable to retrieve seller");
