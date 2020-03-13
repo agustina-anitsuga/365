@@ -93,6 +93,8 @@ public class BookPage extends Page {
     @FindBy(xpath = "//*[@class=\"a-button-text\"]")
     private List<WebElement> editions;
 
+    @FindBy(xpath = "//*[@id=\"formats\"]")
+    private WebElement formats;
     
    /**
     * BookPage
@@ -397,42 +399,6 @@ public class BookPage extends Page {
             photoViewer1.click();
         }
     }
-    
-    /**
-     * getPaperbackEdition
-     * @return
-     */
-    private WebElement getPaperbackEdition(){
-        WebElement ret = null;
-        try {
-            for (WebElement webElement : editions) {
-                String text = webElement.getText();
-                if(text.startsWith("Pasta blanda")){
-                    ret = webElement;
-                    break;
-                }
-            }
-        } catch (Exception e){
-            LOGGER.error(e.getMessage());
-        }
-        return ret;
-    }
-    
-    /**
-     * getPaperbackUrl
-     * @return
-     */
-    public String getPaperbackUrl(){
-        String ret = null;
-        try {
-            WebElement webElement = this.getPaperbackEdition();
-            if(webElement!=null)
-                ret = webElement.getAttribute("href");
-        } catch (Exception e){
-            LOGGER.error(e.getMessage());
-        }
-        return ret;
-    }
         
     /**
      * getImages
@@ -482,19 +448,28 @@ public class BookPage extends Page {
     }
 
     /**
-     * getHardcoverEdition
+     * getEditions
      * @return
      */
-    private WebElement getHardcoverEdition() {
-        WebElement ret = null;
+    private List<WebElement> getEditions() {
+        List<WebElement> ret = new ArrayList<WebElement>();
         try {
-            for (WebElement webElement : editions) {
-                String text = webElement.getText();
-                if(text.startsWith("Pasta dura")||text.startsWith("Encuadernación de biblioteca")){
-                    ret = webElement;
-                    break;
+            for (int i = 1; i < 20; i++) {
+                String xpath = "//*[@id=\"a-autoid-"+i+"-announce\"]";
+                List<WebElement> elements = formats.findElements(By.xpath(xpath));
+                for (WebElement webElement : elements) {
+                    String text = webElement.getText();
+                    if(text.startsWith("Pasta dura")
+                               ||text.startsWith("Encuadernación de biblioteca")
+                               ||text.startsWith("Pasta blanda")
+                               ||text.startsWith("Libro de bolsillo")){
+                        ret.add(webElement);
+                        break;
+                    }
                 }
+                
             }
+            
         } catch (Exception e){
             LOGGER.error(e.getMessage());
         }
@@ -502,20 +477,24 @@ public class BookPage extends Page {
     }
 
     /**
-     * getHardcoverUrl
+     * getEditionsUrls
      * @return
      */
-    public String getHardcoverUrl() {
-        String ret = null;
+    public List<String> getEditionsUrls() {
+        List<String> ret = new ArrayList<String>();
         try {
-            WebElement webElement = this.getHardcoverEdition();
-            if(webElement!=null)
-                ret = webElement.getAttribute("href");
+            LOGGER.info("Editions...");
+            List<WebElement> webElements = this.getEditions();
+            for (WebElement webElement : webElements) {
+                String url = webElement.getAttribute("href");
+                ret.add(url);
+                LOGGER.info("    "+url);
+            }
+            
         } catch (Exception e){
             LOGGER.error(e.getMessage());
         }
         return ret;
     }
-
     
 }

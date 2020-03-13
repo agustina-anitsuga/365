@@ -43,7 +43,9 @@ public class BookPageTester {
         // https://www.amazon.com/-/es/G-Riddle/dp/1940026032/
         // https://www.amazon.com/-/es/Robert-Philips-Sean-Kirkman/dp/8498855152/
         // https://www.amazon.com/-/es/Sidney-Sheldon/dp/1478948434/";
-        String url = "https://www.amazon.com/-/es/Master-Game-Sidney-Sheldon/dp/0688013651/ref=tmm_hrd_swatch_0?_encoding=UTF8&qid=1584057206&sr=1-1";
+        // https://www.amazon.com/-/es/Master-Game-Sidney-Sheldon/dp/0688013651/ref=tmm_hrd_swatch_0?_encoding=UTF8&qid=1584057206&sr=1-1";
+        // String url="https://www.amazon.com/-/es/Sidney-Sheldons-Tides-Memory-Sheldon/dp/006222302X/";
+        String url = "https://www.amazon.com/-/es/Sidney-Sheldon/dp/0446357448/";
         
         try {
             
@@ -63,11 +65,18 @@ public class BookPageTester {
                 System.out.println("seller:"+bookPage.getSeller());
                 System.out.println("title:"+bookPage.getTitle());
                 System.out.println("title.len:"+bookPage.getTitle().length());
+                List<String> editions = bookPage.getEditionsUrls();
+                System.out.println("Editions");
+                for (String edition : editions) {
+                    System.out.println("    edition="+edition);
+                }
+                System.out.println("Images");
                 bookPage.openPhotoViewer();
                 List<String> images = bookPage.getImages();
                 for (String image : images) {
                     System.out.println("    image - "+image);
                 }
+                
             }    
             
         } catch (Exception e) {

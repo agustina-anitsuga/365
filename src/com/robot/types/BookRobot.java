@@ -53,23 +53,28 @@ public abstract class BookRobot implements Robot {
             
             if( bookPage != null )
             {
-                String paperbackUrl = validateUrl(bookPage.getPaperbackUrl(),url);
-                String hardcoverUrl = validateUrl(bookPage.getHardcoverUrl(),url);
+                List<String> urls = bookPage.getEditionsUrls();
                 
-                List<String> urls = new ArrayList<String>();
-                if(url.equals(paperbackUrl)){
-                    urls.add(paperbackUrl);
-                    urls.add(hardcoverUrl);
+                // change javascript call into current url
+                List<String> validatedUrls = new ArrayList<String>();
+                for (String string : urls) {
+                    validatedUrls.add(validateUrl(string,url));
                 }
-                else if(url.equals(hardcoverUrl)){
-                    urls.add(hardcoverUrl);
-                    urls.add(paperbackUrl);
-                } else {
+                
+                // place current url at front to avoid extra calls
+                if(validatedUrls.contains(url)){
+                    urls = new ArrayList<String>();
                     urls.add(url);
-                    urls.add(paperbackUrl);
-                    urls.add(hardcoverUrl);
+                    for (String string : validatedUrls) {
+                        if(!string.equals(url)){
+                            urls.add(string);
+                        }
+                    }
+                } else {
+                    urls = validatedUrls;
                 }
                 
+                // get publication for each url
                 for (String anUrl : urls) {
                     if(!shouldIgnoreUrl(anUrl)){
                         Publication ret = this.getPublication(anUrl, driver, bookPage, !url.equals(anUrl));
@@ -220,23 +225,26 @@ public abstract class BookRobot implements Robot {
      * @return
      */
     private String getPublicationPrice(Book book) {
-        
-        Number dolarPriceAmount = book.getDolarPriceAmount();
-        Number weightInKilos = book.getWeightInKilos();
-        if( ( dolarPriceAmount == null ) || ( weightInKilos == null ) ){
-            return "";
+        try {
+            Number dolarPriceAmount = book.getDolarPriceAmount();
+            Number weightInKilos = book.getWeightInKilos();
+            if( ( dolarPriceAmount == null ) || ( weightInKilos == null ) ){
+                return "";
+            }
+            
+            double creditCardDolarQuotation = getCreditCardDolLarQuotation();
+            double officialDolarQuotation = getOfficialDoLlarQuotation();
+            double shippingPricePerKilo = getShippingPricePerKilo();
+            double margin = getMargin();
+            
+            double costInPesos = dolarPriceAmount.doubleValue() * creditCardDolarQuotation;
+            double shippingCostInPesos = weightInKilos.doubleValue() * officialDolarQuotation * shippingPricePerKilo;
+            double priceInPesos =  ( costInPesos  + shippingCostInPesos ) * margin ;
+            
+            return formatNumberAsString( priceInPesos );
+        } catch (Exception e) {
+            return "Unable to retrieve publication price";
         }
-        
-        double creditCardDolarQuotation = getCreditCardDolLarQuotation();
-        double officialDolarQuotation = getOfficialDoLlarQuotation();
-        double shippingPricePerKilo = getShippingPricePerKilo();
-        double margin = getMargin();
-        
-        double costInPesos = dolarPriceAmount.doubleValue() * creditCardDolarQuotation;
-        double shippingCostInPesos = weightInKilos.doubleValue() * officialDolarQuotation * shippingPricePerKilo;
-        double priceInPesos =  ( costInPesos  + shippingCostInPesos ) * margin ;
-        
-        return formatNumberAsString( priceInPesos );
     }
 
     /**

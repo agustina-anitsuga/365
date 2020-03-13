@@ -32,7 +32,7 @@ public class BookScraperRobot extends BookRobot {
     /**
      * maximum pages to read at a time
      */
-    private static final int MAX_PAGES = 1;
+    private static final int MAX_PAGES = 30;
 
     /**
      * property that points to the file containing the existing publications
