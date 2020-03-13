@@ -262,7 +262,12 @@ public class BookPage extends Page {
      * @return
      */
     public String getAvailability(){
-        String ret = availability.getText();
+        String ret = "Unable to retrieve availability";
+        try {
+            ret = availability.getText();
+        } catch (Exception e) {
+            LOGGER.error("Unable to retrieve availability");
+        }
         return ret;
     }
     
@@ -458,8 +463,14 @@ public class BookPage extends Page {
      * @return
      */
     public String getSeller(){
-        String ret = seller.getText();
-        return ret.trim();
+        String ret = "Unable to retrieve seller";
+        try {
+            seller.getText();
+            ret = ret.trim();
+        } catch (Exception e) {
+            LOGGER.error("Unable to retrieve seller");
+        }
+        return ret;
     }
     
     /**

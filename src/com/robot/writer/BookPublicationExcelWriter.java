@@ -92,44 +92,51 @@ public class BookPublicationExcelWriter implements PublicationCSVWriter {
                 cell.setCellStyle(cellstyle);
             }
             
+            System.out.println("");
+            
             // write data
             for (Publication publication : publications) {
                 try 
                 {
-                    Row row = sheet.createRow(rowCount++);
+                    Row row = sheet.createRow(rowCount);
                     columnCount = 0;
                     Book book = (Book) publication.getProduct();
-                    
-                    writeField(row,publication.getUrl(),columnCount++);
-                    writeField(row,book.getPrice(),columnCount++); // precio en usd
-                    writeField(row,book.getWeight(),columnCount++); // peso
-                    writeField(row,book.getAvailability(),columnCount++); // disponibilidad
-                    writeField(row,book.getSeller(),columnCount++); // seller   
-                    writeField(row,publication.getTitle(),columnCount++); // titulo
-                    writeField(row,toCommaSeparatedArray(publication.getImages()),columnCount++); // imagenes
-                    writeField(row,"",columnCount++); // sku
-                    writeField(row,book.getIsbn(),columnCount++); // isbn
-                    writeField(row,"1",columnCount++); // Cantidad
-                    writeField(row,publication.getPrice(),columnCount++); // precio
-                    writeField(row,publication.getDescription(),columnCount++); // Descripcion
-                    writeField(row,"Nuevo",columnCount++); // Condicion
-                    writeField(row,"",columnCount++); // Link de Youtube
-                    writeField(row,"Clásica",columnCount++); // Tipo de Publicacion     
-                    writeField(row,"Garantía del vendedor",columnCount++); //Tipo de garantia 
-                    writeField(row,"30",columnCount++); // Tiempo de garantia 
-                    writeField(row,"días",columnCount++); // Unidad de tiempo de garantia
-                    writeField(row,"Mercado Envíos",columnCount++); // Forma de envio
-                    writeField(row,"A cargo del comprador",columnCount++) ; // Costo de envio
-                    writeField(row,"Acepto",columnCount++); // Retiro en persona
-                    writeField(row,book.getType(),columnCount++); // Tipo de narracion
-                    writeField(row,book.getTitle(),columnCount++); // titulo libro
-                    writeField(row,book.getAuthor(),columnCount++); // autor libro
-                    writeField(row,book.getLanguage(),columnCount++); // idioma
-                    writeField(row,book.getEditorial(),columnCount++); // editorial
-                    writeField(row,book.getFormat(),columnCount++); // formato
-                    writeField(row,book.getCover(),columnCount++); // tapa       
+                    if(book!=null){
+                        writeField(row,publication.getUrl(),columnCount++);
+                        writeField(row,book.getPrice(),columnCount++); // precio en usd
+                        writeField(row,book.getWeight(),columnCount++); // peso
+                        writeField(row,book.getAvailability(),columnCount++); // disponibilidad
+                        writeField(row,book.getSeller(),columnCount++); // seller   
+                        writeField(row,publication.getTitle(),columnCount++); // titulo
+                        writeField(row,toCommaSeparatedArray(publication.getImages()),columnCount++); // imagenes
+                        writeField(row,"",columnCount++); // sku
+                        writeField(row,book.getIsbn(),columnCount++); // isbn
+                        writeField(row,"1",columnCount++); // Cantidad
+                        writeField(row,publication.getPrice(),columnCount++); // precio
+                        writeField(row,publication.getDescription(),columnCount++); // Descripcion
+                        writeField(row,"Nuevo",columnCount++); // Condicion
+                        writeField(row,"",columnCount++); // Link de Youtube
+                        writeField(row,"Clásica",columnCount++); // Tipo de Publicacion     
+                        writeField(row,"Garantía del vendedor",columnCount++); //Tipo de garantia 
+                        writeField(row,"30",columnCount++); // Tiempo de garantia 
+                        writeField(row,"días",columnCount++); // Unidad de tiempo de garantia
+                        writeField(row,"Mercado Envíos",columnCount++); // Forma de envio
+                        writeField(row,"A cargo del comprador",columnCount++) ; // Costo de envio
+                        writeField(row,"Acepto",columnCount++); // Retiro en persona
+                        writeField(row,book.getType(),columnCount++); // Tipo de narracion
+                        writeField(row,book.getTitle(),columnCount++); // titulo libro
+                        writeField(row,book.getAuthor(),columnCount++); // autor libro
+                        writeField(row,book.getLanguage(),columnCount++); // idioma
+                        writeField(row,book.getEditorial(),columnCount++); // editorial
+                        writeField(row,book.getFormat(),columnCount++); // formato
+                        writeField(row,book.getCover(),columnCount++); // tapa       
+                        rowCount++;
+                    } else {
+                        LOGGER.error("Empty book for URL "+publication.getUrl());
+                    }
                 } catch(Exception e) {
                     LOGGER.error(e.getMessage());
+                    e.printStackTrace();
                 }
             }
                             

@@ -41,7 +41,9 @@ public class BookPageTester {
         // https://www.amazon.com/-/es/Bill-Martin-Jr/dp/0805047905/ref=zg_bs_books_27/147-5971479-1215466?_encoding=UTF8&psc=1&refRID=VXNVB79VE3N9WZMK164J
         // https://www.amazon.com/-/es/Robert-Philips-Sean-Kirkman/dp/8498855152/
         // https://www.amazon.com/-/es/G-Riddle/dp/1940026032/
-        String url = "https://www.amazon.com/-/es/Robert-Philips-Sean-Kirkman/dp/8498855152/";
+        // https://www.amazon.com/-/es/Robert-Philips-Sean-Kirkman/dp/8498855152/
+        // https://www.amazon.com/-/es/Sidney-Sheldon/dp/1478948434/";
+        String url = "https://www.amazon.com/-/es/Master-Game-Sidney-Sheldon/dp/0688013651/ref=tmm_hrd_swatch_0?_encoding=UTF8&qid=1584057206&sr=1-1";
         
         try {
             
