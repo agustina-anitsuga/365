@@ -44,8 +44,9 @@ public class BookPageTester {
         // https://www.amazon.com/-/es/Robert-Philips-Sean-Kirkman/dp/8498855152/
         // https://www.amazon.com/-/es/Sidney-Sheldon/dp/1478948434/";
         // https://www.amazon.com/-/es/Master-Game-Sidney-Sheldon/dp/0688013651/ref=tmm_hrd_swatch_0?_encoding=UTF8&qid=1584057206&sr=1-1";
-        // String url="https://www.amazon.com/-/es/Sidney-Sheldons-Tides-Memory-Sheldon/dp/006222302X/";
-        String url = "https://www.amazon.com/-/es/Sidney-Sheldon/dp/1478948434/ref=sr_1_1?__mk_es_US=%C3%85M%C3%85%C5%BD%C3%95%C3%91&keywords=sidney+sheldon&qid=1584064061&refinements=p_n_feature_nine_browse-bin%3A3291437011%2Cp_n_availability%3A2245265011%2Cp_n_condition-type%3A1294423011&rnid=1294421011&s=books&sr=1-1";
+        //String url="https://www.amazon.com/-/es/Sidney-Sheldons-Tides-Memory-Sheldon/dp/006222302X/";
+        //String url = "https://www.amazon.com/-/es/Chronicles-Narnia-Box-Set/dp/0060244887/ref=tmm_hrd_swatch_0?_encoding=UTF8&qid=1584070775&sr=1-4";
+        String url = "https://www.amazon.com/-/es/Michael-Crichton/dp/0517084791/ref=sr_1_639?__mk_es_US=%C3%85M%C3%85%C5%BD%C3%95%C3%91&keywords=box+set&qid=1584072397&refinements=p_n_condition-type%3A1294423011%2Cp_n_availability%3A2245265011%2Cp_n_feature_browse-bin%3A2656020011&rnid=618072011&s=books&sr=1-639";
         
         try {
             

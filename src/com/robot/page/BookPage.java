@@ -87,6 +87,9 @@ public class BookPage extends Page {
     @FindBy(xpath = "//*[@id=\"merchant-info\"]")
     private WebElement seller;
     
+    @FindBy(xpath = "//*[@id=\"buyNewInner\"]/div[@class=\"a-section a-spacing-small\"]/span")
+    private WebElement seller2;
+    
     // map of book details
     private Map<String,String> detailMap = null ;
     
@@ -429,12 +432,17 @@ public class BookPage extends Page {
      * @return
      */
     public String getSeller(){
-        String ret = "Unable to retrieve seller";
+        String ret = "";
         try {
             ret = seller.getText();
             ret = ret.trim();
         } catch (Exception e) {
-            LOGGER.error("Unable to retrieve seller");
+            try {
+                ret = seller2.getText();
+                ret = ret.trim();
+            } catch (Exception e2) {
+                LOGGER.error("Unable to retrieve seller");
+            }
         }
         return ret;
     }
@@ -462,6 +470,7 @@ public class BookPage extends Page {
                     if(text.startsWith("Pasta dura")
                                ||text.startsWith("Encuadernación de biblioteca")
                                ||text.startsWith("Pasta blanda")
+                               ||text.startsWith("Tapa flexible")
                                ||text.startsWith("Libro de bolsillo")){
                         ret.add(webElement);
                         break;
