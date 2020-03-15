@@ -172,11 +172,19 @@ public abstract class BookRobot implements Robot {
      * @return
      */
     private List<String> getImages(List<String> images) {
+        List<String> ret = new ArrayList<String>();
         if( images!=null && images.size()>0 ){
-            images.add("https://http2.mlstatic.com/4k-ultra-hd-blu-ray-harry-potter-collection-8-films-D_NQ_NP_821117-MLA40710388896_022020-F.webp");
-            //images.add("https://i.postimg.cc/0NsFBwvH/365cine-logo-2.png");
+            int count = 0;
+            for (String url : images) {
+                ret.add(url);
+                if((++count)>=9){
+                    break;
+                }
+            }
+            // add 365 image
+            ret.add("https://http2.mlstatic.com/4k-ultra-hd-blu-ray-harry-potter-collection-8-films-D_NQ_NP_821117-MLA40710388896_022020-F.webp");
         }
-        return images;
+        return ret;
     }
 
     /**
@@ -208,15 +216,93 @@ public abstract class BookRobot implements Robot {
      * @param book
      * @return
      */
-    private String getPublicationTitle(Book book) {
+    protected String getPublicationTitle(Book book) {
         String title = "Libro "+book.getTitle();
+        // remove "Spanish Edition"
+        title = title.replaceAll(" \\(Spanish Edition\\)", "");
+        title = title.replaceAll(" Spanish Edition", "");
+        title = title.replaceAll(" Spanish Version", "");
+        title = title.replaceAll(" Spanish Ed.", "");
+        title = title.replaceAll(" Spanish Ed", "");
+        title = title.replaceAll(" / Spanish", "");
+        title = title.trim();
+        // remove unexpected ending characters
+        if( title.endsWith(":") ){
+            title = title.substring(0,title.length()-1);
+        }
+        // add author if there is room
         if( (title.length()+3+book.getAuthor().length()) <= 60 ){
             title = title + " / " + book.getAuthor();
         }
+        // cut the title to 60 chars
         if(title.length()>60){
             title = title.substring(0, 60);
+            int lastSeparatorCharacterIndex = getLastSeparatorCharacterIndex(title);
+            title = title.substring(0,lastSeparatorCharacterIndex);
+            if( title.length() > 56){
+                lastSeparatorCharacterIndex = getLastSeparatorCharacterIndex(title);
+                title = title.substring(0,lastSeparatorCharacterIndex);
+            }
+            title = title.concat(" ...");
+        }
+        // check for unexpected endings after cutting to 60 chars
+        if( title.endsWith(":") ){
+            title = title.substring(0,title.length()-1);
+        }
+        String[] endings = new String[]{"(The ...", "(A ..."};
+        for (String ending : endings) {     
+            if( title.endsWith(ending) ){
+                int upto = title.indexOf(ending);
+                if(upto>0){
+                    title = title.substring(0,upto);
+                    title = title.concat("...");
+                }
+            }
+        }
+        // check for uneven parenthesis
+        int openingParenthesis = getNumberOfOccurrences(title,"(");
+        if( openingParenthesis==1 ){
+            int closingParenthesis = getNumberOfOccurrences(title,")");
+            if( closingParenthesis==0 ){
+                title = title.replaceAll("\\(", "/");
+            }
         }
         return title;
+    }
+
+    /**
+     * getNumberOfOccurrences
+     * @param title
+     * @param string
+     * @return
+     */
+    private int getNumberOfOccurrences(String title, String pattern) {
+        int count = 0;
+        int index=0;
+        while(index>=0){
+            index = title.indexOf(pattern,index+1);
+            if(index>0){
+                count++;
+            }
+        }
+        return count;
+    }
+
+    /**
+     * getLastSeparatorCharacterIndex
+     * @param title
+     * @return
+     */
+    private int getLastSeparatorCharacterIndex(String title) {
+        int lastSeparatorIndex = title.length();
+        int fromIndex = 0;
+        while(fromIndex>=0){
+            fromIndex = title.indexOf(" ", fromIndex+1);
+            if(fromIndex>=0){
+                lastSeparatorIndex = fromIndex;
+            }
+        }
+        return lastSeparatorIndex;
     }
 
     /**
@@ -224,7 +310,7 @@ public abstract class BookRobot implements Robot {
      * @param book
      * @return
      */
-    private String getPublicationPrice(Book book) {
+    public String getPublicationPrice(Book book) {
         try {
             Number dolarPriceAmount = book.getDolarPriceAmount();
             Number weightInKilos = book.getWeightInKilos();
