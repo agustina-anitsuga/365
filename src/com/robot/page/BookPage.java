@@ -90,6 +90,9 @@ public class BookPage extends Page {
     @FindBy(xpath = "//*[@id=\"buyNewInner\"]/div[@class=\"a-section a-spacing-small\"]/span")
     private WebElement seller2;
     
+    @FindBy(xpath = "//*[@id=\"newOfferAccordionRow\"]/div/div[2]/div/div/div[1]/div/span")
+    private WebElement seller3;
+    
     // map of book details
     private Map<String,String> detailMap = null ;
     
@@ -98,6 +101,8 @@ public class BookPage extends Page {
 
     @FindBy(xpath = "//*[@id=\"formats\"]")
     private WebElement formats;
+    
+    
     
    /**
     * BookPage
@@ -415,15 +420,6 @@ public class BookPage extends Page {
             }
             ret.add(photoTarget.getAttribute("src"));
         }
-        /*
-        if(ret.size()==0){
-            try {
-                ret.add(photoTarget1.getAttribute("src"));                
-            } catch (Exception e) {
-                LOGGER.error(e.getMessage());
-            }
-        }
-        */
         return ret;
     }
     
@@ -441,7 +437,12 @@ public class BookPage extends Page {
                 ret = seller2.getText();
                 ret = ret.trim();
             } catch (Exception e2) {
-                LOGGER.error("Unable to retrieve seller");
+                try {
+                    ret = seller3.getText();
+                    ret = ret.trim();
+                } catch (Exception e3) {
+                    LOGGER.error("Unable to retrieve seller");
+                }
             }
         }
         return ret;
@@ -462,27 +463,44 @@ public class BookPage extends Page {
     private List<WebElement> getEditions() {
         List<WebElement> ret = new ArrayList<WebElement>();
         try {
-            for (int i = 1; i < 20; i++) {
-                String xpath = "//*[@id=\"a-autoid-"+i+"-announce\"]";
+            for (int i = 0; i < 20; i++) {
+                String xpath = "//*[@id=\"a-autoid-"+(i+1)+"-announce\"]";
                 List<WebElement> elements = formats.findElements(By.xpath(xpath));
                 for (WebElement webElement : elements) {
                     String text = webElement.getText();
-                    if(text.startsWith("Pasta dura")
-                               ||text.startsWith("Encuadernación de biblioteca")
-                               ||text.startsWith("Pasta blanda")
-                               ||text.startsWith("Tapa flexible")
-                               ||text.startsWith("Libro de bolsillo")){
+                    if(editionIsOfInterest(text)){
                         ret.add(webElement);
                         break;
                     }
                 }
-                
+                xpath = "//*[@id=\"mediaTab_heading_"+i+"\"]";
+                elements = formats.findElements(By.xpath(xpath));
+                for (WebElement webElement : elements) {
+                    String text = webElement.getText();
+                    if(editionIsOfInterest(text)){
+                        WebElement elem = webElement.findElement(By.xpath("a"));
+                        ret.add(elem);
+                        break;
+                    }
+                }
             }
-            
         } catch (Exception e){
             LOGGER.error(e.getMessage());
         }
         return ret;
+    }
+
+    /**
+     * editionIsOfInterest
+     * @param text
+     * @return
+     */
+    private boolean editionIsOfInterest(String text) {
+        return text.startsWith("Pasta dura")
+                   ||text.startsWith("Encuadernación de biblioteca")
+                   ||text.startsWith("Pasta blanda")
+                   ||text.startsWith("Tapa flexible")
+                   ||text.startsWith("Libro de bolsillo");
     }
 
     /**

@@ -52,6 +52,8 @@ public class BookPageTester {
         
         String url = "https://www.amazon.com/-/es/Michael-Crichton/dp/0517084791/";
         
+        //String url = "https://www.amazon.com/-/es/Tamara-Stevens/dp/0313375178/";
+        
         try {
             
             driver = SeleniumUtils.buildDriver(Browser.CHROME);
