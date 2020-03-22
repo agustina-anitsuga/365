@@ -3,6 +3,7 @@ package com.robot.types;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 import org.openqa.selenium.WebDriver;
 import org.slf4j.Logger;
@@ -13,6 +14,7 @@ import com.robot.RobotProperties;
 import com.robot.model.Book;
 import com.robot.model.Publication;
 import com.robot.page.BookPage;
+import com.robot.page.LoginPage;
 import com.robot.utils.SeleniumUtils;
 import com.robot.utils.StringUtils;
 
@@ -472,6 +474,24 @@ public abstract class BookRobot implements Robot {
         
         
         return ret;
+    }
+    
+    /**
+     * login
+     */
+    public void login( WebDriver driver ){
+        String url = "https://www.amazon.com/ap/signin?_encoding=UTF8&ignoreAuthState=1&openid.assoc_handle=usflex&openid.claimed_id=http%3A%2F%2Fspecs.openid.net%2Fauth%2F2.0%2Fidentifier_select&openid.identity=http%3A%2F%2Fspecs.openid.net%2Fauth%2F2.0%2Fidentifier_select&openid.mode=checkid_setup&openid.ns=http%3A%2F%2Fspecs.openid.net%2Fauth%2F2.0&openid.ns.pape=http%3A%2F%2Fspecs.openid.net%2Fextensions%2Fpape%2F1.0&openid.pape.max_auth_age=0&openid.return_to=https%3A%2F%2Fwww.amazon.com%2F-%2Fes%2FOctavia-Butler%2Fdp%2F1583226982%2Fref%3Dnav_signin%3Fqid%3D1582944662%26refinements%3Dp_n_feature_browse-bin%253A2656022011%26rnid%3D618072011%26s%3Dbooks%26sr%3D1-217&switch_account=";
+        LoginPage page = new LoginPage(driver).go(url);
+        waitForInput();
+    }
+
+    /**
+     * waitForInput
+     */
+    private void waitForInput() {
+        Scanner in = new Scanner(System.in);
+        String s = in. nextLine();
+        System.out. println("You entered string "+s);
     }
        
 }

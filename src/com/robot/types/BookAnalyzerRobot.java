@@ -38,7 +38,9 @@ public class BookAnalyzerRobot extends BookRobot {
         
         List<Publication> ret = new ArrayList<Publication>();
         List<String> bookUrls = readBookURLs();
+        
         WebDriver driver = SeleniumUtils.buildDriver(Browser.CHROME);
+        login(driver);
         
         int total = bookUrls.size();
         int count = 0;

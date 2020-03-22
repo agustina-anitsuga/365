@@ -23,4 +23,5 @@ public interface Robot {
      * @return
      */
     public boolean validConfig();
+
 }

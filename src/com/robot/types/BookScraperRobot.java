@@ -103,6 +103,8 @@ public class BookScraperRobot extends BookRobot {
         try {
             
             driver = SeleniumUtils.buildDriver(Browser.CHROME);
+            login(driver);
+            
             BookCategoryPage categoryPage = new BookCategoryPage(driver);
             List<String> links = new ArrayList<String>();
             
