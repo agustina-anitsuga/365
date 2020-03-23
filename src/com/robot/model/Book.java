@@ -1,5 +1,7 @@
 package com.robot.model;
 
+import java.util.List;
+
 import com.robot.utils.StringUtils;
 
 /**
@@ -22,7 +24,7 @@ public class Book extends Product {
     private String language;
     private String type;
     private String dimensions;
-    private String[] images ;
+    private List<String> images ;
     private String seller;
     
     public String getIsbn() {
@@ -103,10 +105,10 @@ public class Book extends Product {
     public void setDimensions(String dimensions) {
         this.dimensions = dimensions;
     }
-    public String[] getImages() {
+    public List<String> getImages() {
         return images;
     }
-    public void setImages(String[] images) {
+    public void setImages(List<String> images) {
         this.images = images;
     }
     public String getSeller() {
@@ -136,6 +138,7 @@ public class Book extends Product {
     public Number getDolarPriceAmount() {
         String dolarStr = this.getPrice();
         dolarStr = dolarStr.replaceAll(java.util.regex.Matcher.quoteReplacement("US$"), "");
+        dolarStr = dolarStr.replaceAll(java.util.regex.Matcher.quoteReplacement("$"), "");
         dolarStr = dolarStr.replaceAll("USD", "");
         return StringUtils.parse(dolarStr.trim());
     }

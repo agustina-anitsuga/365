@@ -49,25 +49,30 @@ public class BookPageTester {
         //String url="https://www.amazon.com/-/es/Sidney-Sheldons-Tides-Memory-Sheldon/dp/006222302X/";
         //String url = "https://www.amazon.com/-/es/Chronicles-Narnia-Box-Set/dp/0060244887/ref=tmm_hrd_swatch_0?_encoding=UTF8&qid=1584070775&sr=1-4";
         //String url = "https://www.amazon.com/-/es/Swing-Life-Times-Benny-Goodman/dp/0393311686/ref=tmm_pap_swatch_0?_encoding=UTF8&qid=1584234184&sr=1-11";
-        
-        String url = "https://www.amazon.com/-/es/Michael-Crichton/dp/0517084791/";
-        
+        //String url = "https://www.amazon.com/-/es/Michael-Crichton/dp/0517084791/";
         //String url = "https://www.amazon.com/-/es/Tamara-Stevens/dp/0313375178/";
+        //String url = "https://www.amazon.com/-/es/Stephen-King/dp/1451627297/ref=sr_1_19?qid=1582864461&refinements=p_n_feature_browse-bin%3A2656022011&rnid=618072011&s=books&sr=1-19";
+        //url = "https://www.amazon.com/-/es/11-22-63-Stephen-King/dp/1451627289/ref=tmm_hrd_swatch_0?_encoding=UTF8&qid=1582864461&sr=1-19";
+        //url = "https://www.amazon.com/-/es/11-22-63-Stephen-King/dp/1501120603/ref=tmm_mmp_swatch_0?_encoding=UTF8&qid=1582864461&sr=1-19";
+        
+        String url = "https://www.amazon.com/Inteligencia-Emocional-trav%C3%A9s-del-Tarot/dp/8409002337/ref=sr_1_1?dchild=1&keywords=Inteligencia+Emocional+A+Traves+Del+Tarot%3A+Las+7&qid=1584468184&s=books&sr=1-1";
         
         try {
             
             driver = SeleniumUtils.buildDriver(Browser.CHROME);
-        
+            
+            BookRobot robot = new BookScraperRobot();
+            robot.login(driver);        
+
             BookPage bookPage = new BookPage(driver).go(url);
-        
             if( bookPage != null )
             {
-                BookRobot robot = new BookScraperRobot();
-                bookPage.waitForPopups();
+                //bookPage.waitForPopups();
+                System.out.println("seller list url:"+bookPage.getSellerListUrl());
                 System.out.println("author:"+bookPage.getAuthor());
                 System.out.println("availability:"+bookPage.getAvailability());
                 System.out.println("price (USD):"+bookPage.getPrice());
-                System.out.println("price (ARS):"+robot.getPublicationPrice(robot.getBook(bookPage)));
+                System.out.println("price (ARS):"+robot.getPublicationPrice(robot.getBookData(bookPage,driver)));
                 System.out.println("type:"+bookPage.getType());
                 System.out.println("lang:"+bookPage.getLanguage());
                 System.out.println("type:"+bookPage.getType());
@@ -85,7 +90,7 @@ public class BookPageTester {
                 for (String image : images) {
                     System.out.println("    image - "+image);
                 }
-                
+
             }    
             
         } catch (Exception e) {

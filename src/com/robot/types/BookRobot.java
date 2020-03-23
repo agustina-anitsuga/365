@@ -13,8 +13,10 @@ import com.robot.Robot;
 import com.robot.RobotProperties;
 import com.robot.model.Book;
 import com.robot.model.Publication;
+import com.robot.model.SellerQuote;
 import com.robot.page.BookPage;
 import com.robot.page.LoginPage;
+import com.robot.page.SellerListPage;
 import com.robot.utils.SeleniumUtils;
 import com.robot.utils.StringUtils;
 
@@ -144,15 +146,15 @@ public abstract class BookRobot implements Robot {
             
             if( bookPage != null )
             {
-                Book book = getBook(bookPage);
-                ret.setProduct(book);
+                // read data form current page
+                Book book = getBookData(bookPage, driver);
                 
+                // set the publication data
+                ret.setProduct(book);
                 ret.setTitle(getPublicationTitle(book));
                 ret.setPrice(getPublicationPrice(book));
                 ret.setDescription(getPublicationDescription(book));
-                
-                bookPage.openPhotoViewer();
-                ret.setImages(getImages(bookPage.getImages()));
+                ret.setImages(book.getImages());
             }    
             
         } catch (Exception e) {
@@ -166,6 +168,69 @@ public abstract class BookRobot implements Robot {
         } 
        
         return ret;
+    }
+
+    /**
+     * getBookData
+     * @param bookPage
+     * @return
+     */
+    public Book getBookData(BookPage bookPage, WebDriver driver) {
+        
+        Book book = getBookDetails(bookPage);
+        bookPage.openPhotoViewer();
+        book.setImages(getImages(bookPage.getImages()));
+        
+        // if we still did not get an amazon price, look it up
+        if( amazonPriceIsNotSet(book) ){
+            String sellerListUrl = bookPage.getSellerListUrl();
+            SellerListPage sellerListPage = new SellerListPage(driver).go(sellerListUrl); 
+            //sellerListPage.filterNew();
+            boolean loaded = true;
+            do {
+                if(!loaded){
+                    sellerListPage = new SellerListPage(driver).go(sellerListUrl);
+                }
+                loaded = false;
+                List<SellerQuote> sellerQuotes = sellerListPage.getSellerQuotes();
+                SellerQuote amazon = findAmazonQuote(sellerQuotes);
+                if( amazon!=null ){
+                    book.setPrice(amazon.getPrice());
+                    sellerListUrl = null;
+                } else {
+                    sellerListUrl = sellerListPage.nextPageUrl();
+                }
+            } while( sellerListUrl!=null );
+        }
+        
+        return book;
+    }
+
+    /**
+     * findAmazonQuote
+     * @param sellerQuotes
+     * @return
+     */
+    private SellerQuote findAmazonQuote(List<SellerQuote> sellerQuotes) {
+        SellerQuote ret = null;
+        for (SellerQuote sellerQuote : sellerQuotes) {
+            if("Amazon.com".equals(sellerQuote.getSeller())){
+                ret = sellerQuote;
+                break;
+            }
+        }
+        return ret;
+    }
+
+    /**
+     * amazonPriceIsSet
+     * @param book
+     * @return
+     */
+    private boolean amazonPriceIsNotSet(Book book) {
+        return StringUtils.isEmpty(book.getPrice()) 
+                    || StringUtils.isEmpty(book.getSeller()) 
+                    || !"Vendido y enviado por Amazon.com.".equals(book.getSeller());
     }
 
     /**
@@ -193,7 +258,7 @@ public abstract class BookRobot implements Robot {
      * getBook
      * @return
      */
-    public Book getBook(BookPage bookPage){
+    protected Book getBookDetails(BookPage bookPage){
         Book ret = new Book();
         ret.setCover(bookPage.getCover());
         ret.setCoverFullData(bookPage.getCoverFullData());
@@ -481,7 +546,8 @@ public abstract class BookRobot implements Robot {
      */
     public void login( WebDriver driver ){
         String url = "https://www.amazon.com/ap/signin?_encoding=UTF8&ignoreAuthState=1&openid.assoc_handle=usflex&openid.claimed_id=http%3A%2F%2Fspecs.openid.net%2Fauth%2F2.0%2Fidentifier_select&openid.identity=http%3A%2F%2Fspecs.openid.net%2Fauth%2F2.0%2Fidentifier_select&openid.mode=checkid_setup&openid.ns=http%3A%2F%2Fspecs.openid.net%2Fauth%2F2.0&openid.ns.pape=http%3A%2F%2Fspecs.openid.net%2Fextensions%2Fpape%2F1.0&openid.pape.max_auth_age=0&openid.return_to=https%3A%2F%2Fwww.amazon.com%2F-%2Fes%2FOctavia-Butler%2Fdp%2F1583226982%2Fref%3Dnav_signin%3Fqid%3D1582944662%26refinements%3Dp_n_feature_browse-bin%253A2656022011%26rnid%3D618072011%26s%3Dbooks%26sr%3D1-217&switch_account=";
-        LoginPage page = new LoginPage(driver).go(url);
+        LoginPage page = new LoginPage(driver);
+        page.go(url);
         waitForInput();
     }
 
@@ -489,9 +555,19 @@ public abstract class BookRobot implements Robot {
      * waitForInput
      */
     private void waitForInput() {
-        Scanner in = new Scanner(System.in);
-        String s = in. nextLine();
-        System.out. println("You entered string "+s);
+        Scanner in = null;
+        try {
+            in = new Scanner(System.in);
+            String s = in. nextLine();
+            System.out. println("You entered string "+s);
+        } catch (Exception e){
+            LOGGER.error(e.getMessage());
+        } finally {
+            if( in!=null ){
+                in.close();
+            }
+        }
+
     }
        
 }

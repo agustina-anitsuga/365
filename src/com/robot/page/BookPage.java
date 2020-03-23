@@ -101,6 +101,12 @@ public class BookPage extends Page {
 
     @FindBy(xpath = "//*[@id=\"formats\"]")
     private WebElement formats;
+
+    @FindBy(xpath = "//li[@class=\"swatchElement selected resizedSwatchElement\"]")
+    private WebElement sellerList;
+    
+    @FindBy(xpath = "//li[@class=\"swatchElement selected\"]")
+    private WebElement sellerList1;
     
     
     
@@ -155,6 +161,9 @@ public class BookPage extends Page {
         String lang = null;
         Map<String,String> details = getDetailMap();
         lang = (String) details.get("Idioma");
+        if(StringUtils.isEmpty(lang)){
+            lang = (String) details.get("Language");
+        }
         Map<String, String> translations = getLanguageTranslations();
         lang = translations.getOrDefault(lang, lang);
         return lang;
@@ -248,13 +257,25 @@ public class BookPage extends Page {
     public String getEditorial() {
         Map<String,String> details = getDetailMap();
         String ret = (String) details.get("Editor");    
-        if( ret.indexOf(";") >0 ){
-            ret = ret.substring(0,ret.indexOf(";"));
+        if( !StringUtils.isEmpty(ret) ){
+            if( ret.indexOf(";") >0 ){
+                ret = ret.substring(0,ret.indexOf(";"));
+            }
+            if( ret.indexOf("(") >0 ){
+                ret = ret.substring(0,ret.indexOf("("));
+            }
+        } else {
+            ret = (String) details.get("Publisher");    
+            if( !StringUtils.isEmpty(ret) ){
+                if( ret.indexOf(";") >0 ){
+                    ret = ret.substring(0,ret.indexOf(";"));
+                }
+                if( ret.indexOf("(") >0 ){
+                    ret = ret.substring(0,ret.indexOf("("));
+                }
+            }
         }
-        if( ret.indexOf("(") >0 ){
-            ret = ret.substring(0,ret.indexOf("("));
-        }
-        return ret.trim();
+        return (ret==null)? "": ret.trim();
     }
 
     /**
@@ -264,6 +285,9 @@ public class BookPage extends Page {
     public String getDimensions() {
         Map<String,String> details = getDetailMap();
         String ret = (String) details.get("Dimensiones del producto");    
+        if(StringUtils.isEmpty(ret)){
+            ret = (String) details.get("Product Dimensions");
+        }
         return (ret!=null)?ret.trim():ret;
     }
     
@@ -296,7 +320,17 @@ public class BookPage extends Page {
                 ret = weight;
             }
         }
-        return ret.trim();
+        if( StringUtils.isEmpty(ret) ){
+            weight = (String) details.get("Shipping Weight");
+            if( weight!=null ){
+                if(weight.indexOf("(") > 0){
+                    ret = weight.substring(0, weight.indexOf("("));
+                } else {
+                    ret = weight;
+                }
+            }
+        }
+        return (ret==null)? "" : ret.trim();
     }
     
     /**
@@ -522,6 +556,29 @@ public class BookPage extends Page {
             LOGGER.error(e.getMessage());
         }
         return ret;
+    }
+
+    /**
+     * getSellerListUrl
+     * @return
+     */
+    public String getSellerListUrl() {
+        String url = null;
+        try {
+            WebElement sellerListUrl = sellerList.findElement(By.xpath(".//span[@class=\"olp-new olp-link\"]/a"));
+            url = sellerListUrl.getAttribute("href");
+        } catch(Exception e){
+            LOGGER.error(e.getMessage());
+        }
+        try {
+            if(StringUtils.isEmpty(url)){
+                WebElement sellerListUrl = sellerList1.findElement(By.xpath(".//span[@class=\"olp-new olp-link\"]/a"));
+                url = sellerListUrl.getAttribute("href");
+            }
+        } catch (Exception e1) {
+            LOGGER.error(e1.getMessage());
+        }
+        return url;
     }
     
 }
