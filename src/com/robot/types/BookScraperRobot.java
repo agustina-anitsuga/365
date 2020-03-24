@@ -154,36 +154,18 @@ public class BookScraperRobot extends BookRobot {
      * @return
      */
     protected boolean shouldIgnoreUrl(String url) {
-        return super.shouldIgnoreUrl(url) || existingPublications.contains(this.getShortLinkFor(url));
+        return super.shouldIgnoreUrl(url) || existingPublications.contains(this.getAmazonId(url));
     }
-    
-    /**
-     * filterExistingPublications
-     * @param links
-     * @return
-     */
-    /*
-    private List<String> filterExistingPublications(List<String> links) {
-        List<String> ret = new ArrayList<String>();
-        for (String link : links) {
-            String shortenedLink = getShortLinkFor(link);
-            if(!existingPublications.contains(shortenedLink)){
-                ret.add(link);
-            }
-        }
-        return ret;
-    }
-    */
 
     /**
-     * getShortLinkFor
+     * getAmazonId
      * @param link
      * @return
      */
-    private String getShortLinkFor(String link) {
+    protected String getAmazonId(String link) {
         int from = link.indexOf("/dp/");
         int to = link.indexOf("/",from+5);
-        return link.substring(0, to+1);
+        return link.substring(from+4, to);
     }
 
     /**

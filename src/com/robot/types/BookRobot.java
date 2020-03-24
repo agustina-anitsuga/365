@@ -32,6 +32,7 @@ public abstract class BookRobot implements Robot {
      */
     private static final Logger LOGGER = LoggerFactory.getLogger(BookScraperRobot.class.getName());
 
+    private static final String TAXES_MULTIPLIER = "taxes.multiplier";
     private static final String BUSINESS_MARGIN = "business.margin";
     private static final String SHIPPING_PRICE_PER_KILO = "shipping.pricePerKilo";
     private static final String DOLLAR_OFFICIAL = "dolLar.official";
@@ -196,6 +197,7 @@ public abstract class BookRobot implements Robot {
                 SellerQuote amazon = findAmazonQuote(sellerQuotes);
                 if( amazon!=null ){
                     book.setPrice(amazon.getPrice());
+                    book.setSeller(amazon.getSeller());
                     sellerListUrl = null;
                 } else {
                     sellerListUrl = sellerListPage.nextPageUrl();
@@ -385,12 +387,13 @@ public abstract class BookRobot implements Robot {
                 return "";
             }
             
+            double taxesMultiplier = getTaxesMultiplier();
             double creditCardDolarQuotation = getCreditCardDolLarQuotation();
             double officialDolarQuotation = getOfficialDoLlarQuotation();
             double shippingPricePerKilo = getShippingPricePerKilo();
             double margin = getMargin();
             
-            double costInPesos = dolarPriceAmount.doubleValue() * creditCardDolarQuotation;
+            double costInPesos = dolarPriceAmount.doubleValue() * taxesMultiplier * creditCardDolarQuotation;
             double shippingCostInPesos = weightInKilos.doubleValue() * officialDolarQuotation * shippingPricePerKilo;
             double priceInPesos =  ( costInPesos  + shippingCostInPesos ) * margin ;
             
@@ -409,6 +412,14 @@ public abstract class BookRobot implements Robot {
         return String.format( "%.2f", d ) ; 
     }
 
+    /**
+     * getTaxesMultiplier
+     * @return
+     */
+    private double getTaxesMultiplier() {
+        return getPropertyAsDouble(TAXES_MULTIPLIER);
+    }
+    
     /**
      * getOfficialDoLlarQuotation
      * @return
@@ -537,6 +548,7 @@ public abstract class BookRobot implements Robot {
         
         ret &= validatePropertyIsNotEmpty(config,BUSINESS_MARGIN);
         
+        ret &= validatePropertyIsNotEmpty(config,TAXES_MULTIPLIER);
         
         return ret;
     }
