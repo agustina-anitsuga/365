@@ -10,8 +10,8 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.anitsuga.page.Page;
-import com.anitsuga.utils.SeleniumUtils;
+import com.anitsuga.fwk.page.Page;
+import com.anitsuga.fwk.utils.SeleniumUtils;
 
 /**
  * PublicationPage
@@ -34,6 +34,9 @@ public class PublicationPage extends Page {
     
     @FindBy( xpath = "//*[@id=\"quick_edit_standard_task\"]/div[2]/div[4]/button[1]" )
     private WebElement saveButton;
+    
+    @FindBy( xpath = "//*[@id=\"detail_layout\"]/div/p/span[@class=\"sell-ui-snackbar__message\"]" )
+    private WebElement message;
     
     
     /**
@@ -97,7 +100,7 @@ public class PublicationPage extends Page {
     public void waitForLoad(){
         try {
             String titleXPath = "//*[@id=\"info_header_container\"]/div[1]/h2/a";
-            WebDriverWait wait = SeleniumUtils.getWait(driver,30);
+            WebDriverWait wait = SeleniumUtils.getWait(driver,60);
             wait.until(ExpectedConditions.presenceOfElementLocated( 
                     By.xpath(titleXPath) ));
         } catch ( Exception e ){
@@ -108,13 +111,17 @@ public class PublicationPage extends Page {
     /**
      * waitForSave
      */
-    public void waitForSave(){
+    public String waitForSave(){
+        String ret = "";
         try {
-            WebDriverWait wait = SeleniumUtils.getWait(driver,30);
-            wait.until(ExpectedConditions.not(ExpectedConditions.elementToBeClickable(saveButton)) );
+            WebDriverWait wait = SeleniumUtils.getWait(driver,60);
+            // wait.until(ExpectedConditions.not(ExpectedConditions.elementToBeClickable(saveButton)) );
+            wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[@id=\"detail_layout\"]/div/p/span[@class=\"sell-ui-snackbar__message\"]")));
+            ret = message.getText();
         } catch ( Exception e ){
             LOGGER.debug(e.getMessage());
         }
+        return ret;
     }
 
     /**

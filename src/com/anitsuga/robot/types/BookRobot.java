@@ -9,16 +9,16 @@ import org.openqa.selenium.WebDriver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.anitsuga.page.LoginPage;
+import com.anitsuga.fwk.page.LoginPage;
+import com.anitsuga.fwk.utils.AppProperties;
+import com.anitsuga.fwk.utils.SeleniumUtils;
+import com.anitsuga.fwk.utils.StringUtils;
 import com.anitsuga.robot.Robot;
 import com.anitsuga.robot.model.Book;
 import com.anitsuga.robot.model.Publication;
 import com.anitsuga.robot.model.SellerQuote;
 import com.anitsuga.robot.page.BookPage;
 import com.anitsuga.robot.page.SellerListPage;
-import com.anitsuga.utils.AppProperties;
-import com.anitsuga.utils.SeleniumUtils;
-import com.anitsuga.utils.StringUtils;
 
 /**
  * BookRobot

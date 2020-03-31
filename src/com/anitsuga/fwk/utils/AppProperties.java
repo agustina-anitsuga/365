@@ -1,4 +1,4 @@
-package com.anitsuga.utils;
+package com.anitsuga.fwk.utils;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

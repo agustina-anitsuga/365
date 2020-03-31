@@ -11,11 +11,11 @@ import org.openqa.selenium.WebDriver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.anitsuga.fwk.utils.AppProperties;
+import com.anitsuga.fwk.utils.Browser;
+import com.anitsuga.fwk.utils.SeleniumUtils;
 import com.anitsuga.robot.model.Publication;
 import com.anitsuga.robot.page.BookCategoryPage;
-import com.anitsuga.utils.Browser;
-import com.anitsuga.utils.AppProperties;
-import com.anitsuga.utils.SeleniumUtils;
 
 /**
  * BookScraperRobot

@@ -1,4 +1,4 @@
-package com.anitsuga.utils;
+package com.anitsuga.fwk.utils;
 
 import java.io.File;
 
@@ -14,7 +14,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.anitsuga.exception.FrontEndException;
+import com.anitsuga.fwk.exception.FrontEndException;
 
 
 /**

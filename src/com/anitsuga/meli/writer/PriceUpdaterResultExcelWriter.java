@@ -99,7 +99,7 @@ public class PriceUpdaterResultExcelWriter {
         for (Operation operation : result) {
             try 
             {
-                Row row = sheet.createRow(rowCount);
+                Row row = sheet.createRow(rowCount++);
                 columnCount = 0;
                 Publication publication = (Publication) operation.getPublication();
                 if(publication!=null){

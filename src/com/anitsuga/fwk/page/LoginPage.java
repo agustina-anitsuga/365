@@ -1,4 +1,4 @@
-package com.anitsuga.page;
+package com.anitsuga.fwk.page;
 
 import org.openqa.selenium.WebDriver;
 

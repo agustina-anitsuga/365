@@ -1,4 +1,4 @@
-package com.anitsuga.exception;
+package com.anitsuga.fwk.exception;
 
 /**
  * FrontEndException

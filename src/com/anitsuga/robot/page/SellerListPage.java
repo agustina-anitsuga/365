@@ -11,7 +11,7 @@ import org.openqa.selenium.support.FindBy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.anitsuga.page.Page;
+import com.anitsuga.fwk.page.Page;
 import com.anitsuga.robot.model.SellerQuote;
 
 /**

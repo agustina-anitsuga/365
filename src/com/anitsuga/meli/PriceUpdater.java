@@ -9,15 +9,16 @@ import org.openqa.selenium.WebDriver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.anitsuga.fwk.page.LoginPage;
+import com.anitsuga.fwk.utils.AppProperties;
+import com.anitsuga.fwk.utils.Browser;
+import com.anitsuga.fwk.utils.FileUtils;
+import com.anitsuga.fwk.utils.SeleniumUtils;
 import com.anitsuga.meli.model.Operation;
 import com.anitsuga.meli.model.Publication;
 import com.anitsuga.meli.page.PublicationPage;
+import com.anitsuga.meli.reader.PriceUpdaterInputReader;
 import com.anitsuga.meli.writer.PriceUpdaterResultExcelWriter;
-import com.anitsuga.page.LoginPage;
-import com.anitsuga.utils.AppProperties;
-import com.anitsuga.utils.Browser;
-import com.anitsuga.utils.FileUtils;
-import com.anitsuga.utils.SeleniumUtils;
 
 /**
  * PriceUpdater
@@ -90,7 +91,7 @@ public class PriceUpdater {
             Operation op = new Operation();
             op.setPublication(publication);
             op.setResult(result);
-            LOGGER.info("    "+result);            
+            LOGGER.info("    "+result);  
             ret.add(op);
         }
         return ret;
@@ -115,8 +116,7 @@ public class PriceUpdater {
                     publicationPage.setPrice(publication.getPrice());
                     if( pricesMatch(publication, publicationPage) ){
                         publicationPage.commit();
-                        publicationPage.waitForSave();
-                        ret = "Price successfully updated.";
+                        ret = publicationPage.waitForSave();
                         if( !pricesMatch(publication, publicationPage) ){
                             ret = "Price set in publication ("+publicationPage.getPriceValue()+") is not the expected one. Please correct price manually.";
                         }
@@ -212,33 +212,9 @@ public class PriceUpdater {
      * @return
      */
     private List<Publication> readDataToUpdate() {
-        List<Publication> data = new ArrayList<Publication>();
-        
-        Publication publication = new Publication();
-        publication.setId("MLA845929856");
-        publication.setPrice(82);
-        publication.setTitle("Libro - Prueba - No Comprar");
-        data.add(publication);
-        
-        publication = new Publication();
-        publication.setId("MLA845929856");
-        publication.setPrice(23);
-        publication.setTitle("Libro - Prueba - No Comprar");
-        data.add(publication);
-
-        publication = new Publication();
-        publication.setId("MLA845929856");
-        publication.setPrice(82);
-        publication.setTitle("Libro - Prueba - No Comprar");
-        data.add(publication);
-        
-        publication = new Publication();
-        publication.setId("MLA845929856");
-        publication.setPrice(23);
-        publication.setTitle("Libro - Prueba - No Comprar");
-        data.add(publication);
-        
-        return data;
+        String filename = AppProperties.getInstance().getProperty(INPUT_FILE);
+        PriceUpdaterInputReader reader = new PriceUpdaterInputReader(); 
+        return reader.read(filename);
     }
 
     /**

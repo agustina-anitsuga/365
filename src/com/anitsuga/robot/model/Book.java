@@ -2,7 +2,7 @@ package com.anitsuga.robot.model;
 
 import java.util.List;
 
-import com.anitsuga.utils.StringUtils;
+import com.anitsuga.fwk.utils.StringUtils;
 
 /**
  * Book

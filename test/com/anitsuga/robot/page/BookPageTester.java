@@ -6,11 +6,11 @@ import org.openqa.selenium.WebDriver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.anitsuga.fwk.utils.Browser;
+import com.anitsuga.fwk.utils.SeleniumUtils;
 import com.anitsuga.robot.page.BookPage;
 import com.anitsuga.robot.types.BookRobot;
 import com.anitsuga.robot.types.BookScraperRobot;
-import com.anitsuga.utils.Browser;
-import com.anitsuga.utils.SeleniumUtils;
 
 /**
  * PageTester

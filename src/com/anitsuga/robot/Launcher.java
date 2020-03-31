@@ -5,9 +5,9 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.anitsuga.fwk.utils.FileUtils;
 import com.anitsuga.robot.model.Publication;
 import com.anitsuga.robot.writer.PublicationCSVWriter;
-import com.anitsuga.utils.FileUtils;
 
 
 /**

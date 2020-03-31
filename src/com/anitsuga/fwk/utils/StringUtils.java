@@ -1,4 +1,4 @@
-package com.anitsuga.utils;
+package com.anitsuga.fwk.utils;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
