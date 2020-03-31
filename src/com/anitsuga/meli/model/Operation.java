@@ -9,7 +9,7 @@ public class Operation {
 
     private Publication publication;
     
-    private String error;
+    private String result;
 
     
     public Publication getPublication() {
@@ -20,12 +20,12 @@ public class Operation {
         this.publication = publication;
     }
 
-    public String getError() {
-        return error;
+    public String getResult() {
+        return result;
     }
 
-    public void setError(String error) {
-        this.error = error;
+    public void setResult(String error) {
+        this.result = error;
     }
     
     

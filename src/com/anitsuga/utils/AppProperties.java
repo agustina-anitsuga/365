@@ -1,19 +1,19 @@
-package com.anitsuga.robot;
+package com.anitsuga.utils;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * RobotProperties
+ * AppProperties
  * @author agustina.dagnino
  *
  */
-public class RobotProperties {
+public class AppProperties {
 
     /**
      * logger
      */
-    private static final Logger LOGGER = LoggerFactory.getLogger(RobotProperties.class.getName());
+    private static final Logger LOGGER = LoggerFactory.getLogger(AppProperties.class.getName());
 
     /**
      * config
@@ -23,16 +23,16 @@ public class RobotProperties {
     /**
      * instance
      */
-    private static RobotProperties instance = null;
+    private static AppProperties instance = null;
     
     
     /**
      * getInstance
      * @return
      */
-    public static RobotProperties getInstance(){
+    public static AppProperties getInstance(){
         if(instance==null){
-            instance = new RobotProperties();
+            instance = new AppProperties();
         }
         return instance;
     }
@@ -40,9 +40,9 @@ public class RobotProperties {
     /**
      * Constructor
      */
-    private RobotProperties() {
+    private AppProperties() {
         try {
-            config.load(this.getClass().getClassLoader().getResourceAsStream("robot.properties"));
+            config.load(this.getClass().getClassLoader().getResourceAsStream("app.properties"));
         } catch (Exception e) {
             LOGGER.error("Could not read properties file.", e);
         }

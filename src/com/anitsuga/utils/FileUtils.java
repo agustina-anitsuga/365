@@ -9,8 +9,6 @@ import java.net.URL;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.anitsuga.robot.RobotProperties;
-
 /**
  * FileUtils
  * @author agustina.dagnino
@@ -34,7 +32,7 @@ public class FileUtils {
      * @return
      */
     public static String getLocalPath() {
-        RobotProperties config = RobotProperties.getInstance();
+        AppProperties config = AppProperties.getInstance();
         String localPath = config.getProperty("local.path");
         return localPath;
     }
@@ -44,7 +42,7 @@ public class FileUtils {
      * @return
      */
     public static String getImagePrefix() {
-        RobotProperties config = RobotProperties.getInstance();
+        AppProperties config = AppProperties.getInstance();
         String localPath = config.getProperty("image.prefix");
         return localPath;
     }

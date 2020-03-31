@@ -11,10 +11,10 @@ import org.openqa.selenium.WebDriver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.anitsuga.robot.RobotProperties;
 import com.anitsuga.robot.model.Publication;
 import com.anitsuga.robot.page.BookCategoryPage;
 import com.anitsuga.utils.Browser;
+import com.anitsuga.utils.AppProperties;
 import com.anitsuga.utils.SeleniumUtils;
 
 /**
@@ -53,7 +53,7 @@ public class BookScraperRobot extends BookRobot {
         List<Publication> ret = null;
 
         // Get required properties
-        RobotProperties config = RobotProperties.getInstance();
+        AppProperties config = AppProperties.getInstance();
         String url = config.getProperty("book.url");
         
         // Load already published urls if they exist
@@ -69,7 +69,7 @@ public class BookScraperRobot extends BookRobot {
      * loadExistingPublications
      */
     private void loadExistingPublications() {
-        RobotProperties config = RobotProperties.getInstance();
+        AppProperties config = AppProperties.getInstance();
         String bookListFile = config.getProperty(PUBLISHED_BOOKS_FILE);
         BufferedReader br = null;
         try {
@@ -175,7 +175,7 @@ public class BookScraperRobot extends BookRobot {
     public boolean validConfig() {
         boolean ret = super.validConfig();
         
-        RobotProperties config = RobotProperties.getInstance();        
+        AppProperties config = AppProperties.getInstance();        
         ret &= validatePropertyIsNotEmpty(config,"book.url");
 
         return ret;

@@ -11,12 +11,12 @@ import org.slf4j.LoggerFactory;
 
 import com.anitsuga.page.LoginPage;
 import com.anitsuga.robot.Robot;
-import com.anitsuga.robot.RobotProperties;
 import com.anitsuga.robot.model.Book;
 import com.anitsuga.robot.model.Publication;
 import com.anitsuga.robot.model.SellerQuote;
 import com.anitsuga.robot.page.BookPage;
 import com.anitsuga.robot.page.SellerListPage;
+import com.anitsuga.utils.AppProperties;
 import com.anitsuga.utils.SeleniumUtils;
 import com.anitsuga.utils.StringUtils;
 
@@ -434,7 +434,7 @@ public abstract class BookRobot implements Robot {
      * @return double value
      */
     private double getPropertyAsDouble(String property) {
-        RobotProperties config = RobotProperties.getInstance();    
+        AppProperties config = AppProperties.getInstance();    
         String quotation = config.getProperty(property);
         return StringUtils.parse(quotation).doubleValue();
     }
@@ -510,7 +510,7 @@ public abstract class BookRobot implements Robot {
      * @param property
      * @return
      */
-    protected boolean validatePropertyIsNotEmpty(RobotProperties config, String property) {
+    protected boolean validatePropertyIsNotEmpty(AppProperties config, String property) {
         boolean ret = true;
         String businessMargin = config.getProperty(property);
         if( businessMargin==null || "".equals(businessMargin.trim()) ){
@@ -528,7 +528,7 @@ public abstract class BookRobot implements Robot {
         
         boolean ret = true;
         
-        RobotProperties config = RobotProperties.getInstance();
+        AppProperties config = AppProperties.getInstance();
         
         ret &= validatePropertyIsNotEmpty(config,LOCAL_PATH);
         if (ret) {

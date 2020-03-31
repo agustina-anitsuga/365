@@ -26,6 +26,8 @@ public class PublicationPage extends Page {
      */
     private static final Logger LOGGER = LoggerFactory.getLogger(PublicationPage.class.getName());
 
+    @FindBy( xpath = "//*[@id=\"info_header_container\"]/div[1]/h2/a" )    
+    private WebElement title;
     
     @FindBy( xpath = "//*[@id=\"price_and_currency\"]/div[2]/label/div[1]/input" )
     private WebElement price;
@@ -60,11 +62,28 @@ public class PublicationPage extends Page {
      * @param price
      */
     public void setPrice(Number priceArg) {
-        price.sendKeys(Keys.CONTROL,"a");
-        price.sendKeys(Keys.DELETE);
+        String existingPrice = getPriceValue();
+        int length = existingPrice.length();
+        for (int i = 0; i < length; i++) {
+            price.sendKeys(Keys.BACK_SPACE);
+        }
         price.sendKeys(priceArg.toString());
     }
 
+    /**
+     * getPriceValue
+     */
+    public String getPriceValue(){
+        return price.getAttribute("value");
+    }
+    
+    /**
+     * getPrice
+     */
+    public String getPrice(){
+        return price.getText();
+    }
+    
     /**
      * commit
      */
@@ -77,12 +96,33 @@ public class PublicationPage extends Page {
      */
     public void waitForLoad(){
         try {
-            String buttonXPath = "//*[@id=\"info_header_container\"]/div[1]/h2/a";
+            String titleXPath = "//*[@id=\"info_header_container\"]/div[1]/h2/a";
             WebDriverWait wait = SeleniumUtils.getWait(driver,30);
             wait.until(ExpectedConditions.presenceOfElementLocated( 
-                    By.xpath(buttonXPath) ));
+                    By.xpath(titleXPath) ));
         } catch ( Exception e ){
             LOGGER.debug(e.getMessage());
         }
     }
+    
+    /**
+     * waitForSave
+     */
+    public void waitForSave(){
+        try {
+            WebDriverWait wait = SeleniumUtils.getWait(driver,30);
+            wait.until(ExpectedConditions.not(ExpectedConditions.elementToBeClickable(saveButton)) );
+        } catch ( Exception e ){
+            LOGGER.debug(e.getMessage());
+        }
+    }
+
+    /**
+     * getTitle
+     * @return
+     */
+    public String getTitle() {
+        return title.getText();
+    }
+
 }

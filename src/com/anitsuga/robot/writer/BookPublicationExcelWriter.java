@@ -92,8 +92,6 @@ public class BookPublicationExcelWriter implements PublicationCSVWriter {
                 cell.setCellStyle(cellstyle);
             }
             
-            System.out.println("");
-            
             // write data
             for (Publication publication : publications) {
                 try 

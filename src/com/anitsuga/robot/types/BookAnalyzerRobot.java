@@ -11,9 +11,9 @@ import org.openqa.selenium.WebDriver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.anitsuga.robot.RobotProperties;
 import com.anitsuga.robot.model.Publication;
 import com.anitsuga.utils.Browser;
+import com.anitsuga.utils.AppProperties;
 import com.anitsuga.utils.SeleniumUtils;
 
 /**
@@ -59,7 +59,7 @@ public class BookAnalyzerRobot extends BookRobot {
      */
     private List<String> readBookURLs() {
         List<String> ret = new ArrayList<String>();
-        RobotProperties config = RobotProperties.getInstance();
+        AppProperties config = AppProperties.getInstance();
         String bookListFile = config.getProperty(BOOK_LIST_FILE);
         BufferedReader br = null;
         try {
@@ -91,7 +91,7 @@ public class BookAnalyzerRobot extends BookRobot {
         
         boolean ret = super.validConfig();
         
-        RobotProperties config = RobotProperties.getInstance();
+        AppProperties config = AppProperties.getInstance();
         ret &= validatePropertyIsNotEmpty(config,BOOK_LIST_FILE);
         if (ret) {
             String bookListFile = config.getProperty(BOOK_LIST_FILE);

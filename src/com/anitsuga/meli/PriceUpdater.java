@@ -1,5 +1,6 @@
 package com.anitsuga.meli;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -11,8 +12,11 @@ import org.slf4j.LoggerFactory;
 import com.anitsuga.meli.model.Operation;
 import com.anitsuga.meli.model.Publication;
 import com.anitsuga.meli.page.PublicationPage;
+import com.anitsuga.meli.writer.PriceUpdaterResultExcelWriter;
 import com.anitsuga.page.LoginPage;
+import com.anitsuga.utils.AppProperties;
 import com.anitsuga.utils.Browser;
+import com.anitsuga.utils.FileUtils;
 import com.anitsuga.utils.SeleniumUtils;
 
 /**
@@ -27,6 +31,10 @@ public class PriceUpdater {
      */
     private static final Logger LOGGER = LoggerFactory.getLogger(PriceUpdater.class.getName());
 
+    private static final String LOCAL_PATH = "local.path";
+    private static final String INPUT_FILE = "input.file";
+    
+    
     
     /**
      * main
@@ -42,17 +50,18 @@ public class PriceUpdater {
      */
     private void run() {
         
-         this.validateConfigurationIsValid();
-         
-         List<Publication> data = this.readDataToUpdate();
-         
-         WebDriver driver = SeleniumUtils.buildDriver(Browser.CHROME);
-         
-         this.login(driver);
-         
-         List<Operation> result = this.updatePrices(driver,data);
-        
-         this.writeProcessOutput(result);
+         if ( this.validConfig() ) {
+             
+             List<Publication> data = this.readDataToUpdate();
+             
+             WebDriver driver = SeleniumUtils.buildDriver(Browser.CHROME);
+             
+             this.login(driver);
+             
+             List<Operation> result = this.updatePrices(driver,data);
+            
+             this.writeProcessOutput(result);
+         }
     }
 
     /**
@@ -60,8 +69,10 @@ public class PriceUpdater {
      * @param result
      */
     private void writeProcessOutput(List<Operation> result) {
-        // TODO Auto-generated method stub
-        
+        String localPath = FileUtils.getLocalPath();
+        String filename = localPath + "price-updater";
+        PriceUpdaterResultExcelWriter writer = new PriceUpdaterResultExcelWriter(); 
+        writer.write(filename, result);
     }
 
     /**
@@ -70,12 +81,16 @@ public class PriceUpdater {
      * @return
      */
     private List<Operation> updatePrices(WebDriver driver, List<Publication> data) {
+        int total = data.size();
+        int count = 0;
         List<Operation> ret = new ArrayList<Operation>();
         for (Publication publication : data) {
+            LOGGER.info("Updating price ["+count+"/"+total+"] - "+publication.getTitle()+" ("+publication.getId()+")");
             String result = updatePrice(driver,publication);
             Operation op = new Operation();
             op.setPublication(publication);
-            op.setError(result);
+            op.setResult(result);
+            LOGGER.info("    "+result);            
             ret.add(op);
         }
         return ret;
@@ -89,14 +104,32 @@ public class PriceUpdater {
      */
     private String updatePrice(WebDriver driver, Publication publication) {
         
+        String ret = "Undefined";
+        
         try {
             
-            String editUrl = "https://www.mercadolibre.com.ar/publicaciones/"+publication.getId()+"/modificar";
-            PublicationPage publicationPage = new PublicationPage(driver).go(editUrl);
-            publicationPage.waitForLoad();
-            publicationPage.setPrice(publication.getPrice());
-            publicationPage.commit();
-            publicationPage.waitForLoad();
+            PublicationPage publicationPage = goToEditPage(driver, publication);
+            
+            if( titlesMatch(publication, publicationPage) ){
+                if( !pricesMatch(publication, publicationPage) ) {
+                    publicationPage.setPrice(publication.getPrice());
+                    if( pricesMatch(publication, publicationPage) ){
+                        publicationPage.commit();
+                        publicationPage.waitForSave();
+                        ret = "Price successfully updated.";
+                        if( !pricesMatch(publication, publicationPage) ){
+                            ret = "Price set in publication ("+publicationPage.getPriceValue()+") is not the expected one. Please correct price manually.";
+                        }
+                    } else {
+                        ret = "Price could not be set";
+                    }
+                } else {
+                    ret = "Price did not need to be updated.";
+                }
+            } else {
+                ret = "Publication titles do not match.";
+                System.out.println("");
+            }
             
         } catch (Exception e) {
             
@@ -105,10 +138,45 @@ public class PriceUpdater {
             
             // log exception
             LOGGER.error("Error", e);
-            
+            ret = e.getMessage();
         } 
        
-        return "";
+        return ret;
+    }
+
+    /**
+     * titlesMatch
+     * @param publication
+     * @param publicationPage
+     * @return
+     */
+    private boolean titlesMatch(Publication publication, PublicationPage publicationPage) {
+        return publication.getTitle().equals(publicationPage.getTitle());
+    }
+
+    /**
+     * pricesMatch
+     * @param publication
+     * @param publicationPage
+     * @return
+     */
+    private boolean pricesMatch(Publication publication, PublicationPage publicationPage) {
+        String originalPrice = publicationPage.getPriceValue();
+        String priceToUpdate = "$" + publication.getPrice().toString();
+        return priceToUpdate.equals(originalPrice);
+    }
+
+    /**
+     * goToEditPage
+     * @param driver
+     * @param publication
+     * @return
+     */
+    private PublicationPage goToEditPage(WebDriver driver, Publication publication) {
+        String editUrl = "https://www.mercadolibre.com.ar/publicaciones/"+publication.getId()+"/modificar";
+        PublicationPage publicationPage = new PublicationPage(driver).go(editUrl);
+        publicationPage.waitForLoad();
+        return publicationPage;
     }
 
     /**
@@ -139,28 +207,88 @@ public class PriceUpdater {
         }
     }
 
-
     /**
      * readDataToUpdate
      * @return
      */
     private List<Publication> readDataToUpdate() {
         List<Publication> data = new ArrayList<Publication>();
+        
         Publication publication = new Publication();
         publication.setId("MLA845929856");
         publication.setPrice(82);
-        publication.setTitle("Prueba");
+        publication.setTitle("Libro - Prueba - No Comprar");
         data.add(publication);
+        
+        publication = new Publication();
+        publication.setId("MLA845929856");
+        publication.setPrice(23);
+        publication.setTitle("Libro - Prueba - No Comprar");
+        data.add(publication);
+
+        publication = new Publication();
+        publication.setId("MLA845929856");
+        publication.setPrice(82);
+        publication.setTitle("Libro - Prueba - No Comprar");
+        data.add(publication);
+        
+        publication = new Publication();
+        publication.setId("MLA845929856");
+        publication.setPrice(23);
+        publication.setTitle("Libro - Prueba - No Comprar");
+        data.add(publication);
+        
         return data;
     }
 
     /**
-     * validateConfigurationIsValid
+     * validConfig
      */
-    private void validateConfigurationIsValid() {
-        // TODO Auto-generated method stub
+    public boolean validConfig() {
         
+        boolean ret = true;
+        
+        AppProperties config = AppProperties.getInstance();
+        
+        ret &= validateFileExists(config,LOCAL_PATH);
+        ret &= validateFileExists(config,INPUT_FILE);
+        
+        return ret;
     }
     
+    /**
+     * validateFileExists
+     * @param config
+     * @param property
+     * @return
+     */
+    protected boolean validateFileExists(AppProperties config, String property) {
+        boolean ret = validatePropertyIsNotEmpty(config,property);
+        if(ret) {
+            String localPath = config.getProperty(property);
+            File dir = new File(localPath);
+            if( !dir.exists() ){
+                LOGGER.error(property+" does not exist. Please create it.");
+                ret = false;
+            }
+        }
+        return ret;
+    }
+    
+    /**
+     * validatePropertyIsNotEmpty
+     * @param config
+     * @param property
+     * @return
+     */
+    protected boolean validatePropertyIsNotEmpty(AppProperties config, String property) {
+        boolean ret = true;
+        String businessMargin = config.getProperty(property);
+        if( businessMargin==null || "".equals(businessMargin.trim()) ){
+            LOGGER.error(property+" is empty");
+            ret = false;  
+        }
+        return ret;
+    }
     
 }

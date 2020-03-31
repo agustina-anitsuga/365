@@ -1,4 +1,4 @@
-package com.anitsuga.robot;
+package com.anitsuga.robot.page;
 
 import java.util.List;
 
