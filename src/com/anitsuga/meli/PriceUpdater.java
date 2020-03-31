@@ -128,7 +128,6 @@ public class PriceUpdater {
                 }
             } else {
                 ret = "Publication titles do not match.";
-                System.out.println("");
             }
             
         } catch (Exception e) {

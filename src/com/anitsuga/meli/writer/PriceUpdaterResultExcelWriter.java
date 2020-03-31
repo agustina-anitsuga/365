@@ -113,6 +113,7 @@ public class PriceUpdaterResultExcelWriter {
             }
         }
         
+        LOGGER.info("Done writing "+result.size()+" operation changes");        
         return workbook;
     }
 
