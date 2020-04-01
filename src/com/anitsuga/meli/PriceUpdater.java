@@ -50,18 +50,14 @@ public class PriceUpdater {
      * run
      */
     private void run() {
-        
          if ( this.validConfig() ) {
-             
              List<Publication> data = this.readDataToUpdate();
-             
-             WebDriver driver = SeleniumUtils.buildDriver(Browser.CHROME);
-             
-             this.login(driver);
-             
-             List<Operation> result = this.updatePrices(driver,data);
-            
-             this.writeProcessOutput(result);
+             if( data.size() > 0 ){
+                 WebDriver driver = SeleniumUtils.buildDriver(Browser.CHROME);
+                 this.login(driver);
+                 List<Operation> result = this.updatePrices(driver,data);
+                 this.writeProcessOutput(result);
+             }
          }
     }
 
@@ -113,7 +109,7 @@ public class PriceUpdater {
             
             if( titlesMatch(publication, publicationPage) ){
                 if( !pricesMatch(publication, publicationPage) ) {
-                    publicationPage.setPrice(publication.getPrice());
+                    publicationPage.setPrice(publication.getPriceAsString());
                     if( pricesMatch(publication, publicationPage) ){
                         publicationPage.commit();
                         ret = publicationPage.waitForSave();
@@ -161,7 +157,7 @@ public class PriceUpdater {
      */
     private boolean pricesMatch(Publication publication, PublicationPage publicationPage) {
         String originalPrice = publicationPage.getPriceValue();
-        String priceToUpdate = "$" + publication.getPrice().toString();
+        String priceToUpdate = "$" + publication.getPriceAsString();
         return priceToUpdate.equals(originalPrice);
     }
 

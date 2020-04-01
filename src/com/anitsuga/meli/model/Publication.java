@@ -38,5 +38,11 @@ public class Publication {
     public void setPrice(Number price) {
         this.price = price;
     }
+    
+    public String getPriceAsString(){
+        String newPrice = getPrice().toString();
+        newPrice = newPrice.replaceAll(".", ",");
+        return newPrice;
+    }
    
 }

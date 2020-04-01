@@ -64,13 +64,13 @@ public class PublicationPage extends Page {
      * setPrice
      * @param price
      */
-    public void setPrice(Number priceArg) {
+    public void setPrice(String priceArg) {
         String existingPrice = getPriceValue();
         int length = existingPrice.length();
         for (int i = 0; i < length; i++) {
             price.sendKeys(Keys.BACK_SPACE);
         }
-        price.sendKeys(priceArg.toString());
+        price.sendKeys(priceArg);
     }
 
     /**
