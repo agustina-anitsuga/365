@@ -3,11 +3,17 @@ package com.anitsuga.meli.page;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.anitsuga.fwk.page.Page;
+import com.anitsuga.fwk.utils.SeleniumUtils;
 
 /**
  * StorePage
@@ -15,6 +21,12 @@ import com.anitsuga.fwk.page.Page;
  *
  */
 public class StorePage extends Page {
+    
+    /**
+     * logger
+     */
+    private static final Logger LOGGER = LoggerFactory.getLogger(StorePage.class.getName());
+    
     
     @FindBy ( xpath = "/html/body/header/div/form/input" )
     private WebElement searchBox;
@@ -82,5 +94,26 @@ public class StorePage extends Page {
         return ret;
     }
 
-
+    /**
+     * closePopups
+     */
+    public void closePopups(){
+      
+        String[] buttons = new String[] {
+                "//*[@id=\"search-results-disclaimers\"]/section[2]/div/div/div/label"
+                };
+        
+        for (int i = 0; i < buttons.length; i++) {
+            try {
+                String dismissButtonXPath = buttons[i];
+                WebDriverWait wait = SeleniumUtils.getWait(driver);
+                wait.until(ExpectedConditions.presenceOfElementLocated( 
+                        By.xpath(dismissButtonXPath) ));
+                WebElement element = driver.findElement(By.xpath(dismissButtonXPath));
+                element.click();
+            } catch ( Exception e ){
+                LOGGER.debug(e.getMessage());
+            }
+        }
+    }
 }

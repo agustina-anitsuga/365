@@ -44,13 +44,17 @@ public class IdRetriever extends Processor {
         int count = 0;
         List<Operation> ret = new ArrayList<Operation>();
         for (Publication publication : data) {
-            LOGGER.info("Retrieving id ["+count+"/"+total+"] - "+publication.getTitle()+" ("+publication.getIsbn()+")");
-            String result = getId(driver,publication);
-            Operation op = new Operation();
-            op.setPublication(publication);
-            op.setResult(result);
-            LOGGER.info("    "+result);  
-            ret.add(op);
+            try {
+                LOGGER.info("Retrieving id ["+(++count)+"/"+total+"] - "+publication.getTitle()+" ("+publication.getIsbn()+")");
+                String result = getId(driver,publication);
+                Operation op = new Operation();
+                op.setPublication(publication);
+                op.setResult(result);
+                LOGGER.info("    "+result);  
+                ret.add(op);
+            } catch (Exception e){
+                LOGGER.error(e.getMessage());
+            }
         }
         return ret;
     }
@@ -64,13 +68,14 @@ public class IdRetriever extends Processor {
     private String getId(WebDriver driver, Publication publication) {
         
         if( StringUtils.isEmpty(publication.getTitle()) ){
-            return "Null title";
+            return "Null title ";
         }
         
         StorePage store = new StorePage(driver).go("https://eshops.mercadolibre.com.ar/marcelofioren77");
         store.setSearch(publication.getTitle());
         
         StorePage searchResult = store.doSearch();
+        searchResult.closePopups();
         List<String> urls = searchResult.getSearchResultUrls();
         
         if(urls.size()==0){
@@ -94,7 +99,7 @@ public class IdRetriever extends Processor {
             return "No matches found";
         }
         
-        if( possibleMatches.size() == 0) {
+        if( possibleMatches.size() == 1) {
             return possibleMatches.get(0);
         }
         
@@ -116,7 +121,8 @@ public class IdRetriever extends Processor {
         String requiredIsbn = publication.getIsbn();
         String foundIsbn = page.getIsbn();
         requiredIsbn = requiredIsbn.replaceAll("-","");
-        return requiredIsbn!=null && requiredIsbn.equals(foundIsbn);
+        boolean ret = requiredIsbn!=null && requiredIsbn.equals(foundIsbn);
+        return ret;
     }
 
     /**
@@ -128,7 +134,8 @@ public class IdRetriever extends Processor {
     private boolean titlesMatch(Publication publication, PublicationPage page) {
         String requiredTitle = publication.getTitle();
         String foundTitle = page.getTitle();
-        return requiredTitle!=null && requiredTitle.equals(foundTitle);
+        boolean ret = requiredTitle!=null && requiredTitle.toLowerCase().equals(foundTitle.toLowerCase());
+        return ret;
     }
 
     /**
@@ -142,6 +149,7 @@ public class IdRetriever extends Processor {
         String temp = url.substring(from+1);
         int to = temp.indexOf("-",4);
         String ret = temp.substring(0,to);
+        ret = ret.replaceAll("-", "");
         return ret;
     }
 

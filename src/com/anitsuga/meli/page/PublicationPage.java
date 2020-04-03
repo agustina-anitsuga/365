@@ -46,7 +46,7 @@ public class PublicationPage extends Page {
      * @return
      */
     public String getIsbn() {
-        String ret = title.getText();
+        String ret = isbn.getText();
         return ret;
     }
 

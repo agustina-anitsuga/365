@@ -80,7 +80,7 @@ public class InputDataReader {
             }
         }
         
-        // data.addAll(getSampleData());
+        data.addAll(getSampleData());
         
         return data;
     }
@@ -131,7 +131,7 @@ public class InputDataReader {
      */
     private String getId(Row currentRow) {
         Cell cell = currentRow.getCell(2);
-        return cell.getStringCellValue();
+        return (cell==null)? "" : cell.getStringCellValue();
     }
 
     /**
