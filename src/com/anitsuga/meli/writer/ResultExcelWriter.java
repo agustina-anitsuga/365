@@ -19,16 +19,16 @@ import com.anitsuga.meli.model.Operation;
 import com.anitsuga.meli.model.Publication;
 
 /**
- * PriceUpdateResultExcelWriter
+ * ResultExcelWriter
  * @author agustina
  *
  */
-public class PriceUpdaterResultExcelWriter {
+public class ResultExcelWriter {
 
     /**
      * logger
      */
-    private static final Logger LOGGER = LoggerFactory.getLogger(PriceUpdaterResultExcelWriter.class.getName());
+    private static final Logger LOGGER = LoggerFactory.getLogger(ResultExcelWriter.class.getName());
     
     
     /**
@@ -37,7 +37,8 @@ public class PriceUpdaterResultExcelWriter {
     private String[] fields = new String[] {
                    "Id",
                    "Title",
-                   "New Price",
+                   "Price",
+                   "ISBN",
                    "Result"
     };
     
@@ -106,6 +107,7 @@ public class PriceUpdaterResultExcelWriter {
                     writeField(row,publication.getId(),columnCount++);
                     writeField(row,publication.getTitle(),columnCount++);
                     writeField(row,publication.getPrice().toString(),columnCount++);
+                    writeField(row,publication.getIsbn().toString(),columnCount++);                    
                     writeField(row,operation.getResult(),columnCount++);
                 } 
             } catch (Exception e) {

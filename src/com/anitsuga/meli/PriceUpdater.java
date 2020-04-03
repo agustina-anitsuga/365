@@ -4,17 +4,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.WebDriver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.anitsuga.fwk.page.LoginPage;
-import com.anitsuga.fwk.utils.FileUtils;
 import com.anitsuga.fwk.utils.SeleniumUtils;
 import com.anitsuga.meli.model.Operation;
 import com.anitsuga.meli.model.Publication;
 import com.anitsuga.meli.page.PublicationEditPage;
-import com.anitsuga.meli.writer.PriceUpdaterResultExcelWriter;
 
 /**
  * PriceUpdater
@@ -38,7 +37,6 @@ public class PriceUpdater extends Processor {
         self.run();
     }
 
-
     /**
      * doProcess
      * @param data
@@ -47,17 +45,6 @@ public class PriceUpdater extends Processor {
     protected List<Operation> doProcess(List<Publication> data, WebDriver driver) {
         this.login(driver);
         return this.updatePrices(driver,data);
-    }
-
-    /**
-     * writeProcessOutput
-     * @param result
-     */
-    protected void writeProcessOutput(List<Operation> result) {
-        String localPath = FileUtils.getLocalPath();
-        String filename = localPath + "price-updater";
-        PriceUpdaterResultExcelWriter writer = new PriceUpdaterResultExcelWriter(); 
-        writer.write(filename, result);
     }
 
     /**
@@ -92,6 +79,10 @@ public class PriceUpdater extends Processor {
         String ret = "Undefined";
         
         try {
+            
+            if( StringUtils.isEmpty(publication.getId()) ){
+                return "Id is empty";
+            }
             
             PublicationEditPage publicationPage = goToEditPage(driver, publication);
             
@@ -188,6 +179,15 @@ public class PriceUpdater extends Processor {
                 in.close();
             }
         }
+    }
+
+    /**
+     * outputFilePrefix
+     * @return
+     */
+    @Override
+    protected String outputFilePrefix() {
+        return "price-updater";
     }
 
 }

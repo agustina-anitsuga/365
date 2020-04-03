@@ -36,15 +36,6 @@ public class IdRetriever extends Processor {
     }
 
     /**
-     * writeProcessOutput
-     */
-    @Override
-    protected void writeProcessOutput(List<Operation> result) {
-        // TODO Auto-generated method stub
-        
-    }
-
-    /**
      * doProcess
      */
     @Override
@@ -122,8 +113,10 @@ public class IdRetriever extends Processor {
      * @return
      */
     private boolean isbnsMatch(Publication publication, PublicationPage page) {
-        // TODO Auto-generated method stub
-        return false;
+        String requiredIsbn = publication.getIsbn();
+        String foundIsbn = page.getIsbn();
+        requiredIsbn = requiredIsbn.replaceAll("-","");
+        return requiredIsbn!=null && requiredIsbn.equals(foundIsbn);
     }
 
     /**
@@ -133,8 +126,9 @@ public class IdRetriever extends Processor {
      * @return
      */
     private boolean titlesMatch(Publication publication, PublicationPage page) {
-        // TODO Auto-generated method stub
-        return false;
+        String requiredTitle = publication.getTitle();
+        String foundTitle = page.getTitle();
+        return requiredTitle!=null && requiredTitle.equals(foundTitle);
     }
 
     /**
@@ -142,10 +136,22 @@ public class IdRetriever extends Processor {
      * @param string
      * @return
      */
-    private String getIdFromUrl(String string) {
-        // TODO Auto-generated method stub
-        return null;
+    private String getIdFromUrl(String url) {
+        // https://articulo.mercadolibre.com.ar/MLA-841972723-libro-...
+        int from = url.indexOf("/MLA-");
+        String temp = url.substring(from+1);
+        int to = temp.indexOf("-",4);
+        String ret = temp.substring(0,to);
+        return ret;
     }
 
+    /**
+     * outputFilePrefix
+     * @return
+     */
+    @Override
+    protected String outputFilePrefix() {
+        return "id-retriever";
+    }
 
 }

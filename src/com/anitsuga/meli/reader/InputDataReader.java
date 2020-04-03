@@ -53,9 +53,9 @@ public class InputDataReader {
                 Row currentRow = iterator.next();
                 if( rowCount > 0 ){
                     
-                    String id = getId(currentRow);
                     String title = getTitle(currentRow);
-                    if( !StringUtils.isEmpty(id) && !StringUtils.isEmpty(title) ){
+                    if( !StringUtils.isEmpty(title) ){
+                        String id = getId(currentRow);
                         Number price = getPrice(currentRow);
                         String isbn = getISBN(currentRow);
                         publication = new Publication();

@@ -9,10 +9,12 @@ import org.slf4j.LoggerFactory;
 
 import com.anitsuga.fwk.utils.AppProperties;
 import com.anitsuga.fwk.utils.Browser;
+import com.anitsuga.fwk.utils.FileUtils;
 import com.anitsuga.fwk.utils.SeleniumUtils;
 import com.anitsuga.meli.model.Operation;
 import com.anitsuga.meli.model.Publication;
 import com.anitsuga.meli.reader.InputDataReader;
+import com.anitsuga.meli.writer.ResultExcelWriter;
 
 /**
  * Processor
@@ -45,11 +47,24 @@ public abstract class Processor {
          }
     }
     
+
     /**
      * writeProcessOutput
      * @param result
      */
-    protected abstract void writeProcessOutput(List<Operation> result) ;
+    protected void writeProcessOutput(List<Operation> result) {
+        String localPath = FileUtils.getLocalPath();
+        String filename = localPath + outputFilePrefix();
+        ResultExcelWriter writer = new ResultExcelWriter(); 
+        writer.write(filename, result);
+    }
+
+    /**
+     * outputFilePrefix
+     * @return
+     */
+    protected abstract String outputFilePrefix() ;
+    
 
     /**
      * doProcess
