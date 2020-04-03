@@ -13,6 +13,8 @@ public class Publication {
     
     private Number price;
     
+    private String isbn;
+    
     
 
     public String getId() {
@@ -44,5 +46,14 @@ public class Publication {
         newPrice = newPrice.replaceAll(".", ",");
         return newPrice;
     }
+
+    public String getIsbn() {
+        return isbn;
+    }
+
+    public void setIsbn(String isbn) {
+        this.isbn = isbn;
+    }
    
+    
 }

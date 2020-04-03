@@ -19,16 +19,16 @@ import org.slf4j.LoggerFactory;
 import com.anitsuga.meli.model.Publication;
 
 /**
- * PriceUpdaterInputReader
+ * InputDataReader
  * @author agustina
  *
  */
-public class PriceUpdaterInputReader {
+public class InputDataReader {
 
     /**
      * logger
      */
-    private static final Logger LOGGER = LoggerFactory.getLogger(PriceUpdaterInputReader.class.getName());
+    private static final Logger LOGGER = LoggerFactory.getLogger(InputDataReader.class.getName());
     
     
     /**
@@ -57,10 +57,12 @@ public class PriceUpdaterInputReader {
                     String title = getTitle(currentRow);
                     if( !StringUtils.isEmpty(id) && !StringUtils.isEmpty(title) ){
                         Number price = getPrice(currentRow);
+                        String isbn = getISBN(currentRow);
                         publication = new Publication();
                         publication.setId(id);
                         publication.setTitle(title);
                         publication.setPrice(price);
+                        publication.setIsbn(isbn);
                         data.add(publication);
                     }
                 }
@@ -81,6 +83,16 @@ public class PriceUpdaterInputReader {
         // data.addAll(getSampleData());
         
         return data;
+    }
+
+    /**
+     * getISBN
+     * @param currentRow
+     * @return
+     */
+    private String getISBN(Row currentRow) {
+        Cell cell = currentRow.getCell(11);
+        return cell.getStringCellValue();
     }
 
     /**
@@ -134,24 +146,28 @@ public class PriceUpdaterInputReader {
         publication.setId("MLA845929856");
         publication.setPrice(82);
         publication.setTitle("Libro - Prueba - No Comprar");
+        publication.setIsbn("1234");
         data.add(publication);
         
         publication = new Publication();
         publication.setId("MLA845929856");
         publication.setPrice(23);
         publication.setTitle("Libro - Prueba - No Comprar");
+        publication.setIsbn("1234");
         data.add(publication);
 
         publication = new Publication();
         publication.setId("MLA845929856");
         publication.setPrice(82);
         publication.setTitle("Libro - Prueba - No Comprar");
+        publication.setIsbn("1234");
         data.add(publication);
         
         publication = new Publication();
         publication.setId("MLA845929856");
         publication.setPrice(23);
         publication.setTitle("Libro - Prueba - No Comprar");
+        publication.setIsbn("1234");
         data.add(publication);
         
         return data;
