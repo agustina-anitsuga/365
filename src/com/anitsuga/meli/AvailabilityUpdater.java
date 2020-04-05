@@ -85,9 +85,10 @@ public class AvailabilityUpdater extends Processor {
             PublicationEditPage publicationPage = goToEditPage(driver, publication);
             
             if( titlesMatch(publication, publicationPage) ){
+                publicationPage.openAvailabilitySection();
                 if( !availabilityIsAsExpected(publicationPage) ){
                     publicationPage.setAvailability(getExpectedAvailability());
-                    publicationPage.commit();
+                    publicationPage.commitAvailability();
                     ret = publicationPage.waitForSave();
                     if( !availabilityIsAsExpected(publicationPage) ){
                         ret = "Availability set in publication ("+publicationPage.getAvailability()+") is not the expected one. Please correct it manually.";
@@ -117,7 +118,6 @@ public class AvailabilityUpdater extends Processor {
      * @return
      */
     private String getExpectedAvailability() {
-        // TODO Auto-generated method stub
         return "30";
     }
 
@@ -127,8 +127,9 @@ public class AvailabilityUpdater extends Processor {
      * @return
      */
     private boolean availabilityIsAsExpected(PublicationEditPage publicationPage) {
-        // TODO Auto-generated method stub
-        return false;
+        String availability = publicationPage.getAvailability();
+        boolean ret = getExpectedAvailability().equals(availability);
+        return ret;
     }
 
     /**
@@ -147,7 +148,7 @@ public class AvailabilityUpdater extends Processor {
      */
     @Override
     protected String outputFilePrefix() {
-        return "price-updater";
+        return "availability-updater";
     }
 
 }

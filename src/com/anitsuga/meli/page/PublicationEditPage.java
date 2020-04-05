@@ -33,11 +33,19 @@ public class PublicationEditPage extends Page {
     private WebElement price;
     
     @FindBy( xpath = "//*[@id=\"quick_edit_standard_task\"]/div[2]/div[4]/button[1]" )
-    private WebElement saveButton;
-    
+    private WebElement savePriceButton;
+
     @FindBy( xpath = "//*[@id=\"detail_layout\"]/div/p/span[@class=\"sell-ui-snackbar__message\"]" )
     private WebElement message;
     
+    @FindBy( xpath = "//*[@id=\"manufacturing_time_task\"]/div/div/div[1]/svg" )
+    private WebElement availabilitySection;
+    
+    @FindBy( xpath = "//*[@id=\"manufacturing_time_task\"]/div[2]/div[1]/div[2]/label/div[1]/input" )
+    private WebElement availability;
+    
+    @FindBy( xpath = "//*[@id=\"manufacturing_time_task\"]/div[2]/div[2]/button[1]" )
+    private WebElement saveAvailabilityButton;
     
     /**
      * PublicationPage
@@ -91,7 +99,7 @@ public class PublicationEditPage extends Page {
      * commit
      */
     public void commit() {
-        saveButton.click();
+        savePriceButton.click();
     }    
 
     /**
@@ -137,8 +145,12 @@ public class PublicationEditPage extends Page {
      * @param expectedAvailability
      */
     public void setAvailability(String expectedAvailability) {
-        // TODO Auto-generated method stub
-        
+        String existingAvailability = getAvailability();
+        int length = existingAvailability.length();
+        for (int i = 0; i < length; i++) {
+            price.sendKeys(Keys.BACK_SPACE);
+        }
+        price.sendKeys(existingAvailability);
     }
 
     /**
@@ -146,8 +158,21 @@ public class PublicationEditPage extends Page {
      * @return
      */
     public String getAvailability() {
-        // TODO Auto-generated method stub
-        return null;
+        return availability.getAttribute("value");
     }
 
+    /**
+     * openAvailabilitySection
+     */
+    public void openAvailabilitySection() {
+        availabilitySection.click();
+    }
+
+    /**
+     * commitAvailability
+     */
+    public void commitAvailability(){
+        saveAvailabilityButton.click();
+    }
+    
 }
