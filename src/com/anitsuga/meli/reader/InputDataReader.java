@@ -80,7 +80,7 @@ public class InputDataReader {
             }
         }
         
-        data.addAll(getSampleData());
+        //data.addAll(getSampleData());
         
         return data;
     }

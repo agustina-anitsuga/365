@@ -14,16 +14,16 @@ import com.anitsuga.meli.model.Publication;
 import com.anitsuga.meli.page.PublicationEditPage;
 
 /**
- * PriceUpdater
+ * AvailabilityUpdater
  * @author agustina
  *
  */
-public class PriceUpdater extends Processor {
+public class AvailabilityUpdater extends Processor {
 
     /**
      * logger
      */
-    private static final Logger LOGGER = LoggerFactory.getLogger(PriceUpdater.class.getName());
+    private static final Logger LOGGER = LoggerFactory.getLogger(AvailabilityUpdater.class.getName());
     
     
     /**
@@ -31,7 +31,7 @@ public class PriceUpdater extends Processor {
      * @param args
      */
     public static void main(String[] args) {
-        PriceUpdater self = new PriceUpdater();
+        AvailabilityUpdater self = new AvailabilityUpdater();
         self.run();
     }
 
@@ -42,7 +42,7 @@ public class PriceUpdater extends Processor {
      */
     protected List<Operation> doProcess(List<Publication> data, WebDriver driver) {
         this.login(driver);
-        return this.updatePrices(driver,data);
+        return this.updateAvailability(driver,data);
     }
 
     /**
@@ -50,13 +50,13 @@ public class PriceUpdater extends Processor {
      * @param data
      * @return
      */
-    private List<Operation> updatePrices(WebDriver driver, List<Publication> data) {
+    private List<Operation> updateAvailability(WebDriver driver, List<Publication> data) {
         int total = data.size();
         int count = 0;
         List<Operation> ret = new ArrayList<Operation>();
         for (Publication publication : data) {
-            LOGGER.info("Updating price ["+count+"/"+total+"] - "+publication.getTitle()+" ("+publication.getId()+")");
-            String result = updatePrice(driver,publication);
+            LOGGER.info("Updating availability ["+count+"/"+total+"] - "+publication.getTitle()+" ("+publication.getId()+")");
+            String result = update(driver,publication);
             Operation op = new Operation();
             op.setPublication(publication);
             op.setResult(result);
@@ -72,7 +72,7 @@ public class PriceUpdater extends Processor {
      * @param publication
      * @return
      */
-    private String updatePrice(WebDriver driver, Publication publication) {
+    private String update(WebDriver driver, Publication publication) {
         
         String ret = "Undefined";
         
@@ -85,19 +85,15 @@ public class PriceUpdater extends Processor {
             PublicationEditPage publicationPage = goToEditPage(driver, publication);
             
             if( titlesMatch(publication, publicationPage) ){
-                if( !pricesMatch(publication, publicationPage) ) {
-                    publicationPage.setPrice(publication.getPriceAsString());
-                    if( pricesMatch(publication, publicationPage) ){
-                        publicationPage.commit();
-                        ret = publicationPage.waitForSave();
-                        if( !pricesMatch(publication, publicationPage) ){
-                            ret = "Price set in publication ("+publicationPage.getPriceValue()+") is not the expected one. Please correct price manually.";
-                        }
-                    } else {
-                        ret = "Price could not be set";
-                    }
+                if( !availabilityIsAsExpected(publicationPage) ){
+                    publicationPage.setAvailability(getExpectedAvailability());
+                    publicationPage.commit();
+                    ret = publicationPage.waitForSave();
+                    if( !availabilityIsAsExpected(publicationPage) ){
+                        ret = "Availability set in publication ("+publicationPage.getAvailability()+") is not the expected one. Please correct it manually.";
+                    } 
                 } else {
-                    ret = "Price did not need to be updated.";
+                    ret = "Availability did not need to be updated.";
                 }
             } else {
                 ret = "Publication titles do not match.";
@@ -117,6 +113,25 @@ public class PriceUpdater extends Processor {
     }
 
     /**
+     * getExpectedAvailability
+     * @return
+     */
+    private String getExpectedAvailability() {
+        // TODO Auto-generated method stub
+        return "30";
+    }
+
+    /**
+     * availabilityIsAsExpected
+     * @param publicationPage
+     * @return
+     */
+    private boolean availabilityIsAsExpected(PublicationEditPage publicationPage) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    /**
      * titlesMatch
      * @param publication
      * @param publicationPage
@@ -124,18 +139,6 @@ public class PriceUpdater extends Processor {
      */
     private boolean titlesMatch(Publication publication, PublicationEditPage publicationPage) {
         return publication.getTitle().equals(publicationPage.getTitle());
-    }
-
-    /**
-     * pricesMatch
-     * @param publication
-     * @param publicationPage
-     * @return
-     */
-    private boolean pricesMatch(Publication publication, PublicationEditPage publicationPage) {
-        String originalPrice = publicationPage.getPriceValue();
-        String priceToUpdate = "$" + publication.getPriceAsString();
-        return priceToUpdate.equals(originalPrice);
     }
 
     /**

@@ -2,17 +2,20 @@ package com.anitsuga.meli;
 
 import java.io.File;
 import java.util.List;
+import java.util.Scanner;
 
 import org.openqa.selenium.WebDriver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.anitsuga.fwk.page.LoginPage;
 import com.anitsuga.fwk.utils.AppProperties;
 import com.anitsuga.fwk.utils.Browser;
 import com.anitsuga.fwk.utils.FileUtils;
 import com.anitsuga.fwk.utils.SeleniumUtils;
 import com.anitsuga.meli.model.Operation;
 import com.anitsuga.meli.model.Publication;
+import com.anitsuga.meli.page.PublicationEditPage;
 import com.anitsuga.meli.reader.InputDataReader;
 import com.anitsuga.meli.writer.ResultExcelWriter;
 
@@ -133,5 +136,48 @@ public abstract class Processor {
         }
         return ret;
     }
+
+    /**
+     * goToEditPage
+     * @param driver
+     * @param publication
+     * @return
+     */
+    protected PublicationEditPage goToEditPage(WebDriver driver, Publication publication) {
+        String editUrl = "https://www.mercadolibre.com.ar/publicaciones/"+publication.getId()+"/modificar";
+        PublicationEditPage publicationPage = new PublicationEditPage(driver).go(editUrl);
+        publicationPage.waitForLoad();
+        return publicationPage;
+    }
+
+    /**
+     * login
+     */
+    protected void login( WebDriver driver ){
+        String url = "https://www.mercadolibre.com.ar/";
+        LoginPage page = new LoginPage(driver);
+        page.go(url);
+        waitForInput();
+    }
+
+    /**
+     * waitForInput
+     */
+    protected void waitForInput() {
+        Scanner in = null;
+        try {
+            in = new Scanner(System.in);
+            String s = in. nextLine();
+            System.out. println("You entered string "+s);
+        } catch (Exception e){
+            LOGGER.error(e.getMessage());
+        } finally {
+            if( in!=null ){
+                in.close();
+            }
+        }
+    }
+    
+    
 
 }

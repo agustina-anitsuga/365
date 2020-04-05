@@ -132,4 +132,22 @@ public class PublicationEditPage extends Page {
         return title.getText();
     }
 
+    /**
+     * setAvailability
+     * @param expectedAvailability
+     */
+    public void setAvailability(String expectedAvailability) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    /**
+     * getAvailability
+     * @return
+     */
+    public String getAvailability() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
 }
