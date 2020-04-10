@@ -55,7 +55,7 @@ public class PriceUpdater extends Processor {
         int count = 0;
         List<Operation> ret = new ArrayList<Operation>();
         for (Publication publication : data) {
-            LOGGER.info("Updating price ["+count+"/"+total+"] - "+publication.getTitle()+" ("+publication.getId()+")");
+            LOGGER.info("Updating price ["+(++count)+"/"+total+"] - "+publication.getTitle()+" ("+publication.getId()+")");
             String result = updatePrice(driver,publication);
             Operation op = new Operation();
             op.setPublication(publication);
@@ -123,7 +123,10 @@ public class PriceUpdater extends Processor {
      * @return
      */
     private boolean titlesMatch(Publication publication, PublicationEditPage publicationPage) {
-        return publication.getTitle().equals(publicationPage.getTitle());
+        String desiredTitle = publication.getTitle().toLowerCase();
+        desiredTitle = desiredTitle.replaceAll("'", "");
+        String actualTitle = publicationPage.getTitle().toLowerCase();
+        return desiredTitle.equals(actualTitle);
     }
 
     /**

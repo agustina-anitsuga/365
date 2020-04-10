@@ -43,8 +43,9 @@ public class Publication {
     
     public String getPriceAsString(){
         String newPrice = getPrice().toString();
-        newPrice = newPrice.replaceAll(".", ",");
-        return newPrice;
+        Double doubleValue = Double.valueOf(newPrice);
+        Long longValue = Math.round(doubleValue);
+        return longValue.toString();
     }
 
     public String getIsbn() {
