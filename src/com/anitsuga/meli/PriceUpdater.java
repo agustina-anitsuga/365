@@ -126,6 +126,7 @@ public class PriceUpdater extends Processor {
         String desiredTitle = publication.getTitle().toLowerCase();
         desiredTitle = desiredTitle.replaceAll("'", "");
         String actualTitle = publicationPage.getTitle().toLowerCase();
+        actualTitle = actualTitle.replaceAll("'", "");
         return desiredTitle.equals(actualTitle);
     }
 
