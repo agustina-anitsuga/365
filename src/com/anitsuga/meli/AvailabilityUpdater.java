@@ -55,7 +55,7 @@ public class AvailabilityUpdater extends Processor {
         int count = 0;
         List<Operation> ret = new ArrayList<Operation>();
         for (Publication publication : data) {
-            LOGGER.info("Updating availability ["+count+"/"+total+"] - "+publication.getTitle()+" ("+publication.getId()+")");
+            LOGGER.info("Updating availability ["+(++count)+"/"+total+"] - "+publication.getTitle()+" ("+publication.getId()+")");
             String result = update(driver,publication);
             Operation op = new Operation();
             op.setPublication(publication);
@@ -90,11 +90,12 @@ public class AvailabilityUpdater extends Processor {
                     publicationPage.setAvailability(getExpectedAvailability());
                     publicationPage.commitAvailability();
                     ret = publicationPage.waitForSave();
+                    publicationPage.openAvailabilitySection();
                     if( !availabilityIsAsExpected(publicationPage) ){
                         ret = "Availability set in publication ("+publicationPage.getAvailability()+") is not the expected one. Please correct it manually.";
                     } 
                 } else {
-                    ret = "Availability did not need to be updated.";
+                    ret = "Availability did not need to be updated. ";
                 }
             } else {
                 ret = "Publication titles do not match.";

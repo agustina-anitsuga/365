@@ -38,7 +38,7 @@ public class PublicationEditPage extends Page {
     @FindBy( xpath = "//*[@id=\"detail_layout\"]/div/p/span[@class=\"sell-ui-snackbar__message\"]" )
     private WebElement message;
     
-    @FindBy( xpath = "//*[@id=\"manufacturing_time_task\"]/div/div/div[1]/svg" )
+    @FindBy( xpath = "//*[@id=\"manufacturing_time_task\"]" )
     private WebElement availabilitySection;
     
     @FindBy( xpath = "//*[@id=\"manufacturing_time_task\"]/div[2]/div[1]/div[2]/label/div[1]/input" )
@@ -148,9 +148,9 @@ public class PublicationEditPage extends Page {
         String existingAvailability = getAvailability();
         int length = existingAvailability.length();
         for (int i = 0; i < length; i++) {
-            price.sendKeys(Keys.BACK_SPACE);
+            availability.sendKeys(Keys.BACK_SPACE);
         }
-        price.sendKeys(existingAvailability);
+        availability.sendKeys(expectedAvailability);
     }
 
     /**

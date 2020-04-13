@@ -39,6 +39,7 @@ public class InputDataReader {
     public List<Publication> read(String filename) {
 
         List<Publication> data = new ArrayList<Publication>();
+        
         Workbook workbook = null;
         Publication publication = null;
                 
