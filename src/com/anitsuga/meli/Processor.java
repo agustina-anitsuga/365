@@ -178,6 +178,46 @@ public abstract class Processor {
         }
     }
     
-    
+
+    /**
+     * titlesMatch
+     * @param publication
+     * @param publicationPage
+     * @return
+     */
+    protected boolean titlesMatch(Publication publication, PublicationEditPage publicationPage) {
+        String desiredTitle = cleanTitle(publication.getTitle());
+        String actualTitle = cleanTitle(publicationPage.getTitle());
+        return desiredTitle.equals(actualTitle);
+    }
+
+    /**
+     * cleanTitle
+     * @param title
+     * @return
+     */
+    private String cleanTitle(String title) {
+        title = title.toLowerCase();
+        title = title.replaceAll("'", "");
+        title = title.replaceAll(":", "");
+        title = title.replaceAll("\\.", "");
+        title = title.replaceAll("\\(", "");
+        title = title.replaceAll("\\)", "");
+        title = title.replaceAll("\\?", "");
+        title = title.replaceAll("’", "");
+        title = title.replaceAll("–", "");
+        title = title.replaceAll("\"", "");
+        title = title.replaceAll("á", "a");
+        title = title.replaceAll("é", "e");
+        title = title.replaceAll("í", "i");
+        title = title.replaceAll("ó", "o");
+        title = title.replaceAll("ú", "u");
+        title = title.replaceAll("ü", "u");
+        title = title.replaceAll(",", "");
+        title = title.replaceAll("/", "");
+        title = title.replaceAll("¿", "");
+        return title;
+    }
+
 
 }

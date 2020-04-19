@@ -134,16 +134,6 @@ public class AvailabilityUpdater extends Processor {
     }
 
     /**
-     * titlesMatch
-     * @param publication
-     * @param publicationPage
-     * @return
-     */
-    private boolean titlesMatch(Publication publication, PublicationEditPage publicationPage) {
-        return publication.getTitle().equals(publicationPage.getTitle());
-    }
-
-    /**
      * outputFilePrefix
      * @return
      */
