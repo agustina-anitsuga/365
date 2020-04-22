@@ -140,7 +140,11 @@ public class Book extends Product {
         dolarStr = dolarStr.replaceAll(java.util.regex.Matcher.quoteReplacement("US$"), "");
         dolarStr = dolarStr.replaceAll(java.util.regex.Matcher.quoteReplacement("$"), "");
         dolarStr = dolarStr.replaceAll("USD", "");
-        return StringUtils.parse(dolarStr.trim());
+        Number n =  StringUtils.parse(dolarStr.trim());
+        if( n.doubleValue() >= 2500 ){
+            n = n.doubleValue() + 190;
+        }
+        return n;
     }
    
 }

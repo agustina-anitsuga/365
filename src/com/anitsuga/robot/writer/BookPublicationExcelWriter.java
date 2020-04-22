@@ -45,16 +45,16 @@ public class BookPublicationExcelWriter implements PublicationCSVWriter {
                    "ISBN",
                    "Cantidad",
                    "Precio",
-                   "Descripción",
                    "Condición",
+                   "Descripción",
                    "Link de Youtube",
                    "Tipo de Publicación",
-                   "Tipo de garantía",
-                   "Tiempo de garantía",
-                   "Unidad de tiempo de garantía",
                    "Forma de envío",
                    "Costo de envío",
                    "Retiro en persona",
+                   "Tipo de garantía",
+                   "Tiempo de garantía",
+                   "Unidad de tiempo de garantía",
                    "Tipo de narración",
                    "Título",
                    "Autor",
@@ -111,16 +111,16 @@ public class BookPublicationExcelWriter implements PublicationCSVWriter {
                         writeField(row,book.getIsbn(),columnCount++); // isbn
                         writeField(row,"1",columnCount++); // Cantidad
                         writeField(row,publication.getPrice(),columnCount++); // precio
-                        writeField(row,publication.getDescription(),columnCount++); // Descripcion
                         writeField(row,"Nuevo",columnCount++); // Condicion
+                        writeField(row,publication.getDescription(),columnCount++); // Descripcion
                         writeField(row,"",columnCount++); // Link de Youtube
                         writeField(row,"Clásica",columnCount++); // Tipo de Publicacion     
-                        writeField(row,"Garantía del vendedor",columnCount++); //Tipo de garantia 
-                        writeField(row,"30",columnCount++); // Tiempo de garantia 
-                        writeField(row,"días",columnCount++); // Unidad de tiempo de garantia
                         writeField(row,"Mercado Envíos",columnCount++); // Forma de envio
                         writeField(row,"A cargo del comprador",columnCount++) ; // Costo de envio
                         writeField(row,"Acepto",columnCount++); // Retiro en persona
+                        writeField(row,"Garantía del vendedor",columnCount++); //Tipo de garantia 
+                        writeField(row,"30",columnCount++); // Tiempo de garantia 
+                        writeField(row,"días",columnCount++); // Unidad de tiempo de garantia
                         writeField(row,book.getType(),columnCount++); // Tipo de narracion
                         writeField(row,book.getTitle(),columnCount++); // titulo libro
                         writeField(row,book.getAuthor(),columnCount++); // autor libro
