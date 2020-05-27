@@ -35,6 +35,9 @@ public class PublicationEditPage extends Page {
     @FindBy( xpath = "//*[@id=\"quick_edit_standard_task\"]/div[2]/div[4]/button[1]" )
     private WebElement savePriceButton;
 
+    @FindBy( xpath = "//*[@id=\"quick_edit_standard_task\"]/div[2]/div[5]/button[1]" )
+    private WebElement savePriceButton2;
+    
     @FindBy( xpath = "//*[@id=\"detail_layout\"]/div/p/span[@class=\"sell-ui-snackbar__message\"]" )
     private WebElement message;
     
@@ -46,6 +49,10 @@ public class PublicationEditPage extends Page {
     
     @FindBy( xpath = "//*[@id=\"manufacturing_time_task\"]/div[2]/div[2]/button[1]" )
     private WebElement saveAvailabilityButton;
+    
+    @FindBy( xpath = "//*[@id=\"detail_layout\"]/div[1]/div[1]/div/div/div[2]/a" )
+    private WebElement reactivateButton;
+    
     
     /**
      * PublicationPage
@@ -99,7 +106,12 @@ public class PublicationEditPage extends Page {
      * commit
      */
     public void commit() {
-        savePriceButton.click();
+        try {
+            savePriceButton.click();
+        } catch (Exception e) {
+            LOGGER.debug(e.getMessage());
+            savePriceButton2.click();
+        }
     }    
 
     /**
@@ -173,6 +185,13 @@ public class PublicationEditPage extends Page {
      */
     public void commitAvailability(){
         saveAvailabilityButton.click();
+    }
+    
+    /**
+     * reactivate
+     */
+    public void reactivate(){
+        reactivateButton.click();
     }
     
 }

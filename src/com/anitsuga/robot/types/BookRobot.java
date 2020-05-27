@@ -397,6 +397,10 @@ public abstract class BookRobot implements Robot {
             double shippingCostInPesos = weightInKilos.doubleValue() * officialDolarQuotation * shippingPricePerKilo;
             double priceInPesos =  ( costInPesos  + shippingCostInPesos ) * margin ;
             
+            if( priceInPesos >= 2500 ){
+                priceInPesos = priceInPesos + 190;
+            }
+            
             return formatNumberAsString( priceInPesos );
         } catch (Exception e) {
             return "Unable to retrieve publication price";

@@ -103,6 +103,8 @@ public class PriceUpdater extends Processor {
                 ret = "Publication titles do not match.";
             }
             
+            //publicationPage.reactivate();
+            
         } catch (Exception e) {
             
             // take screenshot of error
