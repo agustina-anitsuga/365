@@ -58,6 +58,9 @@ public class BookPage extends Page {
     @FindBy(xpath = "//*[@id=\"buyBoxInner\"]/div/div[1]/ul/li[1]/span/span[2]")
     private WebElement price4 ;
     
+    @FindBy(xpath = "//*[@id=\"newBuyBoxPrice\"]")
+    private WebElement price5 ;
+    
     @FindBy(xpath = "//*[@id=\"productDetailsTable\"]/tbody/tr/td/div/ul/li" )
     private List<WebElement> details;
     
@@ -109,6 +112,8 @@ public class BookPage extends Page {
     @FindBy(xpath = "//li[@class=\"swatchElement selected\"]")
     private WebElement sellerList1;
     
+    @FindBy(xpath = "//*[@id=\"mediaOlp\"]/div/div/div/div[1]")
+    private WebElement sellerList2;
     
     
    /**
@@ -423,7 +428,11 @@ public class BookPage extends Page {
                         try {
                             ret = price4.getText();
                         } catch (Exception e4) {
-                            ret = "";
+                            try {
+                                ret = price5.getText();
+                            } catch (Exception e5) {
+                                ret = "";
+                            }
                         }
                     }
                 }
@@ -577,6 +586,19 @@ public class BookPage extends Page {
                 url = sellerListUrl.getAttribute("href");
             }
         } catch (Exception e1) {
+            LOGGER.error(e1.getMessage());
+        }
+        try {
+            if(StringUtils.isEmpty(url)){
+                List<WebElement> sellerListUrls = sellerList2.findElements(By.xpath(".//span/a"));
+                for (WebElement webElement : sellerListUrls) {
+                    if( webElement.getText().contains("Nuevo") ){
+                        url = webElement.getAttribute("href");
+                    }
+                }
+            }
+        } catch (Exception e1) {
+            System.out.println("");
             LOGGER.error(e1.getMessage());
         }
         return url;

@@ -32,7 +32,7 @@ public class BookPageTester {
         
         WebDriver driver = null ;
         
-        String url = "https://www.amazon.com/Inteligencia-Emocional-trav%C3%A9s-del-Tarot/dp/8409002337/ref=sr_1_1?dchild=1&keywords=Inteligencia+Emocional+A+Traves+Del+Tarot%3A+Las+7&qid=1584468184&s=books&sr=1-1";
+        String url = "https://www.amazon.com/-/es/Francisco-Ugarte-Corcuera/dp/6078237977/ref=sr_1_98?dchild=1&fst=as%3Aoff&qid=1586715639&refinements=p_n_feature_nine_browse-bin%3A3291439011%2Cp_85%3A2470955011%2Cp_n_availability%3A2245265011%2Cp_n_condition-type%3A1294423011%2Cp_n_feature_browse-bin%3A2656022011&rnid=4736&rps=1&s=books&sr=1-98";
         
         try {
             

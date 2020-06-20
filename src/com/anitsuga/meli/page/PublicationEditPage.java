@@ -50,7 +50,7 @@ public class PublicationEditPage extends Page {
     @FindBy( xpath = "//*[@id=\"manufacturing_time_task\"]/div[2]/div[2]/button[1]" )
     private WebElement saveAvailabilityButton;
     
-    @FindBy( xpath = "//*[@id=\"detail_layout\"]/div[1]/div[1]/div/div/div[2]/a" )
+    @FindBy( xpath = "//*[@id=\"detail_layout\"]/div[1]/div[1]/div/div[3]/div/a" )
     private WebElement reactivateButton;
     
     
