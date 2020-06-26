@@ -53,6 +53,8 @@ public class PublicationEditPage extends Page {
     @FindBy( xpath = "//*[@id=\"detail_layout\"]/div[1]/div[1]/div/div[3]/div/a" )
     private WebElement reactivateButton;
     
+    @FindBy( xpath = "//*[@id=\"quantity\"]" )
+    private WebElement quantity;
     
     /**
      * PublicationPage
@@ -103,6 +105,34 @@ public class PublicationEditPage extends Page {
     }
     
     /**
+     * setQuantity
+     * @param price
+     */
+    public void setQuantity(String quantityArg) {
+        String existingQty = getQuantityValue();
+        int length = existingQty.length();
+        for (int i = 0; i < length; i++) {
+            quantity.sendKeys(Keys.BACK_SPACE);
+        }
+        quantity.sendKeys(quantityArg);
+    }
+
+    
+    /**
+     * getQuantityValue
+     */
+    public String getQuantityValue(){
+        return quantity.getAttribute("value");
+    }
+    
+    /**
+     * getQuantity
+     */
+    public String getQuantity(){
+        return quantity.getText();
+    }
+    
+    /**
      * commit
      */
     public void commit() {
@@ -139,6 +169,21 @@ public class PublicationEditPage extends Page {
             wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[@id=\"detail_layout\"]/div/p/span[@class=\"sell-ui-snackbar__message\"]")));
             ret = message.getText();
         } catch ( Exception e ){
+            LOGGER.debug(e.getMessage());
+        }
+        return ret;
+    }
+    
+    /**
+     * isPaused
+     * @return
+     */
+    public boolean isPaused(){
+        boolean ret = false;
+        try {
+            reactivateButton.getLocation();
+            ret = true;
+        } catch (Exception e) {
             LOGGER.debug(e.getMessage());
         }
         return ret;

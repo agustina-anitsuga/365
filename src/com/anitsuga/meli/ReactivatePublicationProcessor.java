@@ -14,16 +14,16 @@ import com.anitsuga.meli.model.Publication;
 import com.anitsuga.meli.page.PublicationEditPage;
 
 /**
- * StatusUpdater
+ * ReactivatePublicationProcessor
  * @author agustina
  *
  */
-public class StatusUpdater extends Processor {
+public class ReactivatePublicationProcessor extends Processor {
 
     /**
      * logger
      */
-    private static final Logger LOGGER = LoggerFactory.getLogger(StatusUpdater.class.getName());
+    private static final Logger LOGGER = LoggerFactory.getLogger(ReactivatePublicationProcessor.class.getName());
     
     
     /**
@@ -31,7 +31,7 @@ public class StatusUpdater extends Processor {
      * @param args
      */
     public static void main(String[] args) {
-        StatusUpdater self = new StatusUpdater();
+        ReactivatePublicationProcessor self = new ReactivatePublicationProcessor();
         self.run();
     }
 
@@ -55,8 +55,8 @@ public class StatusUpdater extends Processor {
         int count = 0;
         List<Operation> ret = new ArrayList<Operation>();
         for (Publication publication : data) {
-            LOGGER.info("Updating status ["+(++count)+"/"+total+"] - "+publication.getTitle()+" ("+publication.getId()+")");
-            String result = updateStatus(driver,publication);
+            LOGGER.info("Reactivating publication ["+(++count)+"/"+total+"] - "+publication.getTitle()+" ("+publication.getId()+")");
+            String result = reactivatePublication(driver,publication);
             Operation op = new Operation();
             op.setPublication(publication);
             op.setResult(result);
@@ -67,12 +67,12 @@ public class StatusUpdater extends Processor {
     }
     
     /**
-     * 
+     * reactivatePublication
      * @param driver
      * @param publication
      * @return
      */
-    private String updateStatus(WebDriver driver, Publication publication) {
+    private String reactivatePublication(WebDriver driver, Publication publication) {
         
         String ret = "Undefined";
         
@@ -85,8 +85,19 @@ public class StatusUpdater extends Processor {
             PublicationEditPage publicationPage = goToEditPage(driver, publication);
             
             if( titlesMatch(publication, publicationPage) ){
-                publicationPage.reactivate();
-                ret = publicationPage.waitForSave();
+                if( !quantityIsAsExpected(publicationPage) ){
+                    publicationPage.setQuantity(this.getExpectedQuantity());
+                    publicationPage.commit();
+                    ret = publicationPage.waitForSave();
+                }
+                if( quantityIsAsExpected(publicationPage) ){
+                    if( publicationPage.isPaused() ){
+                        publicationPage.reactivate();
+                        ret = publicationPage.waitForSave();
+                    }
+                } else {
+                    ret = "Quantity set in publication ("+publicationPage.getQuantityValue()+") is not the expected one. Please correct it manually.";
+                }
             } else {
                 ret = "Publication titles do not match.";
             }
@@ -106,24 +117,31 @@ public class StatusUpdater extends Processor {
     }
 
     /**
-     * pricesMatch
-     * @param publication
+     * quantityIsAsExpected
      * @param publicationPage
      * @return
      */
-    private boolean pricesMatch(Publication publication, PublicationEditPage publicationPage) {
-        String originalPrice = publicationPage.getPriceValue();
-        String priceToUpdate = "$" + publication.getPriceAsString();
-        return priceToUpdate.equals(originalPrice);
+    private boolean quantityIsAsExpected(PublicationEditPage publicationPage) {
+        String quantity = publicationPage.getQuantityValue();
+        boolean ret = getExpectedQuantity().equals(quantity);
+        return ret;
     }
 
+    /**
+     * getExpectedQuantity
+     * @return
+     */
+    private String getExpectedQuantity() {
+        return "1";
+    }
+    
     /**
      * outputFilePrefix
      * @return
      */
     @Override
     protected String outputFilePrefix() {
-        return "price-updater";
+        return "reactivate-publication-processor";
     }
 
 }
