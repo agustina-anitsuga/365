@@ -32,7 +32,7 @@ public class BookPageTester {
         
         WebDriver driver = null ;
         
-        String url = "https://www.amazon.com/-/es/Francisco-Ugarte-Corcuera/dp/6078237977/ref=sr_1_98?dchild=1&fst=as%3Aoff&qid=1586715639&refinements=p_n_feature_nine_browse-bin%3A3291439011%2Cp_85%3A2470955011%2Cp_n_availability%3A2245265011%2Cp_n_condition-type%3A1294423011%2Cp_n_feature_browse-bin%3A2656022011&rnid=4736&rps=1&s=books&sr=1-98";
+        String url = "https://www.amazon.com/-/es/Douglas-Adams/dp/0345453743/ref=sr_1_30?qid=1582864461&refinements=p_n_feature_browse-bin%3A2656022011&rnid=618072011&s=books&sr=1-30";
         
         try {
             
@@ -45,15 +45,16 @@ public class BookPageTester {
             if( bookPage != null )
             {
                 //bookPage.waitForPopups();
-                System.out.println("seller list url:"+bookPage.getSellerListUrl());
+                System.out.println("price (USD):"+bookPage.getPrice()); 
+                System.out.println("price (ARS):"+robot.getPublicationPrice(robot.getBookData(bookPage,driver)));
+                
+                System.out.println("seller list url:"+bookPage.getSellerListUrl()); 
                 System.out.println("author:"+bookPage.getAuthor());
                 System.out.println("availability:"+bookPage.getAvailability());
-                System.out.println("price (USD):"+bookPage.getPrice());
-                System.out.println("price (ARS):"+robot.getPublicationPrice(robot.getBookData(bookPage,driver)));
                 System.out.println("type:"+bookPage.getType());
-                System.out.println("lang:"+bookPage.getLanguage());
+                System.out.println("lang:"+bookPage.getLanguage()); //*
                 System.out.println("type:"+bookPage.getType());
-                System.out.println("seller:"+bookPage.getSeller());
+                System.out.println("seller:"+bookPage.getSeller()); //*
                 System.out.println("title:"+bookPage.getTitle());
                 System.out.println("title.len:"+bookPage.getTitle().length());
                 List<String> editions = bookPage.getEditionsUrls();
@@ -67,6 +68,8 @@ public class BookPageTester {
                 for (String image : images) {
                     System.out.println("    image - "+image);
                 }
+                
+
 
             }    
             
@@ -76,7 +79,7 @@ public class BookPageTester {
             SeleniumUtils.captureScreenshot(driver);
             
             // log exception
-            LOGGER.error("Error reading URL "+url, e);
+            LOGGER.error("Error reading a URL "+url, e);
             
         } finally {
             if (driver != null) {

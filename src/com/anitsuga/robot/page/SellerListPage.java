@@ -100,7 +100,8 @@ public class SellerListPage extends Page {
         try {
             url = next.getAttribute("href");
         } catch(Exception e) {
-            LOGGER.error(e.getMessage());
+            //LOGGER.error(e.getMessage());
+            LOGGER.error("Unable to retrieve seller next page");
         }
         return url;
     }    

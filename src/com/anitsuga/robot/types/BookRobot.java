@@ -185,24 +185,28 @@ public abstract class BookRobot implements Robot {
         // if we still did not get an amazon price, look it up
         if( amazonPriceIsNotSet(book) ){
             String sellerListUrl = bookPage.getSellerListUrl();
-            SellerListPage sellerListPage = new SellerListPage(driver).go(sellerListUrl); 
-            //sellerListPage.filterNew();
-            boolean loaded = true;
-            do {
-                if(!loaded){
-                    sellerListPage = new SellerListPage(driver).go(sellerListUrl);
-                }
-                loaded = false;
-                List<SellerQuote> sellerQuotes = sellerListPage.getSellerQuotes();
-                SellerQuote amazon = findAmazonQuote(sellerQuotes);
-                if( amazon!=null ){
-                    book.setPrice(amazon.getPrice());
-                    book.setSeller(amazon.getSeller());
-                    sellerListUrl = null;
-                } else {
-                    sellerListUrl = sellerListPage.nextPageUrl();
-                }
-            } while( sellerListUrl!=null );
+            if( StringUtils.isEmpty(sellerListUrl) ){
+                LOGGER.info("Seller list not available");
+            } else {
+                SellerListPage sellerListPage = new SellerListPage(driver).go(sellerListUrl); 
+                //sellerListPage.filterNew();
+                boolean loaded = true;
+                do {
+                    if(!loaded){
+                        sellerListPage = new SellerListPage(driver).go(sellerListUrl);
+                    }
+                    loaded = false;
+                    List<SellerQuote> sellerQuotes = sellerListPage.getSellerQuotes();
+                    SellerQuote amazon = findAmazonQuote(sellerQuotes);
+                    if( amazon!=null ){
+                        book.setPrice(amazon.getPrice());
+                        book.setSeller(amazon.getSeller());
+                        sellerListUrl = null;
+                    } else {
+                        sellerListUrl = sellerListPage.nextPageUrl();
+                    }
+                } while( sellerListUrl!=null );
+            }
         }
         
         return book;
@@ -232,7 +236,8 @@ public abstract class BookRobot implements Robot {
     private boolean amazonPriceIsNotSet(Book book) {
         return StringUtils.isEmpty(book.getPrice()) 
                     || StringUtils.isEmpty(book.getSeller()) 
-                    || !"Vendido y enviado por Amazon.com.".equals(book.getSeller());
+                    || ! ( "Amazon.com.".equals(book.getSeller())
+                            || "Vendido y enviado por Amazon.com.".equals(book.getSeller()));
     }
 
     /**

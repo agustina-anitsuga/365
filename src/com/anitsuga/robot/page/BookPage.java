@@ -33,36 +33,35 @@ public class BookPage extends Page {
     private static final Logger LOGGER = LoggerFactory.getLogger(BookPage.class.getName());
     
     
-
     @FindBy(xpath = "//*[@id=\"productTitle\"]")
     private WebElement title;
 
     @FindBy(xpath = "//*[@id=\"bylineInfo\"]/span/span[1]/a[1]")
-    private WebElement author;
-
-    @FindBy(xpath = "//*[@id=\"bylineInfo\"]/span/a")
     private WebElement author1;
-
+    @FindBy(xpath = "//*[@id=\"bylineInfo\"]/span/a")
+    private WebElement author2;
+    private WebElement[] author = { author1, author2 };
+    
     @FindBy(xpath = "//*[@id=\"buyNewSection\"]/a/h5/div/div[2]/div/span[2]" )
-    private WebElement price;
-    
-    @FindBy(xpath = "//*[@id=\"buyNewSection\"]/h5/div/div[2]/div/span[2]")
     private WebElement price1;
-
-    @FindBy(xpath = "//*[@id=\"mediaNoAccordion\"]/div[1]/div[2]/span[2]" )
+    @FindBy(xpath = "//*[@id=\"buyNewSection\"]/h5/div/div[2]/div/span[2]")
     private WebElement price2;
-  
-    @FindBy(xpath = "//*[@id=\"newOfferAccordionRow\"]/div/div[1]/a/h5/div/div[2]/span[2]")
+    @FindBy(xpath = "//*[@id=\"mediaNoAccordion\"]/div[1]/div[2]/span[2]" )
     private WebElement price3;
-
+    @FindBy(xpath = "//*[@id=\"newOfferAccordionRow\"]/div/div[1]/a/h5/div/div[2]/span[2]")
+    private WebElement price4;
     @FindBy(xpath = "//*[@id=\"buyBoxInner\"]/div/div[1]/ul/li[1]/span/span[2]")
-    private WebElement price4 ;
-    
+    private WebElement price5;    
     @FindBy(xpath = "//*[@id=\"newBuyBoxPrice\"]")
-    private WebElement price5 ;
+    private WebElement price6;    
+    @FindBy(xpath = "//*[@id=\"price\"]")
+    private WebElement price7;
+    private WebElement[] price = { price1, price2, price3, price4, price5, price6, price7 };
     
     @FindBy(xpath = "//*[@id=\"productDetailsTable\"]/tbody/tr/td/div/ul/li" )
-    private List<WebElement> details;
+    private List<WebElement> details1;
+    @FindBy( xpath = "//*[@id=\"detailBullets_feature_div\"]/ul/li/span" )
+    private List<WebElement> details2;
     
     @FindBy(xpath = "//*[@id=\"imgBlkFront\"]" )
     private WebElement image;
@@ -74,30 +73,28 @@ public class BookPage extends Page {
     private WebElement type;
 
     @FindBy(xpath = "//*[@id=\"imgThumbs\"]/span/span")    
-    private WebElement photoViewer;
-
-    @FindBy(xpath = "//*[@id=\"imgBlkFront\"]")    
     private WebElement photoViewer1;
+    @FindBy(xpath = "//*[@id=\"imgBlkFront\"]")    
+    private WebElement photoViewer2;
     
     @FindBy(xpath = "//*[@id=\"imgGalleryContent\"]/div[2]/div/img")
     private List<WebElement> photoMiniatures;
     
     @FindBy(xpath = "//*[@id=\"igImage\"]")
-    private WebElement photoTarget;
-    
-    @FindBy(xpath = "//*[@id=\"sitbReaderPage-1\"]/img")
     private WebElement photoTarget1;
-    
+    @FindBy(xpath = "//*[@id=\"sitbReaderPage-1\"]/img")
+    private WebElement photoTarget2;
+
     @FindBy(xpath = "//*[@id=\"merchant-info\"]")
-    private WebElement seller;
-    
+    private WebElement seller1;
     @FindBy(xpath = "//*[@id=\"buyNewInner\"]/div[@class=\"a-section a-spacing-small\"]/span")
     private WebElement seller2;
-    
     @FindBy(xpath = "//*[@id=\"newOfferAccordionRow\"]/div/div[2]/div/div/div[1]/div/span")
     private WebElement seller3;
+    @FindBy(xpath = "//*[@id=\"buyboxTabularTruncate-1\"]/span[2]/span")
+    private WebElement seller4;
+    private WebElement[] seller = { seller1, seller2, seller3, seller4 };
     
-    // map of book details
     private Map<String,String> detailMap = null ;
     
     @FindBy(xpath = "//*[@class=\"a-button-text\"]")
@@ -107,14 +104,20 @@ public class BookPage extends Page {
     private WebElement formats;
 
     @FindBy(xpath = "//li[@class=\"swatchElement selected resizedSwatchElement\"]")
-    private WebElement sellerList;
-    
-    @FindBy(xpath = "//li[@class=\"swatchElement selected\"]")
     private WebElement sellerList1;
-    
-    @FindBy(xpath = "//*[@id=\"mediaOlp\"]/div/div/div/div[1]")
+    @FindBy(xpath = "//li[@class=\"swatchElement selected\"]")
     private WebElement sellerList2;
-    
+    @FindBy(xpath = "//*[@id=\"mediaOlp\"]/div/div/div/div[1]")
+    private WebElement sellerList3;
+    private WebElement[] sellerList = { sellerList1, sellerList1, sellerList2, sellerList2 };
+
+    private String[] sellerListAddin = new String[] {
+            ".//span[@class=\"olp-new olp-link\"]/a",
+            ".//span[@class=\"olp-new olp-link\"]/span/a",
+            ".//span[@class=\"olp-new olp-link\"]/a",
+            ".//span[@class=\"olp-new olp-link\"]/span/a",
+            };
+   
     
    /**
     * BookPage
@@ -164,11 +167,14 @@ public class BookPage extends Page {
      * @return
      */
     public String getLanguage() {
+        String keys[] = new String[]{"Idioma","Language","Idioma:"};
         String lang = null;
         Map<String,String> details = getDetailMap();
-        lang = (String) details.get("Idioma");
-        if(StringUtils.isEmpty(lang)){
-            lang = (String) details.get("Language");
+        for (int i = 0; i < keys.length; i++) {
+            lang = (String) details.get(keys[i]);
+            if(!StringUtils.isEmpty(lang)){
+                break;
+            }
         }
         Map<String, String> translations = getLanguageTranslations();
         lang = translations.getOrDefault(lang, lang);
@@ -219,7 +225,7 @@ public class BookPage extends Page {
     private Map<String,String> getDetailMap() {
         if(detailMap==null){
             detailMap = new HashMap<String,String>();
-            for (WebElement detail : details) {
+            for (WebElement detail : details1) {
                  String content = detail.getText();
                  if(content.contains(":")){
                      String key = (content.substring(0,content.indexOf(":")).trim());
@@ -229,6 +235,12 @@ public class BookPage extends Page {
                      detailMap.put(content, "");
                  }
             }
+            for (WebElement detail : details2) {
+                String key = detail.findElement(By.xpath("./span[1]")).getText();
+                String value = detail.findElement(By.xpath("./span[2]")).getText();
+                if( key.endsWith(":") ) { key = key.substring(0,key.length()-1); };
+                detailMap.put(key.trim(), value.trim());
+           }
         }
         return detailMap;
     }
@@ -261,17 +273,11 @@ public class BookPage extends Page {
      * @return
      */
     public String getEditorial() {
+        String[] keys = new String[] {"Editor","Publisher","Editorial"};
         Map<String,String> details = getDetailMap();
-        String ret = (String) details.get("Editor");    
-        if( !StringUtils.isEmpty(ret) ){
-            if( ret.indexOf(";") >0 ){
-                ret = ret.substring(0,ret.indexOf(";"));
-            }
-            if( ret.indexOf("(") >0 ){
-                ret = ret.substring(0,ret.indexOf("("));
-            }
-        } else {
-            ret = (String) details.get("Publisher");    
+        String ret = null;
+        for (int i = 0; i < keys.length; i++) {
+            ret = (String) details.get(keys[i]);    
             if( !StringUtils.isEmpty(ret) ){
                 if( ret.indexOf(";") >0 ){
                     ret = ret.substring(0,ret.indexOf(";"));
@@ -279,6 +285,7 @@ public class BookPage extends Page {
                 if( ret.indexOf("(") >0 ){
                     ret = ret.substring(0,ret.indexOf("("));
                 }
+                break;
             }
         }
         return (ret==null)? "": ret.trim();
@@ -289,10 +296,14 @@ public class BookPage extends Page {
      * @return
      */
     public String getDimensions() {
+        String[] keys = new String[]{"Dimensiones del producto", "Product Dimensions"};
         Map<String,String> details = getDetailMap();
-        String ret = (String) details.get("Dimensiones del producto");    
-        if(StringUtils.isEmpty(ret)){
-            ret = (String) details.get("Product Dimensions");
+        String ret = null;
+        for (int i = 0; i < keys.length; i++) {
+            ret = (String) details.get(keys[i]);    
+            if(!StringUtils.isEmpty(ret)){
+                break;
+            }
         }
         return (ret!=null)?ret.trim():ret;
     }
@@ -317,23 +328,18 @@ public class BookPage extends Page {
      */
     public String getWeight() {
         String ret = null;
+        String[] keys = new String[] {"Peso del envío","Shipping Weight", "Peso del producto"};
         Map<String,String> details = getDetailMap();
-        String weight = (String) details.get("Peso del envío");
-        if( weight!=null ){
-            if(weight.indexOf("(") > 0){
-                ret = weight.substring(0, weight.indexOf("("));
-            } else {
-                ret = weight;
-            }
-        }
-        if( StringUtils.isEmpty(ret) ){
-            weight = (String) details.get("Shipping Weight");
+        
+        for (int i = 0; i < keys.length; i++) {
+            String weight = (String) details.get(keys[i]);
             if( weight!=null ){
                 if(weight.indexOf("(") > 0){
                     ret = weight.substring(0, weight.indexOf("("));
                 } else {
                     ret = weight;
                 }
+                break;
             }
         }
         return (ret==null)? "" : ret.trim();
@@ -346,22 +352,23 @@ public class BookPage extends Page {
     public String getCover() {
         String ret = "";
         Map<String,String> details = getDetailMap();
-        String isHardcover = (String) details.get("Hardcover");
-        if( isHardcover!=null ){
-            ret = "Dura";
+        String keysForHardcover[] = new String[]{"Tapa dura","Hardcover","Library Binding"};
+        String keysForPaperback[] = new String[]{"Paperback","Mass Market Paperback","Libro de bolsillo", "Tapa blanda"};
+        
+        for (int i = 0; i < keysForHardcover.length; i++) {
+            String isHardcover = (String) details.get(keysForHardcover[i]);
+            if( isHardcover!=null ){
+                ret = "Dura";
+            }
         }
-        isHardcover = (String) details.get("Library Binding");
-        if( isHardcover!=null ){
-            ret = "Dura";
+        
+        for (int i = 0; i < keysForPaperback.length; i++) {
+            String isPaperback = (String) details.get(keysForPaperback[i]);
+            if( isPaperback!=null ){
+                ret = "Blanda";
+            }
         }
-        String isPaperback = (String) details.get("Paperback");
-        if( isPaperback!=null ){
-            ret = "Blanda";
-        }
-        isPaperback = (String) details.get("Mass Market Paperback");
-        if( isPaperback!=null ){
-            ret = "Blanda";
-        }
+       
         return ret;
     }
     
@@ -372,7 +379,7 @@ public class BookPage extends Page {
     public String getCoverFullData() {
         String ret = "";
         Map<String,String> details = getDetailMap();
-        String[] keys = {"Hardcover","Paperback","Library Binding","Board book","Mass Market Paperback"};
+        String[] keys = {"Hardcover","Paperback","Library Binding","Board book","Mass Market Paperback","Tapa dura", "Tapa blanda", "Libro de bolsillo"};
         for (int i = 0; i < keys.length; i++) {
             String key = keys[i];
             String value = (String) details.get(key);
@@ -390,10 +397,15 @@ public class BookPage extends Page {
      */
     public String getAuthor() {
         String ret = null;
-        try {
-            ret = author.getText();
-        } catch (Exception e) {
-            ret = author1.getText();
+        for (int i = 0; i < author.length; i++) {
+            try {
+                ret = author[i].getText();
+            } catch (Exception e) {
+                //
+            }
+            if( !StringUtils.isEmpty(ret) ){
+                break;
+            }
         }
         return ret;
     }
@@ -413,29 +425,14 @@ public class BookPage extends Page {
      */
     public String getPrice() {
         String ret = null;
-        try { 
-            ret = price.getText();
-        } catch (Exception e) {
+        for (int i = 0; i < price.length; i++) {
             try {
-                ret = price1.getText();
-            } catch (Exception e1) {
-                try{
-                    ret = price2.getText();
-                } catch (Exception e2) {
-                    try {
-                        ret = price3.getText();
-                    } catch (Exception e3) {
-                        try {
-                            ret = price4.getText();
-                        } catch (Exception e4) {
-                            try {
-                                ret = price5.getText();
-                            } catch (Exception e5) {
-                                ret = "";
-                            }
-                        }
-                    }
-                }
+                ret = price[i].getText();
+            } catch (Exception e) {
+                //
+            }
+            if( !StringUtils.isEmpty(ret) ){
+                break;
             }
         }
         return ret;
@@ -446,9 +443,9 @@ public class BookPage extends Page {
      */
     public void openPhotoViewer(){
         try {
-            photoViewer.click();
-        } catch (Exception e) {
             photoViewer1.click();
+        } catch (Exception e) {
+            photoViewer2.click();
         }
     }
         
@@ -462,7 +459,7 @@ public class BookPage extends Page {
             if( !photoMiniature.isSelected() ){
                 photoMiniature.click();
             }
-            ret.add(photoTarget.getAttribute("src"));
+            ret.add(photoTarget1.getAttribute("src"));
         }
         return ret;
     }
@@ -473,20 +470,15 @@ public class BookPage extends Page {
      */
     public String getSeller(){
         String ret = "";
-        try {
-            ret = seller.getText();
-            ret = ret.trim();
-        } catch (Exception e) {
+        for (int i = 0; i < seller.length; i++) {
             try {
-                ret = seller2.getText();
+                ret = seller[i].getText();
                 ret = ret.trim();
-            } catch (Exception e2) {
-                try {
-                    ret = seller3.getText();
-                    ret = ret.trim();
-                } catch (Exception e3) {
-                    LOGGER.error("Unable to retrieve seller");
-                }
+            } catch (Exception e) {
+                //
+            }
+            if( !StringUtils.isEmpty(ret) ){
+                break;
             }
         }
         return ret;
@@ -541,6 +533,7 @@ public class BookPage extends Page {
      */
     private boolean editionIsOfInterest(String text) {
         return text.startsWith("Pasta dura")
+                   ||text.startsWith("Tapa dura")
                    ||text.startsWith("Encuadernación de biblioteca")
                    ||text.startsWith("Pasta blanda")
                    ||text.startsWith("Tapa flexible")
@@ -574,23 +567,21 @@ public class BookPage extends Page {
      */
     public String getSellerListUrl() {
         String url = null;
-        try {
-            WebElement sellerListUrl = sellerList.findElement(By.xpath(".//span[@class=\"olp-new olp-link\"]/a"));
-            url = sellerListUrl.getAttribute("href");
-        } catch(Exception e){
-            LOGGER.error(e.getMessage());
-        }
-        try {
-            if(StringUtils.isEmpty(url)){
-                WebElement sellerListUrl = sellerList1.findElement(By.xpath(".//span[@class=\"olp-new olp-link\"]/a"));
+        for (int i = 0; i < sellerList.length; i++) {
+            try {
+                WebElement sellerListUrl = sellerList[i].findElement(By.xpath(sellerListAddin[i]));
                 url = sellerListUrl.getAttribute("href");
+            } catch(Exception e){
+                //LOGGER.error(e.getMessage());
             }
-        } catch (Exception e1) {
-            LOGGER.error(e1.getMessage());
+            if( !StringUtils.isEmpty(url) ){
+                break;
+            }
         }
+        
         try {
             if(StringUtils.isEmpty(url)){
-                List<WebElement> sellerListUrls = sellerList2.findElements(By.xpath(".//span/a"));
+                List<WebElement> sellerListUrls = sellerList3.findElements(By.xpath(".//span/a"));
                 for (WebElement webElement : sellerListUrls) {
                     if( webElement.getText().contains("Nuevo") ){
                         url = webElement.getAttribute("href");
@@ -598,7 +589,6 @@ public class BookPage extends Page {
                 }
             }
         } catch (Exception e1) {
-            System.out.println("");
             LOGGER.error(e1.getMessage());
         }
         return url;

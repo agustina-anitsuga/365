@@ -121,13 +121,15 @@ public class Book extends Product {
     public Number getWeightInKilos() {
         Double ret = null;
         String weightStr = this.getWeight();
-        if( weightStr.contains("pounds") ){
+        if( weightStr.contains("pounds") || weightStr.contains("libras") ){
             weightStr = weightStr.replaceAll("pounds", "");
+            weightStr = weightStr.replaceAll("libras", "");
             double poundToKilo = 0.454;
             Number weight = StringUtils.parse(weightStr.trim());
             ret = Double.valueOf(poundToKilo * weight.doubleValue());
-        } else if ( weightStr.contains("ounces") ){
+        } else if ( weightStr.contains("ounces") || weightStr.contains("onzas") ){
             weightStr = weightStr.replaceAll("ounces", "");
+            weightStr = weightStr.replaceAll("onzas", "");
             double ounceToKilo = 0.028;
             Number weight = StringUtils.parse(weightStr.trim());
             ret = Double.valueOf(ounceToKilo * weight.doubleValue());
