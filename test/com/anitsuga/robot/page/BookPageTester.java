@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
 
 import com.anitsuga.fwk.utils.Browser;
 import com.anitsuga.fwk.utils.SeleniumUtils;
-import com.anitsuga.robot.page.BookPage;
+import com.anitsuga.robot.model.Book;
 import com.anitsuga.robot.types.BookRobot;
 import com.anitsuga.robot.types.BookScraperRobot;
 
@@ -32,7 +32,7 @@ public class BookPageTester {
         
         WebDriver driver = null ;
         
-        String url = "https://www.amazon.com/-/es/Douglas-Adams/dp/0345453743/ref=sr_1_30?qid=1582864461&refinements=p_n_feature_browse-bin%3A2656022011&rnid=618072011&s=books&sr=1-30";
+        String url = "https://www.amazon.com/-/es/Jacques-Lob/dp/1782761330/ref=sr_1_7?fst=as%3Aoff&qid=1583705973&refinements=p_n_feature_nine_browse-bin%3A3291437011%7C3291439011%2Cp_n_availability%3A2245265011%2Cp_n_condition-type%3A1294423011%2Cp_n_feature_browse-bin%3A2656020011&rnid=618072011&s=books&sr=1-7";
         
         try {
             
@@ -44,10 +44,11 @@ public class BookPageTester {
             BookPage bookPage = new BookPage(driver).go(url);
             if( bookPage != null )
             {
+                Book book = robot.getBookData(bookPage,driver);
                 //bookPage.waitForPopups();
                 System.out.println("price (USD):"+bookPage.getPrice()); 
-                System.out.println("price (ARS):"+robot.getPublicationPrice(robot.getBookData(bookPage,driver)));
-                
+                System.out.println("price (ARS):"+robot.getPublicationPrice(book));
+                System.out.println("is amazon price not set?"+robot.amazonPriceIsNotSet(book));
                 System.out.println("seller list url:"+bookPage.getSellerListUrl()); 
                 System.out.println("author:"+bookPage.getAuthor());
                 System.out.println("availability:"+bookPage.getAvailability());

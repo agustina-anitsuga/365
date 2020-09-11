@@ -233,10 +233,10 @@ public abstract class BookRobot implements Robot {
      * @param book
      * @return
      */
-    private boolean amazonPriceIsNotSet(Book book) {
+    public boolean amazonPriceIsNotSet(Book book) {
         return StringUtils.isEmpty(book.getPrice()) 
                     || StringUtils.isEmpty(book.getSeller()) 
-                    || ! ( "Amazon.com.".equals(book.getSeller())
+                    || ! ( "Amazon.com".equals(book.getSeller())
                             || "Vendido y enviado por Amazon.com.".equals(book.getSeller()));
     }
 

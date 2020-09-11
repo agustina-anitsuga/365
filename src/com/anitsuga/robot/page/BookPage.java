@@ -84,7 +84,6 @@ public class BookPage extends Page {
     private WebElement photoTarget1;
     @FindBy(xpath = "//*[@id=\"sitbReaderPage-1\"]/img")
     private WebElement photoTarget2;
-
     @FindBy(xpath = "//*[@id=\"merchant-info\"]")
     private WebElement seller1;
     @FindBy(xpath = "//*[@id=\"buyNewInner\"]/div[@class=\"a-section a-spacing-small\"]/span")
@@ -93,7 +92,9 @@ public class BookPage extends Page {
     private WebElement seller3;
     @FindBy(xpath = "//*[@id=\"buyboxTabularTruncate-1\"]/span[2]/span")
     private WebElement seller4;
-    private WebElement[] seller = { seller1, seller2, seller3, seller4 };
+    @FindBy(xpath = "//*[@id=\"buyboxTabularTruncate-1\"]/span[2]")
+    private WebElement seller5;
+    private WebElement[] seller = { seller1, seller2, seller3, seller4, seller5 };
     
     private Map<String,String> detailMap = null ;
     
