@@ -126,6 +126,7 @@ public class PriceUpdater extends Processor {
      */
     private boolean pricesMatch(Publication publication, PublicationEditPage publicationPage) {
         String originalPrice = publicationPage.getPriceValue();
+        originalPrice = originalPrice.replaceAll("\\.","");
         String priceToUpdate = "$" + publication.getPriceAsString();
         return priceToUpdate.equals(originalPrice);
     }
