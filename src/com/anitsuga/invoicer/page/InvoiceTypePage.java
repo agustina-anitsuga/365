@@ -47,8 +47,8 @@ public class InvoiceTypePage extends Page {
      */
     public void selecteDefaultInvoiceType(){
         Select invoiceTypeSelect = new Select(invoiceType);
-        //invoiceTypeSelect.selectByVisibleText("Factura C");
-        invoiceTypeSelect.selectByValue("2");
+        invoiceTypeSelect.selectByVisibleText("Factura B");
+        //invoiceTypeSelect.selectByValue("2");
     }
     
     /**

@@ -22,6 +22,15 @@ public class SalePage extends Page {
     @FindBy( xpath = "//*[@id=\"root-app\"]/div/div[2]/div[1]/div[1]/div[2]/ul/li/div[2]/div" )
     private WebElement price;
     
+    @FindBy( xpath = "//*[@id=\"root-app\"]/div/div[1]/div/div[6]/div[1]/button/span" )
+    private WebElement addNoteButton;
+    
+    @FindBy( xpath = "//*[@id=\"root-app\"]/div/div[1]/div/div[6]/div[2]/label/div[1]/input" )
+    private WebElement noteTextField;
+    
+    @FindBy( xpath = "//*[@id=\"root-app\"]/div/div[1]/div/div[6]/div[2]/button/span" )
+    private WebElement saveNoteButton;
+    
     
     /**
      * PublicationPage
@@ -81,6 +90,12 @@ public class SalePage extends Page {
         int beginIndex = invoiceDataStr.indexOf('\n') +1;
         String address = invoiceDataStr.substring(beginIndex);
         return address;
+    }
+    
+    public void addNote( String note ){
+        addNoteButton.click();
+        noteTextField.sendKeys(note);
+        saveNoteButton.click();
     }
     
 }

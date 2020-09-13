@@ -4,6 +4,7 @@ import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.ui.Select;
 
 import com.anitsuga.fwk.page.Page;
 
@@ -20,7 +21,7 @@ public class InvoiceDetailPage extends Page {
     @FindBy( xpath = "//*[@id=\"detalle_precio1\"]" )
     private WebElement price;
     
-    @FindBy( xpath = "" )
+    @FindBy( xpath = "//*[@id=\"detalle_tipo_iva1\"]" )
     private WebElement iva;
     
     @FindBy( xpath = "//*[@id=\"contenido\"]/form/input[8]" )
@@ -57,7 +58,12 @@ public class InvoiceDetailPage extends Page {
      * @param ivaSelection
      */
     public void setIva(String ivaSelection) {
-        
+        Select ivaSelect = new Select(iva);
+        if( "Exento".equals(ivaSelection) ) {
+            ivaSelect.selectByVisibleText(" Exento");
+        } else {
+            ivaSelect.selectByValue("5");
+        }
     }
 
     /**
