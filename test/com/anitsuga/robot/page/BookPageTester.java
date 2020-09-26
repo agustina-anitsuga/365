@@ -13,7 +13,7 @@ import com.anitsuga.robot.types.BookRobot;
 import com.anitsuga.robot.types.BookScraperRobot;
 
 /**
- * PageTester
+ * BookPageTester
  * @author agustina.dagnino
  *
  */

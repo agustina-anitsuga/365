@@ -16,35 +16,41 @@ import com.anitsuga.fwk.page.Page;
 import com.anitsuga.fwk.utils.SeleniumUtils;
 
 /**
- * BookCategoryPage
+ * CategoryPage
  * @author agustina.dagnino
  *
  */
-public class BookCategoryPage extends Page {
+public class CategoryPage extends Page {
 
 
     /**
      * logger
      */
-    private static final Logger LOGGER = LoggerFactory.getLogger(BookCategoryPage.class.getName());
+    private static final Logger LOGGER = LoggerFactory.getLogger(CategoryPage.class.getName());
     
     
-    /* [@class=\"a-link-normal\"] */
     @FindBy(xpath = "//*[@class=\"zg-item-immersion\"]/span/div/span/a")
-    private List<WebElement> bookLinks;
+    private List<WebElement> categoryLinks1;
     
-
     @FindBy(xpath = "//*[@class=\"a-fixed-left-grid-col a-col-left\"]/div[@class=\"a-row\"]/div/a" )
-    private List<WebElement> bookLinks2;
+    private List<WebElement> categoryLinks2;
     
     @FindBy(xpath = "//*[@class=\"sg-col-inner\"]/div/span/a")
-    private List<WebElement> bookLinks3;
+    private List<WebElement> categoryLinks3;
     
     @FindBy(xpath = "//*[@class=\"kc-horizontal-rank-card desktop-hide mobile-hide row\"]/div[1]/div[2]/div/a[1]")
-    private List<WebElement> bookLinks4;
+    private List<WebElement> categoryLinks4;
     
     @FindBy(xpath = "//*[@class=\"kc-horizontal-rank-card mobile-hide row\"]/div[1]/div[2]/div/a[1]")
-    private List<WebElement> bookLinks5;
+    private List<WebElement> categoryLinks5;
+ 
+    private Object[] allLinkTypes = {
+            categoryLinks1,
+            categoryLinks2,
+            categoryLinks3,
+            categoryLinks4,
+            categoryLinks5
+    };
     
     @FindBy(xpath = "//*[@class=\"a-pagination\"]/li[@class=\"a-last\"]/a")
     private WebElement next;
@@ -56,7 +62,7 @@ public class BookCategoryPage extends Page {
      * BookCategoryPage
      * @param driver
      */
-    public BookCategoryPage(WebDriver driver) {
+    public CategoryPage(WebDriver driver) {
         super(driver);
     }
 
@@ -65,12 +71,12 @@ public class BookCategoryPage extends Page {
      * @param url
      * @return
      */
-    public BookCategoryPage go(String url) {
+    public CategoryPage go(String url) {
         // go to url
         driver.get(url);
 
         // return page
-        return new BookCategoryPage(this.driver);
+        return new CategoryPage(this.driver);
     }
 
     /**
@@ -102,39 +108,16 @@ public class BookCategoryPage extends Page {
     public List<String> getLinks() {
         List<String> ret = new ArrayList<String>();
         
-        if( bookLinks.size() > 0 ){
-            for (WebElement bookLink : bookLinks) {
-                String url = bookLink.getAttribute("href");
-                ret.add(url);
-            }
-        } else {
-            if( bookLinks2.size() > 0 ){
-                for (WebElement bookLink : bookLinks2) {
-                    String url = bookLink.getAttribute("href");
-                    ret.add(url);
-                }
-            } else {
-                if( bookLinks3.size() > 0 ){
-                    for (WebElement bookLink : bookLinks3) {
-                        String url = bookLink.getAttribute("href");
-                        ret.add(url);
-                    }
-                } else {
-                    if( bookLinks4.size() > 0 ){
-                        for (WebElement bookLink : bookLinks4) {
-                            String url = bookLink.getAttribute("href");
-                            ret.add(url);
-                        }
-                    }
-                    if( bookLinks5.size() > 0 ){
-                        for (WebElement bookLink : bookLinks5) {
-                            String url = bookLink.getAttribute("href");
-                            ret.add(url);
-                        }
-                    }
-                }
-            }
+        for (int i = 0; i < allLinkTypes.length; i++) {
+             List<WebElement> links = (List<WebElement>) allLinkTypes[i];
+             if( links.size() > 0 ){
+                 for (WebElement bookLink : links) {
+                     String url = bookLink.getAttribute("href");
+                     ret.add(url);
+                 }
+             } 
         }
+        
         return ret;
     }
 

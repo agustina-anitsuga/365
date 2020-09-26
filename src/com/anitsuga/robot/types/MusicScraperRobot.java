@@ -18,26 +18,26 @@ import com.anitsuga.robot.model.Publication;
 import com.anitsuga.robot.page.CategoryPage;
 
 /**
- * BookScraperRobot
+ * MusicScraperRobot
  * @author agustina.dagnino
  *
  */
-public class BookScraperRobot extends BookRobot {
+public class MusicScraperRobot extends MusicRobot {
 
     /**
      * logger
      */
-    private static final Logger LOGGER = LoggerFactory.getLogger(BookScraperRobot.class.getName());
+    private static final Logger LOGGER = LoggerFactory.getLogger(MusicScraperRobot.class.getName());
     
     /**
      * maximum pages to read at a time
      */
-    private static final int MAX_PAGES = 40;
+    private static final int MAX_PAGES = 2;
 
     /**
      * property that points to the file containing the existing publications
      */
-    private static final String PUBLISHED_BOOKS_FILE = "published.books.file";
+    private static final String PUBLISHED_MUSIC_FILE = "published.music.file";
     
     /**
      * existingPublications
@@ -54,7 +54,7 @@ public class BookScraperRobot extends BookRobot {
 
         // Get required properties
         AppProperties config = AppProperties.getInstance();
-        String url = config.getProperty("book.url");
+        String url = config.getProperty("music.url");
         
         // Load already published urls if they exist
         loadExistingPublications();
@@ -70,7 +70,7 @@ public class BookScraperRobot extends BookRobot {
      */
     private void loadExistingPublications() {
         AppProperties config = AppProperties.getInstance();
-        String bookListFile = config.getProperty(PUBLISHED_BOOKS_FILE);
+        String bookListFile = config.getProperty(PUBLISHED_MUSIC_FILE);
         BufferedReader br = null;
         try {
             File file = new File(bookListFile);
@@ -126,7 +126,7 @@ public class BookScraperRobot extends BookRobot {
             int total = links.size();
             int count=0;
             for (String link : links) {
-                LOGGER.info("Reading book ["+(++count)+"/"+total+"] from url "+link);
+                LOGGER.info("Reading music ["+(++count)+"/"+total+"] from url "+link);
                 List<Publication> publications = getPublications(link, driver);
                 ret.addAll(publications);
             }
@@ -176,7 +176,7 @@ public class BookScraperRobot extends BookRobot {
         boolean ret = super.validConfig();
         
         AppProperties config = AppProperties.getInstance();        
-        ret &= validatePropertyIsNotEmpty(config,"book.url");
+        ret &= validatePropertyIsNotEmpty(config,"music.url");
 
         return ret;
     }

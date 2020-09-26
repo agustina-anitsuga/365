@@ -14,23 +14,23 @@ import com.anitsuga.fwk.utils.AppProperties;
 import com.anitsuga.fwk.utils.SeleniumUtils;
 import com.anitsuga.fwk.utils.StringUtils;
 import com.anitsuga.robot.Robot;
-import com.anitsuga.robot.model.Book;
+import com.anitsuga.robot.model.Music;
 import com.anitsuga.robot.model.Publication;
 import com.anitsuga.robot.model.SellerQuote;
-import com.anitsuga.robot.page.BookPage;
+import com.anitsuga.robot.page.MusicPage;
 import com.anitsuga.robot.page.SellerListPage;
 
 /**
- * BookRobot
+ * MusicRobot
  * @author agustina.dagnino
  *
  */
-public abstract class BookRobot implements Robot {
+public abstract class MusicRobot implements Robot {
 
     /**
      * logger
      */
-    private static final Logger LOGGER = LoggerFactory.getLogger(BookScraperRobot.class.getName());
+    private static final Logger LOGGER = LoggerFactory.getLogger(MusicRobot.class.getName());
 
     private static final String TAXES_MULTIPLIER = "taxes.multiplier";
     private static final String BUSINESS_MARGIN = "business.margin";
@@ -53,12 +53,12 @@ public abstract class BookRobot implements Robot {
         try {
             
             // open browser to requested url
-            BookPage bookPage = new BookPage(driver).go(url);
-            bookPage.waitForPopups();
+            MusicPage musicPage = new MusicPage(driver).go(url);
+            musicPage.waitForPopups();
             
-            if( bookPage != null )
+            if( musicPage != null )
             {
-                List<String> urls = bookPage.getEditionsUrls();
+                List<String> urls = musicPage.getEditionsUrls();
                 
                 // change javascript call into current url
                 List<String> validatedUrls = new ArrayList<String>();
@@ -82,7 +82,7 @@ public abstract class BookRobot implements Robot {
                 // get publication for each url
                 for (String anUrl : urls) {
                     if(!shouldIgnoreUrl(anUrl)){
-                        Publication ret = this.getPublication(anUrl, driver, bookPage, !url.equals(anUrl));
+                        Publication ret = this.getPublication(anUrl, driver, musicPage, !url.equals(anUrl));
                         list.add(ret);
                     }
                 }
@@ -131,7 +131,7 @@ public abstract class BookRobot implements Robot {
      * @param driver
      * @return
      */
-    protected Publication getPublication( String url, WebDriver driver, BookPage aBookPage , boolean shouldReload ){
+    protected Publication getPublication( String url, WebDriver driver, MusicPage aMusicPage , boolean shouldReload ){
         
         Publication ret = new Publication();
         ret.setUrl(url);
@@ -139,23 +139,23 @@ public abstract class BookRobot implements Robot {
         try {
             
             // open browser to requested url
-            BookPage bookPage = aBookPage;
+            MusicPage musicPage = aMusicPage;
             if( shouldReload ){
-                bookPage = new BookPage(driver).go(url);
-                bookPage.waitForPopups();
+                musicPage = new MusicPage(driver).go(url);
+                musicPage.waitForPopups();
             }
             
-            if( bookPage != null )
+            if( musicPage != null )
             {
                 // read data form current page
-                Book book = getBookData(bookPage, driver);
+                Music music = getMusicData(musicPage, driver);
                 
                 // set the publication data
-                ret.setProduct(book);
-                ret.setTitle(getPublicationTitle(book));
-                ret.setPrice(getPublicationPrice(book));
-                ret.setDescription(getPublicationDescription(book));
-                ret.setImages(book.getImages());
+                ret.setProduct(music);
+                ret.setTitle(getPublicationTitle(music));
+                ret.setPrice(getPublicationPrice(music));
+                ret.setDescription(getPublicationDescription(music));
+                ret.setImages(music.getImages());
             }    
             
         } catch (Exception e) {
@@ -172,19 +172,19 @@ public abstract class BookRobot implements Robot {
     }
 
     /**
-     * getBookData
-     * @param bookPage
+     * getMusicData
+     * @param musicPage
      * @return
      */
-    public Book getBookData(BookPage bookPage, WebDriver driver) {
+    public Music getMusicData(MusicPage musicPage, WebDriver driver) {
         
-        Book book = getBookDetails(bookPage);
-        bookPage.openPhotoViewer();
-        book.setImages(getImages(bookPage.getImages()));
+        Music music = getMusicDetails(musicPage);
+        musicPage.openPhotoViewer();
+        music.setImages(getImages(musicPage.getImages()));
         
         // if we still did not get an amazon price, look it up
-        if( amazonPriceIsNotSet(book) ){
-            String sellerListUrl = bookPage.getSellerListUrl();
+        if( amazonPriceIsNotSet(music) ){
+            String sellerListUrl = musicPage.getSellerListUrl();
             if( StringUtils.isEmpty(sellerListUrl) ){
                 LOGGER.info("Seller list not available");
             } else {
@@ -199,8 +199,8 @@ public abstract class BookRobot implements Robot {
                     List<SellerQuote> sellerQuotes = sellerListPage.getSellerQuotes();
                     SellerQuote amazon = findAmazonQuote(sellerQuotes);
                     if( amazon!=null ){
-                        book.setPrice(amazon.getPrice());
-                        book.setSeller(amazon.getSeller());
+                        music.setPrice(amazon.getPrice());
+                        music.setSeller(amazon.getSeller());
                         sellerListUrl = null;
                     } else {
                         sellerListUrl = sellerListPage.nextPageUrl();
@@ -209,7 +209,7 @@ public abstract class BookRobot implements Robot {
             }
         }
         
-        return book;
+        return music;
     }
 
     /**
@@ -230,14 +230,14 @@ public abstract class BookRobot implements Robot {
 
     /**
      * amazonPriceIsSet
-     * @param book
+     * @param music
      * @return
      */
-    public boolean amazonPriceIsNotSet(Book book) {
-        return StringUtils.isEmpty(book.getPrice()) 
-                    || StringUtils.isEmpty(book.getSeller()) 
-                    || ! ( "Amazon.com".equals(book.getSeller())
-                            || "Vendido y enviado por Amazon.com.".equals(book.getSeller()));
+    public boolean amazonPriceIsNotSet(Music music) {
+        return StringUtils.isEmpty(music.getPrice()) 
+                    || StringUtils.isEmpty(music.getSeller()) 
+                    || ! ( "Amazon.com".equals(music.getSeller())
+                            || "Vendido y enviado por Amazon.com.".equals(music.getSeller()));
     }
 
     /**
@@ -262,132 +262,47 @@ public abstract class BookRobot implements Robot {
     }
 
     /**
-     * getBook
+     * getMusicDetails
      * @return
      */
-    protected Book getBookDetails(BookPage bookPage){
-        Book ret = new Book();
-        ret.setCover(bookPage.getCover());
-        ret.setCoverFullData(bookPage.getCoverFullData());
-        ret.setEditorial(bookPage.getEditorial());
-        ret.setFormat(bookPage.getFormat());
-        ret.setGenericIdentifier(bookPage.getISBN());
-        ret.setPrice(bookPage.getPrice());
-        ret.setTitle(bookPage.getTitle());
-        ret.setAuthor(bookPage.getAuthor());
-        ret.setWeight(bookPage.getWeight());
-        ret.setAvailability(bookPage.getAvailability());
-        ret.setLanguage(bookPage.getLanguage());
-        ret.setGenre(bookPage.getType());
-        ret.setDimensions(bookPage.getDimensions());
-        ret.setSeller(bookPage.getSeller());
+    protected Music getMusicDetails(MusicPage musicPage){
+        Music ret = new Music();
+        ret.setFormat(musicPage.getFormat());
+        ret.setAlbumFormat(musicPage.getAlbumFormat());
+        ret.setHasAdditionalTracks(musicPage.hasAdditionalTracks());
+        ret.setReleaseYear(musicPage.getReleaseYear());
+        ret.setNumberOfDisks(musicPage.getNumberOfDisks());
+        ret.setNumberOfSongs(musicPage.getNumberOfSongs());        
+        ret.setPrice(musicPage.getPrice());
+        ret.setWeight(musicPage.getWeight());
+        ret.setAvailability(musicPage.getAvailability());
+        ret.setGenre(musicPage.getGenre());
+        ret.setOrigin(musicPage.getOrigin());
+        ret.setDimensions(musicPage.getDimensions());
+        ret.setSeller(musicPage.getSeller());
         return ret;
     }
 
     
     /**
      * getPublicationTitle
-     * @param book
+     * @param music
      * @return
      */
-    protected String getPublicationTitle(Book book) {
-        String title = "Libro "+book.getTitle();
-        // remove "Spanish Edition"
-        title = title.replaceAll(" \\(Spanish Edition\\)", "");
-        title = title.replaceAll(" Spanish Edition", "");
-        title = title.replaceAll(" Spanish Version", "");
-        title = title.replaceAll(" Spanish Ed.", "");
-        title = title.replaceAll(" Spanish Ed", "");
-        title = title.replaceAll(" / Spanish", "");
-        title = title.trim();
-        // remove unexpected ending characters
-        if( title.endsWith(":") ){
-            title = title.substring(0,title.length()-1);
-        }
-        // add author if there is room
-        if( (title.length()+3+book.getAuthor().length()) <= 60 ){
-            title = title + " / " + book.getAuthor();
-        }
-        // cut the title to 60 chars
-        if(title.length()>60){
-            title = title.substring(0, 60);
-            int lastSeparatorCharacterIndex = getLastSeparatorCharacterIndex(title);
-            title = title.substring(0,lastSeparatorCharacterIndex);
-            if( title.length() > 56){
-                lastSeparatorCharacterIndex = getLastSeparatorCharacterIndex(title);
-                title = title.substring(0,lastSeparatorCharacterIndex);
-            }
-            title = title.concat(" ...");
-        }
-        // check for unexpected endings after cutting to 60 chars
-        if( title.endsWith(":") ){
-            title = title.substring(0,title.length()-1);
-        }
-        String[] endings = new String[]{"(The ...", "(A ..."};
-        for (String ending : endings) {     
-            if( title.endsWith(ending) ){
-                int upto = title.indexOf(ending);
-                if(upto>0){
-                    title = title.substring(0,upto);
-                    title = title.concat("...");
-                }
-            }
-        }
-        // check for uneven parenthesis
-        int openingParenthesis = getNumberOfOccurrences(title,"(");
-        if( openingParenthesis==1 ){
-            int closingParenthesis = getNumberOfOccurrences(title,")");
-            if( closingParenthesis==0 ){
-                title = title.replaceAll("\\(", "/");
-            }
-        }
+    protected String getPublicationTitle(Music music) {
+        String title = music.getAlbumFormat() + " - " + music.getArtist() + " - " +music.getAlbum();
         return title;
     }
-
-    /**
-     * getNumberOfOccurrences
-     * @param title
-     * @param string
-     * @return
-     */
-    private int getNumberOfOccurrences(String title, String pattern) {
-        int count = 0;
-        int index=0;
-        while(index>=0){
-            index = title.indexOf(pattern,index+1);
-            if(index>0){
-                count++;
-            }
-        }
-        return count;
-    }
-
-    /**
-     * getLastSeparatorCharacterIndex
-     * @param title
-     * @return
-     */
-    private int getLastSeparatorCharacterIndex(String title) {
-        int lastSeparatorIndex = title.length();
-        int fromIndex = 0;
-        while(fromIndex>=0){
-            fromIndex = title.indexOf(" ", fromIndex+1);
-            if(fromIndex>=0){
-                lastSeparatorIndex = fromIndex;
-            }
-        }
-        return lastSeparatorIndex;
-    }
-
+    
     /**
      * getPublicationPrice
-     * @param book
+     * @param music
      * @return
      */
-    public String getPublicationPrice(Book book) {
+    public String getPublicationPrice(Music music) {
         try {
-            Number dolarPriceAmount = book.getDolarPriceAmount();
-            Number weightInKilos = book.getWeightInKilos();
+            Number dolarPriceAmount = music.getDolarPriceAmount();
+            Number weightInKilos = music.getWeightInKilos();
             if( ( dolarPriceAmount == null ) || ( weightInKilos == null ) ){
                 return "";
             }
@@ -474,17 +389,17 @@ public abstract class BookRobot implements Robot {
 
     /**
      * getPublicationDescription
-     * @param book
+     * @param music
      * @return
      */
-    private String getPublicationDescription(Book book) {
+    private String getPublicationDescription(Music music) {
         return "365CINE."+ lineBreak()+
                "CARACTERISTICAS: NUEVO / ORIGINAL / IMPORTADO"+ lineBreak()+
-               getCharacteristicDescription("IDIOMA",book.getLanguage())+
-               getCharacteristicDescription("DIMENSIONES",book.getDimensions())+
-               getCharacteristicDescription("EDITOR",book.getEditorial())+
-               getCharacteristicDescription("FORMATO",book.getCoverFullData())+
-               "IMPORTAMOS ESTE PRODUCTO CON UNA DEMORA APROXIMADA DE 20 A 25 DIAS."+  lineBreak()+
+               getCharacteristicDescription("DIMENSIONES",music.getDimensions())+
+               getCharacteristicDescription("SELLO",music.getLabel())+
+               getCharacteristicDescription("CANTIDAD DE DISCOS",music.getNumberOfDisks())+
+               getCharacteristicDescription("FORMATO",music.getFormat())+
+               "IMPORTAMOS ESTE PRODUCTO CON UNA DEMORA APROXIMADA DE 25 A 30 DIAS."+  lineBreak()+
                "SE RETIRA POR CAPITAL FEDERAL."+ lineBreak()+ 
                "ENVIOS A DOMICILIO A TODO EL PAIS."+ lineBreak()+ 
                "MEDIOS DE PAGO ACEPTADOS: MERCADO PAGO (INCLUYE TARJETAS DE CREDITO Y DEBITO) // RAPIPAGO // PAGO FACIL."+lineBreak()+  

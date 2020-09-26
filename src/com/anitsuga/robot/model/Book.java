@@ -1,9 +1,5 @@
 package com.anitsuga.robot.model;
 
-import java.util.List;
-
-import com.anitsuga.fwk.utils.StringUtils;
-
 /**
  * Book
  * @author agustina.dagnino
@@ -11,28 +7,15 @@ import com.anitsuga.fwk.utils.StringUtils;
  */
 public class Book extends Product {
 
-    private String isbn;
     private String title;
     private String author;
     private String editorial;
     private String format;
     private String cover;
     private String coverFullData;
-    private String price;
-    private String weight;
-    private String availability;
+    private String genre;
     private String language;
-    private String type;
-    private String dimensions;
-    private List<String> images ;
-    private String seller;
     
-    public String getIsbn() {
-        return isbn;
-    }
-    public void setIsbn(String isbn) {
-        this.isbn = isbn;
-    }
     public String getTitle() {
         return title;
     }
@@ -69,23 +52,11 @@ public class Book extends Product {
     public void setCoverFullData(String coverFullData) {
         this.coverFullData = coverFullData;
     }
-    public String getPrice() {
-        return price;
+    public String getGenre() {
+        return genre;
     }
-    public void setPrice(String price) {
-        this.price = price;
-    }
-    public String getWeight() {
-        return weight;
-    }
-    public void setWeight(String weight) {
-        this.weight = weight;
-    }
-    public String getAvailability() {
-        return availability;
-    }
-    public void setAvailability(String availability) {
-        this.availability = availability;
+    public void setGenre(String genre) {
+        this.genre = genre;
     }
     public String getLanguage() {
         return language;
@@ -93,57 +64,5 @@ public class Book extends Product {
     public void setLanguage(String language) {
         this.language = language;
     }
-    public String getType() {
-        return type;
-    }
-    public void setType(String type) {
-        this.type = type;
-    }
-    public String getDimensions() {
-        return dimensions;
-    }
-    public void setDimensions(String dimensions) {
-        this.dimensions = dimensions;
-    }
-    public List<String> getImages() {
-        return images;
-    }
-    public void setImages(List<String> images) {
-        this.images = images;
-    }
-    public String getSeller() {
-        return seller;
-    }
-    public void setSeller(String seller) {
-        this.seller = seller;
-    }
     
-    public Number getWeightInKilos() {
-        Double ret = null;
-        String weightStr = this.getWeight();
-        if( weightStr.contains("pounds") || weightStr.contains("libras") ){
-            weightStr = weightStr.replaceAll("pounds", "");
-            weightStr = weightStr.replaceAll("libras", "");
-            double poundToKilo = 0.454;
-            Number weight = StringUtils.parse(weightStr.trim());
-            ret = Double.valueOf(poundToKilo * weight.doubleValue());
-        } else if ( weightStr.contains("ounces") || weightStr.contains("onzas") ){
-            weightStr = weightStr.replaceAll("ounces", "");
-            weightStr = weightStr.replaceAll("onzas", "");
-            double ounceToKilo = 0.028;
-            Number weight = StringUtils.parse(weightStr.trim());
-            ret = Double.valueOf(ounceToKilo * weight.doubleValue());
-        } 
-        return ret;
-    }
-    
-    public Number getDolarPriceAmount() {
-        String dolarStr = this.getPrice();
-        dolarStr = dolarStr.replaceAll(java.util.regex.Matcher.quoteReplacement("US$"), "");
-        dolarStr = dolarStr.replaceAll(java.util.regex.Matcher.quoteReplacement("$"), "");
-        dolarStr = dolarStr.replaceAll("USD", "");
-        Number n =  StringUtils.parse(dolarStr.trim());
-        return n;
-    }
-   
 }

@@ -89,7 +89,7 @@ public class BookPublicationCSVWriter implements PublicationCSVWriter {
                         writeField(publication.getTitle())+ // titulo
                         writeField(toCommaSeparatedArray(publication.getImages())) + // imagenes
                         DELIMITER+ // sku
-                        writeField(book.getIsbn())+ // isbn
+                        writeField(book.getGenericIdentifier())+ // isbn
                         writeField("1") + // Cantidad
                         writeField(publication.getPrice())+ // precio
                         writeField(publication.getDescription()) + // Descripcion
@@ -102,7 +102,7 @@ public class BookPublicationCSVWriter implements PublicationCSVWriter {
                         writeField("Mercado Envios") + // Forma de envio
                         writeField("A cargo del comprador") + // Costo de envio
                         writeField("Acepto") + // Retiro en persona
-                        writeField(book.getType()) + // Tipo de narracion
+                        writeField(book.getGenre()) + // Tipo de narracion
                         writeField(book.getTitle()) + // titulo libro
                         writeField(book.getAuthor()) + // autor libro
                         writeField(book.getLanguage()) + // idioma
