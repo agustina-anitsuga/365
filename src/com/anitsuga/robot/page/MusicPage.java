@@ -69,7 +69,7 @@ public class MusicPage extends Page {
     private WebElement photoTarget1;
     @FindBy(xpath = "//*[@id=\"landingImage\"]")
     private WebElement photoTarget2;
-    
+
     @FindBy(xpath = "//*[@id=\"merchant-info\"]")
     private WebElement seller1;
     @FindBy(xpath = "//*[@id=\"buyNewInner\"]/div[@class=\"a-section a-spacing-small\"]/span")
@@ -80,7 +80,9 @@ public class MusicPage extends Page {
     private WebElement seller4;
     @FindBy(xpath = "//*[@id=\"buyboxTabularTruncate-1\"]/span[2]")
     private WebElement seller5;
-    private WebElement[] seller = { seller1, seller2, seller3, seller4, seller5 };
+    @FindBy(xpath = "//*[@id=\"sfsb_accordion_head\"]/div[2]/div/span[2]" )
+    private WebElement seller6;
+    private WebElement[] seller = { seller1, seller2, seller3, seller4, seller5, seller6 };
     
     private Map<String,String> detailMap = null ;
     
@@ -104,11 +106,19 @@ public class MusicPage extends Page {
             ".//span[@class=\"olp-new olp-link\"]/a",
             ".//span[@class=\"olp-new olp-link\"]/span/a",
             };
-    
+
     @FindBy(xpath = "//*[@id=\"bylineInfo\"]/span[3]" )
-    private WebElement albumFormat;
-   
-    
+    private WebElement albumFormat1;
+    @FindBy(xpath = "//*[@id=\"bylineInfo\"]/span[4]" )
+    private WebElement albumFormat2;
+    @FindBy(xpath = "//*[@id=\"bylineInfo\"]/span[5]" )
+    private WebElement albumFormat3;
+    @FindBy(xpath = "//*[@id=\"bylineInfo\"]/span[6]" )
+    private WebElement albumFormat4;
+
+    private WebElement[] albumFormat = { albumFormat1, albumFormat2, albumFormat3, albumFormat4 };
+
+
    /**
     * MusicPage
     * @param driver
@@ -270,6 +280,8 @@ public class MusicPage extends Page {
      */
     public String getAlbum() {
         String ret = title.getText();
+        ret = ret.replace("[Vinyl]", "");
+        ret = ret.replace("(Vinyl)", "");
         return ret;
     }
 
@@ -454,11 +466,17 @@ public class MusicPage extends Page {
      */
     public String getAlbumFormat() {
         String ret = "";
-        try {
-            String format = albumFormat.getText();
-            ret = translateFormat(format);
-        } catch (Exception e) {
-            LOGGER.error("Error reading album format");
+        for (int i = 0; i < albumFormat.length; i++) {
+            try {
+                String format = albumFormat[i].getText();
+                ret = translateFormat(format);
+                if( !StringUtils.isEmpty(ret) ){
+                    break;
+                }
+            } catch (Exception e) {
+                LOGGER.error("Error reading album format");
+            }
+
         }
         return ret;
     }
@@ -506,7 +524,7 @@ public class MusicPage extends Page {
                 break;
             }
         }
-        return (ret==null)? "" : ret.trim();
+        return (ret==null)? "1900" : ret.trim();
     }
 
     /**

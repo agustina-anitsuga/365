@@ -221,9 +221,13 @@ public class Invoicer {
      * @return
      */
     private InvoiceData getInvoiceDataFrom(SalePage salePage) {
-        Product product = new Product(salePage.getProductTitle(),salePage.getProductPrice());
-        Customer customer = new Customer(salePage.getCustomerDocType(),salePage.getCustomerDocNumber(),salePage.getCustomerAddress());
-        return new InvoiceData(customer,product);
+        InvoiceData ret = null;
+        if( !salePage.includesInvoicedComment() ){
+            Product product = new Product(salePage.getProductTitle(),salePage.getProductPrice());
+            Customer customer = new Customer(salePage.getCustomerDocType(),salePage.getCustomerDocNumber(),salePage.getCustomerAddress());
+            ret = new InvoiceData(customer,product);
+        }
+        return ret;
     }
     
     /**
@@ -246,8 +250,12 @@ public class Invoicer {
             lastTab = tabName;
         }
         driver.switchTo().window(lastTab);
-        WebElement company = driver.findElement( By.xpath("//*[@id=\"contenido\"]/form/table/tbody/tr[4]/td/input[2]"));
+        try {
+            WebElement company = driver.findElement( By.xpath("//*[@id=\"contenido\"]/form/table/tbody/tr[4]/td/input[2]"));
         company.click();
+        } catch( Exception e) {
+            e.printStackTrace();
+        }
     }
 
     /**

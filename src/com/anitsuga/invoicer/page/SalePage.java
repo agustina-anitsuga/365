@@ -1,5 +1,7 @@
 package com.anitsuga.invoicer.page;
 
+import java.util.List;
+
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -30,6 +32,9 @@ public class SalePage extends Page {
     
     @FindBy( xpath = "//*[@id=\"root-app\"]/div/div[1]/div/div[6]/div[2]/button/span" )
     private WebElement saveNoteButton;
+    
+    @FindBy( xpath = "//*[@class=\"sc-notes\"]/div[@class=\"sc-notes__content\"]/p[@class=\"sc-notes__content-text\"]" )
+    private List<WebElement> existingNotes;
     
     
     /**
@@ -96,6 +101,14 @@ public class SalePage extends Page {
         addNoteButton.click();
         noteTextField.sendKeys(note);
         saveNoteButton.click();
+    }
+
+    public boolean includesInvoicedComment() {
+        boolean ret = false;
+        for (WebElement note : existingNotes) {
+            ret |= note.getText().contains("F");
+        }
+        return ret;
     }
     
 }

@@ -5,6 +5,7 @@ package com.anitsuga.robot.model;
  * @author agustina
  *
  * https://www.upcitemdb.com/upc/696568418397
+ * https://www.synccentric.com/features/upc-asin/
  */
 public class Music extends Product {
  

@@ -100,7 +100,7 @@ public abstract class PublicationExcelWriter implements PublicationCSVWriter {
                         writeField(row,publication.getUrl(),columnCount++);
                         writeField(row,product.getPrice(),columnCount++); // precio en usd
                         writeField(row,product.getWeight(),columnCount++); // peso
-                        writeField(row,product.getWeightInKilos().toString(),columnCount++); // peso
+                        writeField(row,(product.getWeightInKilos() == null )?"":product.getWeightInKilos().toString(),columnCount++); // peso
                         writeField(row,product.getAvailability(),columnCount++); // disponibilidad
                         writeField(row,product.getSeller(),columnCount++); // seller   
                         writeField(row,publication.getTitle(),columnCount++); // titulo

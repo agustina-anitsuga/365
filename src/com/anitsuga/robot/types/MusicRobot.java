@@ -293,7 +293,7 @@ public abstract class MusicRobot implements Robot {
      * @return
      */
     protected String getPublicationTitle(Music music) {
-        String title = music.getAlbumFormat() + " - " + music.getArtist() + " - " +music.getAlbum();
+        String title = music.getAlbumFormat() + " " + music.getArtist() + " " +music.getAlbum();
         return title;
     }
     
