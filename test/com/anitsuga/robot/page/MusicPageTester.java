@@ -32,7 +32,7 @@ public class MusicPageTester {
         
         WebDriver driver = null ;
         
-        String url = "https://www.amazon.com/-/es/Pink-Floyd/dp/B01IOED4BK/ref=tmm_vnl_swatch_0?_encoding=UTF8&qid=1601073780&sr=1-1";
+        String url = "https://www.amazon.com/-/es/Pink-Floyd/dp/B019VQSAXM/ref=sr_1_1?__mk_es_US=%C3%85M%C3%85%C5%BD%C3%95%C3%91&dchild=1&keywords=pink+floyd&qid=1601083943&s=music&sr=1-1";
         
         try {
             
@@ -44,8 +44,9 @@ public class MusicPageTester {
             MusicPage musicPage = new MusicPage(driver).go(url);
             if( musicPage != null )
             {
+                musicPage.waitForPopups();
+                
                 Music music = robot.getMusicData(musicPage,driver);
-                //bookPage.waitForPopups();
                 System.out.println("price (USD):"+musicPage.getPrice()); 
                 System.out.println("price (ARS):"+robot.getPublicationPrice(music));
                 System.out.println("is amazon price not set?"+robot.amazonPriceIsNotSet(music));
