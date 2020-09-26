@@ -9,6 +9,7 @@ import java.util.List;
  */
 public class Publication {
 
+
     private String url ;
     private String title ;
     private String price ;
@@ -18,6 +19,7 @@ public class Publication {
     private String description ;
     private String condition ;
     private Product product ;
+    
     
     public List<String> getImages() {
         return images;

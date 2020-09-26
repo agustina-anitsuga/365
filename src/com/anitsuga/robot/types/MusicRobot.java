@@ -267,6 +267,7 @@ public abstract class MusicRobot implements Robot {
      */
     protected Music getMusicDetails(MusicPage musicPage){
         Music ret = new Music();
+        ret.setAmazonID(musicPage.getAmazonID());
         ret.setFormat(musicPage.getFormat());
         ret.setAlbumFormat(musicPage.getAlbumFormat());
         ret.setHasAdditionalTracks(musicPage.hasAdditionalTracks());
@@ -280,6 +281,8 @@ public abstract class MusicRobot implements Robot {
         ret.setOrigin(musicPage.getOrigin());
         ret.setDimensions(musicPage.getDimensions());
         ret.setSeller(musicPage.getSeller());
+        ret.setArtist(musicPage.getArtist());
+        ret.setAlbum(musicPage.getAlbum());
         return ret;
     }
 
@@ -297,28 +300,26 @@ public abstract class MusicRobot implements Robot {
     /**
      * getPublicationPrice
      * @param music
-     * @return
+     * @return  
+     * 
+     * 
+     * costo = ( ( (precio + tax) * dolar tarjeta ) * 1.4 ) * 1.6
+     * 
      */
     public String getPublicationPrice(Music music) {
         try {
             Number dolarPriceAmount = music.getDolarPriceAmount();
-            Number weightInKilos = music.getWeightInKilos();
-            if( ( dolarPriceAmount == null ) || ( weightInKilos == null ) ){
-                return "";
-            }
             
             double taxesMultiplier = getTaxesMultiplier();
             double creditCardDolarQuotation = getCreditCardDolLarQuotation();
-            double officialDolarQuotation = getOfficialDoLlarQuotation();
-            double shippingPricePerKilo = getShippingPricePerKilo();
             double margin = getMargin();
             
-            double costInPesos = dolarPriceAmount.doubleValue() * taxesMultiplier * creditCardDolarQuotation;
-            double shippingCostInPesos = weightInKilos.doubleValue() * officialDolarQuotation * shippingPricePerKilo;
-            double priceInPesos =  ( costInPesos  + shippingCostInPesos ) * margin ;
+            double costInPesos = dolarPriceAmount.doubleValue() * taxesMultiplier * creditCardDolarQuotation * 1.4 ;
+            
+            double priceInPesos = costInPesos * margin ;
             
             if( priceInPesos >= 2500 ){
-                priceInPesos = priceInPesos + 190;
+                priceInPesos = priceInPesos + 200;
             }
             
             return formatNumberAsString( priceInPesos );
@@ -343,14 +344,6 @@ public abstract class MusicRobot implements Robot {
     private double getTaxesMultiplier() {
         return getPropertyAsDouble(TAXES_MULTIPLIER);
     }
-    
-    /**
-     * getOfficialDoLlarQuotation
-     * @return
-     */
-    private double getOfficialDoLlarQuotation() {
-        return getPropertyAsDouble(DOLLAR_OFFICIAL);
-    }
 
     /**
      * getPropertyAsDouble
@@ -363,14 +356,6 @@ public abstract class MusicRobot implements Robot {
         return StringUtils.parse(quotation).doubleValue();
     }
     
-    /**
-     * getPricePerKilo
-     * @return
-     */
-    private double getShippingPricePerKilo() {
-        return getPropertyAsDouble(SHIPPING_PRICE_PER_KILO);
-    }
-
     /**
      * getMargin
      * @return

@@ -32,7 +32,7 @@ public class MusicScraperRobot extends MusicRobot {
     /**
      * maximum pages to read at a time
      */
-    private static final int MAX_PAGES = 2;
+    private static final int MAX_PAGES = 4;
 
     /**
      * property that points to the file containing the existing publications

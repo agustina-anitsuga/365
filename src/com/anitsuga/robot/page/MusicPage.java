@@ -32,13 +32,17 @@ public class MusicPage extends Page {
      */
     private static final Logger LOGGER = LoggerFactory.getLogger(MusicPage.class.getName());
     
+    @FindBy(xpath = "//*[@id=\"bylineInfo\"]/span[1]/a" )
+    private WebElement artist;
     
     @FindBy(xpath = "//*[@id=\"productTitle\"]")
     private WebElement title;
     
     @FindBy(xpath = "//*[@id=\"newBuyBoxPrice\"]" )
     private WebElement price1;
-    private WebElement[] price = { price1 };
+    @FindBy(xpath = "//*[@id=\"price_inside_buybox\"]")
+    private WebElement price2;
+    private WebElement[] price = { price1, price2 };
     
     @FindBy(xpath = "//*[@id=\"productDetailsTable\"]/tbody/tr/td/div/ul/li" )
     private List<WebElement> details1;
@@ -60,8 +64,11 @@ public class MusicPage extends Page {
     @FindBy(xpath = "//*[@id=\"ivThumbs\"]/div[@class=\"ivRow\"]/div")
     private List<WebElement> photoMiniatures;
   
+
     @FindBy(xpath = "//*[@id=\"ivLargeImage\"]/img")
     private WebElement photoTarget1;
+    @FindBy(xpath = "//*[@id=\"landingImage\"]")
+    private WebElement photoTarget2;
     
     @FindBy(xpath = "//*[@id=\"merchant-info\"]")
     private WebElement seller1;
@@ -303,11 +310,14 @@ public class MusicPage extends Page {
     public List<String> getImages(){
         List<String> ret = new ArrayList<String>();
         for (WebElement photoMiniature : photoMiniatures) {
-            if( !photoMiniature.isSelected() ){
+            if( !photoMiniature.isSelected() && photoMiniature.isDisplayed() ){
                 photoMiniature.click();
             }
-            try{Thread.sleep(100);}catch(Exception e){}
-            ret.add(photoTarget1.getAttribute("src"));
+            try{
+                ret.add(photoTarget1.getAttribute("src"));
+            } catch (Exception e) {
+                ret.add(photoTarget2.getAttribute("src"));
+            }
         }
         return ret;
     }
@@ -443,8 +453,13 @@ public class MusicPage extends Page {
      * @return
      */
     public String getAlbumFormat() {
-        String format = albumFormat.getText();
-        String ret = translateFormat(format);
+        String ret = "";
+        try {
+            String format = albumFormat.getText();
+            ret = translateFormat(format);
+        } catch (Exception e) {
+            LOGGER.error("Error reading album format");
+        }
         return ret;
     }
 
@@ -455,10 +470,13 @@ public class MusicPage extends Page {
      */
     private String translateFormat(String format) {
         String ret = "";
-        if( "Vynil".equals(format) ){
+        if( "Vinyl".equals(format) ){
             ret = "Vinilo";
         }
         if( "CD de audio".equals(format) ){
+            ret = "CD";
+        }
+        if( "Audio CD".equals(format) ){
             ret = "CD";
         }
         return ret;
@@ -524,6 +542,33 @@ public class MusicPage extends Page {
      */
     public String getOrigin() {
         return "Estados Unidos";
+    }
+
+    /**
+     * getArtist
+     * @return
+     */
+    public String getArtist() {
+        return artist.getText();
+    }
+
+    /**
+     * getAmazonID
+     * @return
+     */
+    public String getAmazonID() {
+        String ret = null;
+        String[] keys = new String[] {"ASIN"};
+        Map<String,String> details = getDetailMap();
+        
+        for (int i = 0; i < keys.length; i++) {
+            String amazonID = (String) details.get(keys[i]);
+            if( amazonID!=null ){
+                ret = amazonID; 
+                break;
+            }
+        }
+        return (ret==null)? "" : ret.trim();
     }
     
 }

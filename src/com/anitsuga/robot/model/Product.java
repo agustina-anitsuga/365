@@ -11,6 +11,7 @@ import com.anitsuga.fwk.utils.StringUtils;
  */
 public abstract class Product {
 
+    private String amazonID;
     private String price;
     private String weight;
     private String availability;
@@ -20,6 +21,13 @@ public abstract class Product {
     private String genericIdentifier;
     
 
+    
+    public String getAmazonID() {
+        return amazonID;
+    }
+    public void setAmazonID(String amazonID) {
+        this.amazonID = amazonID;
+    }
     public String getGenericIdentifier() {
         return genericIdentifier;
     }

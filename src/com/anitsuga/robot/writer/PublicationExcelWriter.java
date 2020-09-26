@@ -34,9 +34,11 @@ public abstract class PublicationExcelWriter implements PublicationCSVWriter {
      * fields
      */
     private String[] genericFields = new String[] {
+                   "Amazon ID",   
                    "Fuente",
                    "Precio en USD",
                    "Peso",
+                   "Peso en Kilos",
                    "Disponibilidad",
                    "Seller",
                    "Título",
@@ -80,7 +82,7 @@ public abstract class PublicationExcelWriter implements PublicationCSVWriter {
             String[] fields = this.getFields();
             Row headerRow = sheet.createRow(rowCount++);
             for (int i = 0; i < fields.length; i++) {
-                CellStyle cellstyle = (i<5)? getExtraFieldsStyle(workbook) : getRequiredFieldsStyle(workbook);
+                CellStyle cellstyle = (i<7)? getExtraFieldsStyle(workbook) : getRequiredFieldsStyle(workbook);
                 Cell cell = headerRow.createCell(columnCount++);
                 cell.setCellValue(fields[i]);
                 cell.setCellStyle(cellstyle);
@@ -94,15 +96,17 @@ public abstract class PublicationExcelWriter implements PublicationCSVWriter {
                     columnCount = 0;
                     Product product = (Product) publication.getProduct();
                     if(product!=null){
+                        writeField(row,product.getAmazonID(),columnCount++);
                         writeField(row,publication.getUrl(),columnCount++);
                         writeField(row,product.getPrice(),columnCount++); // precio en usd
                         writeField(row,product.getWeight(),columnCount++); // peso
+                        writeField(row,product.getWeightInKilos().toString(),columnCount++); // peso
                         writeField(row,product.getAvailability(),columnCount++); // disponibilidad
                         writeField(row,product.getSeller(),columnCount++); // seller   
                         writeField(row,publication.getTitle(),columnCount++); // titulo
+                        writeField(row,product.getGenericIdentifier(),columnCount++); // isbn
                         writeField(row,toCommaSeparatedArray(publication.getImages()),columnCount++); // imagenes
                         writeField(row,"",columnCount++); // sku
-                        writeField(row,product.getGenericIdentifier(),columnCount++); // isbn
                         writeField(row,"1",columnCount++); // Cantidad
                         writeField(row,publication.getPrice(),columnCount++); // precio
                         writeField(row,"Nuevo",columnCount++); // Condicion
