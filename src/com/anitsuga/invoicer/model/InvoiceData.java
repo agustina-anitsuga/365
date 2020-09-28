@@ -1,5 +1,8 @@
 package com.anitsuga.invoicer.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * InvoiceData
  * @author agustina
@@ -7,24 +10,26 @@ package com.anitsuga.invoicer.model;
  */
 public class InvoiceData {
 
-    private Product product;
+    private List<Product> products;
     
     private Customer customer;
 
     
     public InvoiceData( Customer customer, Product product ){
         this.customer = customer;
-        this.product = product;
+        this.products = new ArrayList<Product>();
+        this.products.add(product);
+    }
+
+    public InvoiceData( Customer customer, List<Product> products ){
+        this.customer = customer;
+        this.products = products;
     }
     
-    public Product getProduct() {
-        return product;
+    public List<Product> getProducts(){
+        return products;
     }
-
-    public void setProduct(Product product) {
-        this.product = product;
-    }
-
+    
     public Customer getCustomer() {
         return customer;
     }

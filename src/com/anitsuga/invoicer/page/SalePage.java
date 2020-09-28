@@ -1,12 +1,15 @@
 package com.anitsuga.invoicer.page;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
 import com.anitsuga.fwk.page.Page;
+import com.anitsuga.invoicer.model.Product;
 
 /**
  * SalePage
@@ -36,6 +39,8 @@ public class SalePage extends Page {
     @FindBy( xpath = "//*[@class=\"sc-notes\"]/div[@class=\"sc-notes__content\"]/p[@class=\"sc-notes__content-text\"]" )
     private List<WebElement> existingNotes;
     
+    @FindBy( xpath = "//*[@class=\"sc-product\"]" )
+    private List<WebElement> productList;
     
     /**
      * PublicationPage
@@ -58,11 +63,24 @@ public class SalePage extends Page {
         return new SalePage(this.driver);
     }
 
-    public String getProductTitle(){
+    public String getTitle(){
         return product.getText();
     }
     
-    public String getProductPrice(){
+    public List<Product> getProducts(){
+        List<Product> products = new ArrayList<Product>();
+        for (WebElement product : productList) {
+            String aTitle = product.findElement(By.xpath("./div[@class=\"sc-title\"]")).getText();
+            String aPrice = product.findElement(By.xpath("./div[@class=\"sc-price\"]")).getText();     
+            aPrice = aPrice.replaceAll("\\.", "");
+            aPrice = aPrice.replaceAll("\\$", "");
+            Product p = new Product(aTitle,aPrice);
+            products.add(p);
+        }
+        return products;
+    }
+    
+    public String getTotalPrice(){
         String priceStr = price.getText();
         priceStr = priceStr.replaceAll("\\.", "");
         priceStr = priceStr.replaceAll("\\$", "");

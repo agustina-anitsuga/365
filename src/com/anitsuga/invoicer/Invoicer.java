@@ -127,7 +127,7 @@ public class Invoicer {
             String saleUrl = sale.getSaleUrl();
             SalePage salePage = new SalePage(driverMeli).go(saleUrl);
             InvoiceData invoiceData = this.getInvoiceDataFrom(salePage);
-            sale.setTitle(invoiceData.getProduct().getTitle());
+            sale.setTitle(invoiceData.getProducts().get(0).getTitle());
             
             this.executeInvoiceWorkflow(driverInv, invoiceData);
             
@@ -179,9 +179,18 @@ public class Invoicer {
         invoiceHeader.clickNext();
         
         InvoiceDetailPage invoiceDetail = new InvoiceDetailPage(driverInv); 
-        invoiceDetail.setProduct( invoiceData.getProduct().getTitle() );
-        invoiceDetail.setPrice( invoiceData.getProduct().getFormattedPrice() );
-        invoiceDetail.setIva( invoiceData.getProduct().getIVA() );
+        List<Product> products = invoiceData.getProducts();
+        int line = 1;
+        for (Product product : products) {
+            invoiceDetail.setProduct( line, product.getTitle() );
+            invoiceDetail.setPrice( line, product.getFormattedPrice() );
+            invoiceDetail.setIva( line, product.getIVA() );   
+            line = line + 1;
+            if(line<=products.size()){
+                invoiceDetail.newLine();
+                doWait(1000);
+            }
+        }
         invoiceDetail.clickNext();
         
         /*
@@ -223,9 +232,8 @@ public class Invoicer {
     private InvoiceData getInvoiceDataFrom(SalePage salePage) {
         InvoiceData ret = null;
         if( !salePage.includesInvoicedComment() ){
-            Product product = new Product(salePage.getProductTitle(),salePage.getProductPrice());
             Customer customer = new Customer(salePage.getCustomerDocType(),salePage.getCustomerDocNumber(),salePage.getCustomerAddress());
-            ret = new InvoiceData(customer,product);
+            ret = new InvoiceData(customer,salePage.getProducts());
         }
         return ret;
     }
