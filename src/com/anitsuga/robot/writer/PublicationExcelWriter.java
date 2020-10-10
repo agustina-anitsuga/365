@@ -125,7 +125,7 @@ public abstract class PublicationExcelWriter implements PublicationCSVWriter {
                         }    
                         rowCount++;
                     } else {
-                        LOGGER.error("Empty book for URL "+publication.getUrl());
+                        LOGGER.error("Empty album for URL "+publication.getUrl());
                     }
                 } catch(Exception e) {
                     LOGGER.error(e.getMessage());

@@ -32,7 +32,8 @@ public class MusicPageTester {
         
         WebDriver driver = null ;
         
-        String url = "https://www.amazon.com/-/es/Pink-Floyd/dp/B019VQSAXM/ref=sr_1_1?__mk_es_US=%C3%85M%C3%85%C5%BD%C3%95%C3%91&dchild=1&keywords=pink+floyd&qid=1601083943&s=music&sr=1-1";
+        //String url = "https://www.amazon.com/-/es/Bon-Jovi/dp/B01GTQZNNM/ref=sr_1_64?dchild=1&fst=as%3Aoff&qid=1602290771&refinements=p_n_binding_browse-bin%3A387647011%2Cp_n_condition-type%3A1294428011%2Cp_85%3A2470955011&rnid=2470954011&rps=1&s=music&sr=1-64";
+        String url = "https://www.amazon.com/-/es/Journey/dp/B000G7PNKO/ref=tmm_abk_swatch_0?_encoding=UTF8&qid=1602293016&sr=1-27";
         
         try {
             
@@ -54,6 +55,7 @@ public class MusicPageTester {
                 System.out.println("availability:"+musicPage.getAvailability());
                 System.out.println("genre:"+musicPage.getGenre());
                 System.out.println("origin:"+musicPage.getOrigin());
+                System.out.println("artist:"+musicPage.getArtist());
                 System.out.println("seller:"+musicPage.getSeller());
                 System.out.println("album title:"+musicPage.getAlbum());
                 System.out.println("title.len:"+musicPage.getAlbum().length());

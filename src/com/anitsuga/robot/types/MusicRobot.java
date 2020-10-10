@@ -319,7 +319,7 @@ public abstract class MusicRobot implements Robot {
             double priceInPesos = costInPesos * margin ;
             
             if( priceInPesos >= 2500 ){
-                priceInPesos = priceInPesos + 200;
+                priceInPesos = priceInPesos + 250;
             }
             
             return formatNumberAsString( priceInPesos );

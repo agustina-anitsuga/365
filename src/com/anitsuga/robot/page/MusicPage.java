@@ -31,9 +31,12 @@ public class MusicPage extends Page {
      * logger
      */
     private static final Logger LOGGER = LoggerFactory.getLogger(MusicPage.class.getName());
-    
+
     @FindBy(xpath = "//*[@id=\"bylineInfo\"]/span[1]/a" )
-    private WebElement artist;
+    private WebElement artist1;
+    @FindBy(xpath = "//*[@id=\"bylineInfo\"]/span/span[1]/a[1]" )
+    private WebElement artist2;
+    private WebElement[] artist = {artist1,artist2};
     
     @FindBy(xpath = "//*[@id=\"productTitle\"]")
     private WebElement title;
@@ -115,8 +118,9 @@ public class MusicPage extends Page {
     private WebElement albumFormat3;
     @FindBy(xpath = "//*[@id=\"bylineInfo\"]/span[6]" )
     private WebElement albumFormat4;
-
-    private WebElement[] albumFormat = { albumFormat1, albumFormat2, albumFormat3, albumFormat4 };
+    @FindBy(xpath = "//li[@class=\"swatchElement selected resizedSwatchElement\"]/span/span/span/a/span" )
+    private WebElement albumFormat5;
+    private WebElement[] albumFormat = { albumFormat1, albumFormat2, albumFormat3, albumFormat4, albumFormat5 };
 
 
    /**
@@ -325,13 +329,38 @@ public class MusicPage extends Page {
             if( !photoMiniature.isSelected() && photoMiniature.isDisplayed() ){
                 photoMiniature.click();
             }
+            sleep(500);
             try{
-                ret.add(photoTarget1.getAttribute("src"));
+
+                ret.add(getPhotoUrl(photoTarget1));
             } catch (Exception e) {
-                ret.add(photoTarget2.getAttribute("src"));
+                ret.add(getPhotoUrl(photoTarget2));
             }
         }
         return ret;
+    }
+
+    /**
+     * sleep
+     */
+    private void sleep(int millis) {
+        try {
+        Thread.sleep(500);
+        } catch (Exception e) {}
+    }
+
+    /**
+     * getPhotoUrl
+     * @param photoTarget
+     * @return
+     */
+    private String getPhotoUrl(WebElement photoTarget) {
+        String photo = null;
+        do {
+            photo = photoTarget1.getAttribute("src");
+            sleep(100);
+        } while (photo.contains("loadIndicators"));
+        return photo;
     }
     
     /**
@@ -543,7 +572,7 @@ public class MusicPage extends Page {
                 break;
             }
         }
-        return (ret==null)? "" : ret.trim();
+        return (ret==null)? "1" : ret.trim();
     }
 
     /**
@@ -567,7 +596,19 @@ public class MusicPage extends Page {
      * @return
      */
     public String getArtist() {
-        return artist.getText();
+        //return artist.getText();
+        String ret = "";
+        for (int i = 0; i < artist.length; i++) {
+            try {
+                ret = artist[i].getText();
+                if( !StringUtils.isEmpty(ret) ){
+                    break;
+                }
+            } catch (Exception e) {
+                LOGGER.error("Error reading artist");
+            }
+        }
+        return ret;
     }
 
     /**
