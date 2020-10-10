@@ -10,7 +10,6 @@ import com.anitsuga.fwk.utils.Browser;
 import com.anitsuga.fwk.utils.SeleniumUtils;
 import com.anitsuga.robot.model.Music;
 import com.anitsuga.robot.types.MusicRobot;
-import com.anitsuga.robot.types.MusicScraperRobot;
 
 /**
  * MusicPageTester
@@ -39,7 +38,7 @@ public class MusicPageTester {
             
             driver = SeleniumUtils.buildDriver(Browser.CHROME);
             
-            MusicRobot robot = new MusicScraperRobot();
+            MusicRobot robot = new MusicRobot();
             //robot.login(driver);        
 
             MusicPage musicPage = new MusicPage(driver).go(url);
@@ -47,7 +46,7 @@ public class MusicPageTester {
             {
                 musicPage.waitForPopups();
                 
-                Music music = robot.getMusicData(musicPage,driver);
+                Music music = (Music) robot.getProductData(musicPage,driver);
                 System.out.println("price (USD):"+musicPage.getPrice()); 
                 System.out.println("price (ARS):"+robot.getPublicationPrice(music));
                 System.out.println("is amazon price not set?"+robot.amazonPriceIsNotSet(music));

@@ -24,4 +24,16 @@ public interface Robot {
      */
     public boolean validConfig();
 
+    /**
+     * setURLProvider
+     * @param urlProvider
+     */
+    public void setURLProvider(RobotURLProvider urlProvider);
+
+    /**
+     * shouldNavigateURLs
+     * @param shouldNavigateURLs
+     */
+    public void shouldNavigateURLs(boolean shouldNavigateURLs);
+
 }

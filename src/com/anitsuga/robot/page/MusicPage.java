@@ -14,7 +14,6 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.anitsuga.fwk.page.Page;
 import com.anitsuga.fwk.utils.SeleniumUtils;
 import com.anitsuga.fwk.utils.StringUtils;
 
@@ -24,7 +23,7 @@ import com.anitsuga.fwk.utils.StringUtils;
  * 
  *
  */
-public class MusicPage extends Page {
+public class MusicPage extends ProductPage {
 
 
     /**

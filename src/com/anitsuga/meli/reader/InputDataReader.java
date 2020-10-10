@@ -71,7 +71,7 @@ public class InputDataReader {
             }
         
         } catch (Exception e) {
-            LOGGER.error(publication.getId()+" "+e.getMessage());
+            LOGGER.error(""+publication.getId()+" "+e.getMessage());
             data = new ArrayList<Publication>();
         } finally {
             try {
@@ -92,8 +92,16 @@ public class InputDataReader {
      * @return
      */
     private String getISBN(Row currentRow) {
-        Cell cell = currentRow.getCell(11);
-        return cell.getStringCellValue();
+        String ret = "";
+        Cell cell = currentRow.getCell(9);
+        CellType type = cell.getCellType();
+        if( type == CellType.NUMERIC ) {
+            Number n = cell.getNumericCellValue();
+            ret = String.valueOf(n.longValue());
+        } else {
+            ret = cell.getStringCellValue();
+        }
+        return ret;
     }
 
     /**
@@ -131,7 +139,7 @@ public class InputDataReader {
      * @return
      */
     private String getId(Row currentRow) {
-        Cell cell = currentRow.getCell(2);
+        Cell cell = currentRow.getCell(0);
         return (cell==null)? "" : cell.getStringCellValue();
     }
 

@@ -4,8 +4,6 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import com.anitsuga.robot.model.Book;
-import com.anitsuga.robot.types.BookRobot;
-import com.anitsuga.robot.types.BookScraperRobot;
 
 
 /**
@@ -36,7 +34,7 @@ public class BookRobotTest {
             {"El niño Astronauta: La busqueda de un amigo / Spanish","Jorge Luis Gómez","Libro El niño Astronauta: La busqueda de un amigo"}
         };
         
-        BookRobot robot = new BookScraperRobot();
+        BookRobot robot = new BookRobot();
         for (String[] testCase : testCases) {
             Book book = new Book();
             book.setTitle(testCase[0]);

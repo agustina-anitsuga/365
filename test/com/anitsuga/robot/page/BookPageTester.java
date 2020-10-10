@@ -10,7 +10,6 @@ import com.anitsuga.fwk.utils.Browser;
 import com.anitsuga.fwk.utils.SeleniumUtils;
 import com.anitsuga.robot.model.Book;
 import com.anitsuga.robot.types.BookRobot;
-import com.anitsuga.robot.types.BookScraperRobot;
 
 /**
  * BookPageTester
@@ -38,13 +37,13 @@ public class BookPageTester {
             
             driver = SeleniumUtils.buildDriver(Browser.CHROME);
             
-            BookRobot robot = new BookScraperRobot();
+            BookRobot robot = new BookRobot();
             //robot.login(driver);        
 
             BookPage bookPage = new BookPage(driver).go(url);
             if( bookPage != null )
             {
-                Book book = robot.getBookData(bookPage,driver);
+                Book book = (Book) robot.getProductData(bookPage,driver);
                 //bookPage.waitForPopups();
                 System.out.println("price (USD):"+bookPage.getPrice()); 
                 System.out.println("price (ARS):"+robot.getPublicationPrice(book));

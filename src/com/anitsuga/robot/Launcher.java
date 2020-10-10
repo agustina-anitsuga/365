@@ -30,7 +30,7 @@ public class Launcher {
      */
     public static void main(String[] args) {
         Launcher self = new Launcher();
-        self.run(RobotType.MUSIC_SCRAPER);
+        self.run(RobotType.MUSIC_ANALYZER);
     }
 
     /**
@@ -41,6 +41,8 @@ public class Launcher {
        
        // get robot
        Robot robot = type.getInstance();
+       robot.setURLProvider(type.getURLProvider());
+       robot.shouldNavigateURLs(type.shouldNavigateURLs());
     
        // validate config
        if( !robot.validConfig() ) {
