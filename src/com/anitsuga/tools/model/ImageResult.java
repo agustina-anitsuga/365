@@ -1,11 +1,11 @@
-package com.anitsuga.imager.model;
+package com.anitsuga.tools.model;
 
 /**
- * Result
+ * ImageResult
  * @author agustina
  *
  */
-public class Result {
+public class ImageResult implements Result {
     
     private String isbn;
     private String images;

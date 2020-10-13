@@ -1,4 +1,4 @@
-package com.anitsuga.imager.page;
+package com.anitsuga.tools.page;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -7,8 +7,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.anitsuga.fwk.page.Page;
 
@@ -26,10 +24,6 @@ public class AbeSearchResultPage extends Page {
     @FindBy(xpath = "//*[@id=\"book-1\"]/div[2]/div[1]/h2/a")
     private WebElement firstLink;
     
-    /**
-     * logger
-     */
-    private static final Logger LOGGER = LoggerFactory.getLogger(AbeSearchResultPage.class.getName());
     
     /**
      * AbeSearchResultPage
@@ -37,7 +31,6 @@ public class AbeSearchResultPage extends Page {
      */
     public AbeSearchResultPage(WebDriver driver) {
         super(driver);
-        // TODO Auto-generated constructor stub
     }
     
     /**

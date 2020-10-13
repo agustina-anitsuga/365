@@ -1,4 +1,4 @@
-package com.anitsuga.imager.reader;
+package com.anitsuga.tools.reader;
 
 import java.io.BufferedReader;
 import java.io.File;

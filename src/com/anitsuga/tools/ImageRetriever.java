@@ -1,4 +1,4 @@
-package com.anitsuga.imager;
+package com.anitsuga.tools;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -7,9 +7,13 @@ import org.openqa.selenium.WebDriver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.anitsuga.imager.model.Result;
-import com.anitsuga.imager.page.AbeBookPage;
-import com.anitsuga.imager.page.AbeSearchResultPage;
+import com.anitsuga.fwk.utils.AppProperties;
+import com.anitsuga.tools.model.ImageResult;
+import com.anitsuga.tools.model.Result;
+import com.anitsuga.tools.page.AbeBookPage;
+import com.anitsuga.tools.page.AbeSearchResultPage;
+import com.anitsuga.tools.writer.ImageResultExcelWriter;
+import com.anitsuga.tools.writer.ResultExcelWriter;
 
 /**
  * ImageRetriever
@@ -22,6 +26,12 @@ public class ImageRetriever extends Processor {
      * logger
      */
     private static final Logger LOGGER = LoggerFactory.getLogger(ImageRetriever.class.getName());
+
+    /**
+     * ISBN_FILE
+     */
+    protected static final String ISBN_FILE = "book.isbn.file";
+
     
     /**
      * main
@@ -32,11 +42,17 @@ public class ImageRetriever extends Processor {
         self.run();
     }
 
+    /**
+     * outputFilePrefix
+     */
     @Override
     protected String outputFilePrefix() {
         return "image-retriever";
     }
 
+    /**
+     * doProcess
+     */
     @Override
     protected List<Result> doProcess(List<String> data, WebDriver driver) {
         int total = data.size();
@@ -46,7 +62,7 @@ public class ImageRetriever extends Processor {
             LOGGER.info("Retrieving image ["+(++count)+"/"+total+"] - "+isbn);
             try {
                 String result = retrieveImages(driver,isbn);
-                Result op = new Result();
+                ImageResult op = new ImageResult();
                 op.setIsbn(isbn);
                 op.setImages(result);
                 LOGGER.info("    "+result);  
@@ -136,6 +152,22 @@ public class ImageRetriever extends Processor {
      */
     private String format(String isbn) {
         return isbn.replaceAll("-", "");
+    }
+
+    /**
+     * getResultExcelWriter
+     */
+    @Override
+    protected ResultExcelWriter getResultExcelWriter() {
+        return new ImageResultExcelWriter();
+    }
+
+    /**
+     * getInputFilename
+     */
+    @Override
+    protected String getInputFilename() {
+        return AppProperties.getInstance().getProperty(ISBN_FILE);
     }
    
 }

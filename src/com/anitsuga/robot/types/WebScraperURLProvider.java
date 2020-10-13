@@ -30,7 +30,7 @@ public class WebScraperURLProvider implements RobotURLProvider {
     /**
      * MAX_PAGES
      */
-    private static final int MAX_PAGES = 2;
+    private static final int MAX_PAGES = 40;
     
     /**
      * URL where the robot will start scraping

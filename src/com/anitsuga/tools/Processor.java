@@ -1,4 +1,4 @@
-package com.anitsuga.imager;
+package com.anitsuga.tools;
 
 import java.io.File;
 import java.util.List;
@@ -11,9 +11,9 @@ import com.anitsuga.fwk.utils.AppProperties;
 import com.anitsuga.fwk.utils.Browser;
 import com.anitsuga.fwk.utils.FileUtils;
 import com.anitsuga.fwk.utils.SeleniumUtils;
-import com.anitsuga.imager.model.Result;
-import com.anitsuga.imager.reader.InputDataReader;
-import com.anitsuga.imager.writer.ResultExcelWriter;
+import com.anitsuga.tools.model.Result;
+import com.anitsuga.tools.reader.InputDataReader;
+import com.anitsuga.tools.writer.ResultExcelWriter;
 
 /**
  * Processor
@@ -27,10 +27,9 @@ public abstract class Processor {
      */
     private static final Logger LOGGER = LoggerFactory.getLogger(Processor.class.getName());
     
-
+    
     protected static final String LOCAL_PATH = "local.path";
-    protected static final String ISBN_FILE = "book.isbn.file";
-
+    
 
     /**
      * run
@@ -54,9 +53,15 @@ public abstract class Processor {
     protected void writeProcessOutput(List<Result> result) {
         String localPath = FileUtils.getLocalPath();
         String filename = localPath + outputFilePrefix();
-        ResultExcelWriter writer = new ResultExcelWriter(); 
+        ResultExcelWriter writer = getResultExcelWriter(); 
         writer.write(filename, result);
     }
+
+    /**
+     * 
+     * @return
+     */
+    protected abstract ResultExcelWriter getResultExcelWriter();
 
     /**
      * outputFilePrefix
@@ -78,10 +83,16 @@ public abstract class Processor {
      * @return
      */
     protected List<String> readInputData() {
-        String filename = AppProperties.getInstance().getProperty(ISBN_FILE);
+        String filename = getInputFilename();
         InputDataReader reader = new InputDataReader(); 
         return reader.read(filename);
     }
+
+    /**
+     * getInputFilename
+     * @return
+     */
+    protected abstract String getInputFilename() ;
 
     /**
      * validConfig
@@ -93,7 +104,7 @@ public abstract class Processor {
         AppProperties config = AppProperties.getInstance();
         
         ret &= validateFileExists(config,LOCAL_PATH);
-        ret &= validateFileExists(config,ISBN_FILE);
+        //ret &= validateFileExists(config,ISBN_FILE);
         
         return ret;
     }

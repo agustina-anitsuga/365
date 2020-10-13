@@ -1,4 +1,4 @@
-package com.anitsuga.imager.writer;
+package com.anitsuga.tools.writer;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -15,28 +15,19 @@ import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.anitsuga.imager.model.Result;
+import com.anitsuga.tools.model.Result;
 
 /**
  * ResultExcelWriter
  * @author agustina
  *
  */
-public class ResultExcelWriter {
+public abstract class ResultExcelWriter {
 
     /**
      * logger
      */
     private static final Logger LOGGER = LoggerFactory.getLogger(ResultExcelWriter.class.getName());
-    
-    
-    /**
-     * fields
-     */
-    private String[] fields = new String[] {
-                   "ISBN",
-                   "Images"
-    };
     
     
     /**
@@ -84,6 +75,7 @@ public class ResultExcelWriter {
         Sheet sheet = workbook.createSheet("result");
          
         // write header
+        String[] fields = getFields();
         Row headerRow = sheet.createRow(rowCount++);
         for (int i = 0; i < fields.length; i++) {
             CellStyle cellstyle = getHeaderFieldsStyle(workbook);
@@ -97,9 +89,7 @@ public class ResultExcelWriter {
             try 
             {
                 Row row = sheet.createRow(rowCount++);
-                columnCount = 0;
-                writeField(row,aResult.getIsbn().toString(),columnCount++);                    
-                writeField(row,aResult.getImages(),columnCount++);
+                writeFieldsToRow(aResult, row);
             } catch (Exception e) {
                 LOGGER.error(e.getMessage());
             }
@@ -108,6 +98,10 @@ public class ResultExcelWriter {
         LOGGER.info("Done writing "+result.size()+" results");        
         return workbook;
     }
+
+    protected abstract String[] getFields() ;
+
+    protected abstract void writeFieldsToRow(Result aResult, Row row);
 
     /**
      * getHeaderFieldsStyle
@@ -125,7 +119,7 @@ public class ResultExcelWriter {
      * writeField
      * @param data
      */
-    public void writeField(Row row, String data, int columnCount) {
+    protected void writeField(Row row, String data, int columnCount) {
         Cell cell = row.createCell(columnCount);
         cell.setCellValue(data);
     }
