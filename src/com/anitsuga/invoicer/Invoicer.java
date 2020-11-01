@@ -43,7 +43,7 @@ public class Invoicer {
     /**
      * logger
      */
-    private static final Logger LOGGER = LoggerFactory.getLogger(Invoicer.class.getName());
+    private static final Logger LOGGER = LoggerFactory.getLogger(InvoiceStatusChecker.class.getName());
     
     /**
      * Input scanner
@@ -56,7 +56,7 @@ public class Invoicer {
      * @param args
      */
     public static void main(String[] args) {
-        Invoicer invoicer = new Invoicer();
+        InvoiceStatusChecker invoicer = new InvoiceStatusChecker();
         invoicer.run();
     }
 
@@ -126,18 +126,29 @@ public class Invoicer {
             
             String saleUrl = sale.getSaleUrl();
             SalePage salePage = new SalePage(driverMeli).go(saleUrl);
-            InvoiceData invoiceData = this.getInvoiceDataFrom(salePage);
-            sale.setTitle(invoiceData.getProducts().get(0).getTitle());
-            
-            this.executeInvoiceWorkflow(driverInv, invoiceData);
-            
-            String input = this.promptForInput("Mark sale as invoiced? (yes/no):");
-            if( "yes".equals(input) )
-            {
-                salePage.addNote("F");
-                ret = "Marked as invoiced";
+            if ( salePage.includesInvoicedComment() ){
+                ret = "Already invoiced";
             } else {
-                ret = "Not marked as invoiced ["+input+"]";
+                InvoiceData invoiceData = this.getInvoiceDataFrom(salePage);
+                if( invoiceData==null ){
+                    ret = "No data invoice";
+                } else {
+                    
+                    String title = invoiceData.getProducts().get(0).getTitle();
+                    sale.setTitle(title);
+                    System.out.println("    "+title);
+                    
+                    this.executeInvoiceWorkflow(driverInv, invoiceData);
+                    
+                    String input = this.promptForInput("Mark sale as invoiced? (yes/no): ");
+                    if( "yes".equals(input) )
+                    {
+                        salePage.addNote("F");
+                        ret = "Marked as invoiced";
+                    } else {
+                        ret = "Not marked as invoiced ["+input+"]";
+                    }
+                }
             }
             
         } catch (Exception e) {
@@ -158,40 +169,10 @@ public class Invoicer {
         menuPage.go("https://serviciosjava2.afip.gob.ar/rcel/jsp/menu_ppal.jsp");
         menuPage.clickGenerateInvoice();
         
-        InvoiceTypePage invoiceType = new InvoiceTypePage(driverInv);
-        invoiceType.selectDefaultSalesPoint();
-        doWait(1000);
-        invoiceType.selecteDefaultInvoiceType();
-        invoiceType.clickNext();
-        
-        ProductTypePage productType = new ProductTypePage(driverInv);     
-        productType.selectDefaultProductType();
-        productType.clickNext();
-        
-        InvoiceHeaderPage invoiceHeader = new InvoiceHeaderPage(driverInv); 
-        invoiceHeader.setDefaultCustomerType();
-        doWait(1000);
-        invoiceHeader.setCustomerDocType( invoiceData.getCustomer().getDocType() );
-        invoiceHeader.setCustomerDocNumber( invoiceData.getCustomer().getDocNumber() );
-        doWait(1000);
-        invoiceHeader.setCustomerAddress( invoiceData.getCustomer().getAddress() );
-        invoiceHeader.setDefaultPaymentType();
-        invoiceHeader.clickNext();
-        
-        InvoiceDetailPage invoiceDetail = new InvoiceDetailPage(driverInv); 
-        List<Product> products = invoiceData.getProducts();
-        int line = 1;
-        for (Product product : products) {
-            invoiceDetail.setProduct( line, product.getTitle() );
-            invoiceDetail.setPrice( line, product.getFormattedPrice() );
-            invoiceDetail.setIva( line, product.getIVA() );   
-            line = line + 1;
-            if(line<=products.size()){
-                invoiceDetail.newLine();
-                doWait(1000);
-            }
-        }
-        invoiceDetail.clickNext();
+        doWorkflowStep1InvoiceType(driverInv);
+        doWorkflowStep2ProductType(driverInv);
+        doWorkflowStep3InvoiceHeader(driverInv, invoiceData);
+        doWorkflowStep4InvoiceDetails(driverInv, invoiceData);
         
         /*
         String input = this.promptForInput("Generate and download invoice automatically? (yes/no):");
@@ -200,6 +181,72 @@ public class Invoicer {
             summary.confirm();
         }
         */
+    }
+
+    private void doWorkflowStep4InvoiceDetails(WebDriver driverInv, InvoiceData invoiceData) {
+        try {
+            InvoiceDetailPage invoiceDetail = new InvoiceDetailPage(driverInv); 
+            List<Product> products = invoiceData.getProducts();
+            int line = 1;
+            for (Product product : products) {
+                invoiceDetail.setProduct( line, product.getTitle() );
+                invoiceDetail.setPrice( line, product.getFormattedPrice() );
+                invoiceDetail.setIva( line, product.getIVA() );   
+                line = line + 1;
+                if(line<=products.size()){
+                    invoiceDetail.newLine();
+                    doWait(1000);
+                }
+        }
+        invoiceDetail.clickNext();
+        } catch( Exception e ){
+            e.printStackTrace();
+            this.promptForInput("Could you fix the error, please? (and go to the next step)");
+        }
+    }
+
+    /**
+     * doWorkflowStep3InvoiceHeader
+     * @param driverInv
+     * @param invoiceData
+     */
+    private void doWorkflowStep3InvoiceHeader(WebDriver driverInv, InvoiceData invoiceData) {
+        try {
+            InvoiceHeaderPage invoiceHeader = new InvoiceHeaderPage(driverInv); 
+            invoiceHeader.setDefaultCustomerType();
+            doWait(1000);
+            invoiceHeader.setCustomerDocType( invoiceData.getCustomer().getDocType() );
+            invoiceHeader.setCustomerDocNumber( invoiceData.getCustomer().getDocNumber() );
+            doWait(1000);
+            invoiceHeader.setCustomerAddress( invoiceData.getCustomer().getAddress() );
+            invoiceHeader.setDefaultPaymentType();
+            invoiceHeader.clickNext();
+        } catch( Exception e ) {
+            e.printStackTrace();
+            this.promptForInput("Could you fix the error, please? (and go to the next step)");
+        }
+    }
+
+    /**
+     * doWorkflowStep2ProductType
+     * @param driverInv
+     */
+    private void doWorkflowStep2ProductType(WebDriver driverInv) {
+        ProductTypePage productType = new ProductTypePage(driverInv);     
+        productType.selectDefaultProductType();
+        productType.clickNext();
+    }
+
+    /**
+     * doWorkflowStep1InvoiceType
+     * @param driverInv
+     */
+    private void doWorkflowStep1InvoiceType(WebDriver driverInv) {
+        InvoiceTypePage invoiceType = new InvoiceTypePage(driverInv);
+        invoiceType.selectDefaultSalesPoint();
+        doWait(1000);
+        invoiceType.selecteDefaultInvoiceType();
+        invoiceType.clickNext();
     }
     
     /**
@@ -251,7 +298,7 @@ public class Invoicer {
      * @param driver
      */
     private void initializeProcess(WebDriver driver) {
-        promptForInput("Enter any message once you have logged in to both Meli and Afip");
+        promptForInput("Enter any message once you have logged in to both Meli and Afip ");
         String lastTab = "";
         Set<String> tabsAfter = driver.getWindowHandles();
         for (String tabName : tabsAfter) {
