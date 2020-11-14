@@ -84,7 +84,9 @@ public class MusicPage extends ProductPage {
     private WebElement seller5;
     @FindBy(xpath = "//*[@id=\"sfsb_accordion_head\"]/div[2]/div/span[2]" )
     private WebElement seller6;
-    private WebElement[] seller = { seller1, seller2, seller3, seller4, seller5, seller6 };
+    @FindBy(xpath = "//*[@id=\"tabular-buybox-truncate-1\"]/span[2]/span" )
+    private WebElement seller7;
+    private WebElement[] seller = { seller1, seller2, seller3, seller4, seller5, seller6, seller7 };
     
     private Map<String,String> detailMap = null ;
     

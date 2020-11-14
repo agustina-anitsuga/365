@@ -37,7 +37,8 @@ public class StorePage extends Page {
     @FindBy ( xpath = "/html/body/header/div/form/button[@class=\"nav-search-btn\"]" )
     private WebElement searchButton;
     
-    @FindBy ( xpath = "//*[@id=\"searchResults\"]/li/div/div/div/div/a" )
+    //@FindBy ( xpath = "//*[@id=\"searchResults\"]/li/div/div/div/div/a" )
+    @FindBy ( xpath = "//div[@class=\"ui-search-result__content-wrapper\"]/div/a" )
     private List<WebElement> searchResults;
     
     /**

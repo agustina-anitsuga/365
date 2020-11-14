@@ -45,7 +45,7 @@ public class IdRetriever extends Processor {
         List<Operation> ret = new ArrayList<Operation>();
         for (Publication publication : data) {
             try {
-                LOGGER.info("Retrieving id ["+(++count)+"/"+total+"] - "+publication.getTitle()+" ("+publication.getIsbn()+")");
+                LOGGER.info("Retrieving id ["+(++count)+"/"+total+"] - "+publication.getTitle()+" ("+publication.getIsbn()+") ");
                 String result = getId(driver,publication);
                 Operation op = new Operation();
                 op.setPublication(publication);
@@ -89,7 +89,7 @@ public class IdRetriever extends Processor {
         List<String> possibleMatches = new ArrayList<String>();
         for (String url : urls) {
             PublicationPage page = new PublicationPage(driver).go(url);
-            if( titlesMatch(publication,page) && isbnsMatch(publication,page) ){
+            if( titlesMatch(publication,page) ) { // && isbnsMatch(publication,page) ){
                 String id = getIdFromUrl(url);
                 possibleMatches.add(id);
             }

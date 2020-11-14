@@ -35,5 +35,12 @@ public interface Robot {
      * @param shouldNavigateURLs
      */
     public void shouldNavigateURLs(boolean shouldNavigateURLs);
-
+    
+    /**
+     * shouldRetrieveImages
+     * @param shouldRetrieveImages
+     * @return
+     */
+    public void shouldRetrieveImages(boolean shouldRetrieveImages);
+    
 }

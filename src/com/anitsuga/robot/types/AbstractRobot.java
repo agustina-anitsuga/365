@@ -44,6 +44,8 @@ public abstract class AbstractRobot implements Robot {
 
     private RobotURLProvider urlProvider;
     private boolean shouldNavigateURLs;
+    private boolean shouldRetrieveImages;
+    
     
     /**
      * setURLProvider
@@ -242,12 +244,17 @@ public abstract class AbstractRobot implements Robot {
      */
     public Product getProductData(ProductPage productPage, WebDriver driver) {
         
-        Product book = getProductDetails(productPage);
-        productPage.openPhotoViewer();
-        book.setImages(getImages(productPage.getImages()));
+        Product product = getProductDetails(productPage);
+        
+        if( this.shouldRetrieveImages ){ 
+            productPage.openPhotoViewer();
+            product.setImages(getImages(productPage.getImages()));
+        } else {
+            product.setImages(new ArrayList<String>());
+        }
         
         // if we still did not get an amazon price, look it up
-        if( amazonPriceIsNotSet(book) ){
+        if( amazonPriceIsNotSet(product) ){
             String sellerListUrl = productPage.getSellerListUrl();
             if( StringUtils.isEmpty(sellerListUrl) ){
                 LOGGER.info("Seller list not available");
@@ -263,8 +270,8 @@ public abstract class AbstractRobot implements Robot {
                     List<SellerQuote> sellerQuotes = sellerListPage.getSellerQuotes();
                     SellerQuote amazon = findAmazonQuote(sellerQuotes);
                     if( amazon!=null ){
-                        book.setPrice(amazon.getPrice());
-                        book.setSeller(amazon.getSeller());
+                        product.setPrice(amazon.getPrice());
+                        product.setSeller(amazon.getSeller());
                         sellerListUrl = null;
                     } else {
                         sellerListUrl = sellerListPage.nextPageUrl();
@@ -273,7 +280,7 @@ public abstract class AbstractRobot implements Robot {
             }
         }
         
-        return book;
+        return product;
     }
 
     /**
@@ -535,6 +542,11 @@ public abstract class AbstractRobot implements Robot {
     @Override
     public void shouldNavigateURLs(boolean shouldNavigateURLs) {
         this.shouldNavigateURLs = shouldNavigateURLs;
+    }
+    
+    @Override
+    public void shouldRetrieveImages(boolean shouldRetrieveImages) {
+        this.shouldRetrieveImages = shouldRetrieveImages;
     }
        
 }

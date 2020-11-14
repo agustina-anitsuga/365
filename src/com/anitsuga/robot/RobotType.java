@@ -44,6 +44,11 @@ public enum RobotType {
         public boolean shouldNavigateURLs() {
             return true;
         }        
+        
+        @Override
+        public boolean shouldRetrieveImages() {
+            return true;
+        }  
     },
 
     BOOK_ANALYZER {
@@ -73,6 +78,11 @@ public enum RobotType {
         public boolean shouldNavigateURLs() {
             return false;
         }        
+        
+        @Override
+        public boolean shouldRetrieveImages() {
+            return false;
+        }  
     },
     
     MUSIC_SCRAPER {
@@ -102,7 +112,12 @@ public enum RobotType {
         @Override
         public boolean shouldNavigateURLs() {
             return true;
-        }        
+        }      
+        
+        @Override
+        public boolean shouldRetrieveImages() {
+            return true;
+        }  
     },
     
     MUSIC_ANALYZER {
@@ -131,6 +146,11 @@ public enum RobotType {
         @Override
         public boolean shouldNavigateURLs() {
             return false;
+        }
+
+        @Override
+        public boolean shouldRetrieveImages() {
+            return false;
         }        
     }
     ;
@@ -140,5 +160,7 @@ public enum RobotType {
     public abstract PublicationCSVWriter getWriter();
     public abstract RobotURLProvider getURLProvider();
     public abstract boolean shouldNavigateURLs();
+    public abstract boolean shouldRetrieveImages();
+    
 
 }
