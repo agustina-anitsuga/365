@@ -16,7 +16,6 @@ import com.anitsuga.fwk.utils.SeleniumUtils;
 import com.anitsuga.fwk.utils.StringUtils;
 import com.anitsuga.robot.Robot;
 import com.anitsuga.robot.RobotURLProvider;
-import com.anitsuga.robot.model.Book;
 import com.anitsuga.robot.model.Product;
 import com.anitsuga.robot.model.Publication;
 import com.anitsuga.robot.model.SellerQuote;
@@ -257,11 +256,13 @@ public abstract class AbstractRobot implements Robot {
         if( amazonPriceIsNotSet(product) ){
             String sellerListUrl = productPage.getSellerListUrl();
             if( StringUtils.isEmpty(sellerListUrl) ){
-                LOGGER.info("Seller list not available");
+                LOGGER.info("Seller list not available ");
             } else {
                 SellerListPage sellerListPage = new SellerListPage(driver).go(sellerListUrl); 
+                List<SellerQuote> amazonDistributedQuotes = new ArrayList<SellerQuote>();
                 //sellerListPage.filterNew();
                 boolean loaded = true;
+                
                 do {
                     if(!loaded){
                         sellerListPage = new SellerListPage(driver).go(sellerListUrl);
@@ -272,15 +273,70 @@ public abstract class AbstractRobot implements Robot {
                     if( amazon!=null ){
                         product.setPrice(amazon.getPrice());
                         product.setSeller(amazon.getSeller());
+                        product.setDistributor(amazon.getSeller());
                         sellerListUrl = null;
                     } else {
                         sellerListUrl = sellerListPage.nextPageUrl();
                     }
+                    List<SellerQuote> amazonDistributedQuotesInPage = findAmazonDistributedQuote(sellerQuotes);
+                    amazonDistributedQuotes.addAll(amazonDistributedQuotesInPage);
+                   
                 } while( sellerListUrl!=null );
+                
+                if( !"Amazon.com".equals(product.getSeller()) ){
+                    SellerQuote selectedQuote = bestQuoteIn(amazonDistributedQuotes);
+                    product.setPrice(selectedQuote.getPrice());
+                    product.setSeller(selectedQuote.getSeller());
+                    product.setDistributor(selectedQuote.getDistributor());
+                }
             }
         }
         
         return product;
+    }
+
+    /**
+     * bestQuoteIn
+     * @param amazonDistributedQuotes
+     * @return
+     */
+    private SellerQuote bestQuoteIn(List<SellerQuote> amazonDistributedQuotes) {
+        SellerQuote ret = amazonDistributedQuotes.get(0);
+        for (SellerQuote sellerQuote : amazonDistributedQuotes) {
+            if( getDolarPriceAmount(ret.getPrice()) > getDolarPriceAmount(sellerQuote.getPrice()) ){
+                ret = sellerQuote;
+            }
+        }
+        return ret;
+    }
+
+    /**
+     * getDolarPriceAmount
+     * @param input
+     * @return
+     */
+    public double getDolarPriceAmount(String input) {
+        String dolarStr = input;
+        dolarStr = dolarStr.replaceAll(java.util.regex.Matcher.quoteReplacement("US$"), "");
+        dolarStr = dolarStr.replaceAll(java.util.regex.Matcher.quoteReplacement("$"), "");
+        dolarStr = dolarStr.replaceAll("USD", "");
+        Number n =  StringUtils.parse(dolarStr.trim());
+        return n.doubleValue();
+    }
+
+    /**
+     * findAmazonDistributedQuote
+     * @param sellerQuotes
+     * @return
+     */
+    private List<SellerQuote> findAmazonDistributedQuote(List<SellerQuote> sellerQuotes) {
+        List<SellerQuote> ret = new ArrayList<SellerQuote>();
+        for (SellerQuote sellerQuote : sellerQuotes) {
+            if( (sellerQuote.getDistributor()!=null) && sellerQuote.getDistributor().endsWith("DE AMAZON") ){
+                ret.add(sellerQuote);
+            }
+        }
+        return ret;
     }
 
     /**
@@ -305,10 +361,11 @@ public abstract class AbstractRobot implements Robot {
      * @return
      */
     public boolean amazonPriceIsNotSet(Product product) {
-        return StringUtils.isEmpty(product.getPrice()) 
-                    || StringUtils.isEmpty(product.getSeller()) 
-                    || ! ( "Amazon.com".equals(product.getSeller())
-                            || "Vendido y enviado por Amazon.com.".equals(product.getSeller()));
+        boolean priceIsEmpty = StringUtils.isEmpty(product.getPrice()) ;
+        boolean sellerIsEmpty = StringUtils.isEmpty(product.getSeller());
+        boolean sellerIsAmazon =  "Amazon.com".equals(product.getSeller())
+                            || "Vendido y enviado por Amazon.com.".equals(product.getSeller());
+        return priceIsEmpty || sellerIsEmpty || !sellerIsAmazon;
     }
 
     /**

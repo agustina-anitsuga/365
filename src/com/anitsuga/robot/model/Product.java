@@ -18,6 +18,7 @@ public abstract class Product {
     private String dimensions;
     private List<String> images ;
     private String seller;
+    private String distributor;
     private String genericIdentifier;
     
 
@@ -70,7 +71,12 @@ public abstract class Product {
     public void setSeller(String seller) {
         this.seller = seller;
     }
-  
+    public String getDistributor() {
+        return distributor;
+    }
+    public void setDistributor(String distributor) {
+        this.distributor = distributor;
+    }
     
     public Number getWeightInKilos() {
         Double ret = null;

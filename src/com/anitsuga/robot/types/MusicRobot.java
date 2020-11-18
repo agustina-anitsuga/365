@@ -15,7 +15,15 @@ import com.anitsuga.robot.page.ProductPage;
  */
 public class MusicRobot extends AbstractRobot implements Robot {
 
-
+    /**
+     * amazonPriceIsNotSet
+     */
+    public boolean amazonPriceIsNotSet(Product product) {
+        boolean amazonPriceIsNotSet = super.amazonPriceIsNotSet(product);
+        boolean amazonIsDistributor = "Amazon".equals(product.getDistributor());
+        return amazonPriceIsNotSet?  !amazonIsDistributor : amazonPriceIsNotSet;
+    }
+    
     /**
      * getProductDetails
      * @return
@@ -37,6 +45,7 @@ public class MusicRobot extends AbstractRobot implements Robot {
         ret.setOrigin(musicPage.getOrigin());
         ret.setDimensions(musicPage.getDimensions());
         ret.setSeller(musicPage.getSeller());
+        ret.setDistributor(musicPage.getDistributor());
         ret.setArtist(musicPage.getArtist());
         ret.setAlbum(musicPage.getAlbum());
         return ret;

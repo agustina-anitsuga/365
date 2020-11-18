@@ -9,6 +9,7 @@ public class SellerQuote {
 
     
     private String seller;
+    private String distributor;
     private String price;
     
     
@@ -23,6 +24,12 @@ public class SellerQuote {
     }
     public void setPrice(String price) {
         this.price = price;
+    }
+    public String getDistributor() {
+        return distributor;
+    }
+    public void setDistributor(String distributor) {
+        this.distributor = distributor;
     }
     
 }

@@ -33,7 +33,9 @@ public class MusicPageTester {
         
         //String url = "https://www.amazon.com/-/es/Bon-Jovi/dp/B01GTQZNNM/ref=sr_1_64?dchild=1&fst=as%3Aoff&qid=1602290771&refinements=p_n_binding_browse-bin%3A387647011%2Cp_n_condition-type%3A1294428011%2Cp_85%3A2470955011&rnid=2470954011&rps=1&s=music&sr=1-64";
         //String url = "https://www.amazon.com/-/es/Journey/dp/B000G7PNKO/ref=tmm_abk_swatch_0?_encoding=UTF8&qid=1602293016&sr=1-27";
-        String url = "https://www.amazon.com/-/es/Lana-Del-Rey/dp/B009LA1QW6/ref=tmm_acd_swatch_0?_encoding=UTF8&qid=1601095349&sr=1-43";
+        //String url = "https://www.amazon.com/-/es/Lana-Del-Rey/dp/B009LA1QW6/ref=tmm_acd_swatch_0?_encoding=UTF8&qid=1601095349&sr=1-43";
+        //String url = "https://www.amazon.com/-/es/George-Strait/dp/B000006L5J/ref=tmm_acd_swatch_0?_encoding=UTF8&qid=1605568013&sr=1-7";
+        String url = "https://www.amazon.com/-/es/dp/B01K8QKLLI/ref=tmm_acd_swatch_0?_encoding=UTF8&qid=1605640960&sr=1-200";
         
         try {
             

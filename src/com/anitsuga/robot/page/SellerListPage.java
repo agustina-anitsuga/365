@@ -77,6 +77,7 @@ public class SellerListPage extends Page {
             quote.setPrice(price.getText());
             WebElement seller = webElement.findElement(By.xpath("div[@class=\"a-column a-span2 olpSellerColumn\"]/h3"));
             String sellerName = seller.getText(); 
+            
             if(StringUtils.isEmpty(sellerName)){
                 try {
                     WebElement sellerWebElement = webElement.findElement(By.xpath("div[@class=\"a-column a-span2 olpSellerColumn\"]/h3/img"));
@@ -86,6 +87,14 @@ public class SellerListPage extends Page {
                 }
             }
             quote.setSeller(sellerName);
+            
+            try {
+                WebElement distributor = webElement.findElement(By.xpath("div[@class=\"a-column a-span3 olpDeliveryColumn\"]/div/div/span/a"));
+                String distributorName = distributor.getText(); 
+                quote.setDistributor(distributorName);
+            } catch (Exception e) {
+                quote.setDistributor(quote.getSeller());
+            }
             sellerQuotes.add(quote);
         }
         return sellerQuotes;

@@ -41,6 +41,7 @@ public abstract class PublicationExcelWriter implements PublicationCSVWriter {
                    "Peso en Kilos",
                    "Disponibilidad",
                    "Seller",
+                   "Distributor",
                    "Título",
                    "Codigo Universal (ISBN u otros)",                   
                    "Imágenes",
@@ -102,7 +103,8 @@ public abstract class PublicationExcelWriter implements PublicationCSVWriter {
                         writeField(row,product.getWeight(),columnCount++); // peso
                         writeField(row,(product.getWeightInKilos() == null )?"":product.getWeightInKilos().toString(),columnCount++); // peso
                         writeField(row,product.getAvailability(),columnCount++); // disponibilidad
-                        writeField(row,product.getSeller(),columnCount++); // seller   
+                        writeField(row,product.getSeller(),columnCount++); // seller 
+                        writeField(row,product.getDistributor(),columnCount++); // distributor 
                         writeField(row,publication.getTitle(),columnCount++); // titulo
                         writeField(row,product.getGenericIdentifier(),columnCount++); // isbn
                         writeField(row,toCommaSeparatedArray(publication.getImages()),columnCount++); // imagenes

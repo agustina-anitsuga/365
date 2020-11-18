@@ -87,7 +87,17 @@ public class MusicPage extends ProductPage {
     @FindBy(xpath = "//*[@id=\"tabular-buybox-truncate-1\"]/span[2]/span" )
     private WebElement seller7;
     private WebElement[] seller = { seller1, seller2, seller3, seller4, seller5, seller6, seller7 };
-    
+
+    @FindBy(xpath = "//*[@id=\"buyboxTabularTruncate-0\"]/span[2]/span")
+    private WebElement distributor1;
+    @FindBy(xpath = "//*[@id=\"buyboxTabularTruncate-0\"]/span[2]")
+    private WebElement distributor2;
+    @FindBy(xpath = "//*[@id=\"sfsb_accordion_head\"]/div[2]/div/span[1]" )
+    private WebElement distributor3;
+    @FindBy(xpath = "//*[@id=\"tabular-buybox-truncate-0\"]/span[2]/span" )
+    private WebElement distributor4;
+    private WebElement[] distributor = { distributor1, distributor2, distributor3, distributor4 };
+  
     private Map<String,String> detailMap = null ;
     
     @FindBy(xpath = "//*[@class=\"a-button-text\"]")
@@ -121,7 +131,10 @@ public class MusicPage extends ProductPage {
     private WebElement albumFormat4;
     @FindBy(xpath = "//li[@class=\"swatchElement selected resizedSwatchElement\"]/span/span/span/a/span" )
     private WebElement albumFormat5;
-    private WebElement[] albumFormat = { albumFormat1, albumFormat2, albumFormat3, albumFormat4, albumFormat5 };
+    @FindBy(xpath = "//*[@id=\"bylineInfo\"]/span[2]" )
+    private WebElement albumFormat6;
+    
+    private WebElement[] albumFormat = { albumFormat1, albumFormat2, albumFormat3, albumFormat4, albumFormat5, albumFormat6 };
 
 
    /**
@@ -629,6 +642,26 @@ public class MusicPage extends ProductPage {
             }
         }
         return (ret==null)? "" : ret.trim();
+    }
+
+    /**
+     * getDistributor
+     * @return
+     */
+    public String getDistributor() {
+        String ret = "";
+        for (int i = 0; i < distributor.length; i++) {
+            try {
+                ret = distributor[i].getText();
+                ret = ret.trim();
+            } catch (Exception e) {
+                //
+            }
+            if( !StringUtils.isEmpty(ret) ){
+                break;
+            }
+        }
+        return ret;
     }
     
 }
