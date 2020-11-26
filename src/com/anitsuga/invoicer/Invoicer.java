@@ -56,7 +56,7 @@ public class Invoicer {
      * @param args
      */
     public static void main(String[] args) {
-        InvoiceStatusChecker invoicer = new InvoiceStatusChecker();
+        Invoicer invoicer = new Invoicer();
         invoicer.run();
     }
 
@@ -183,6 +183,11 @@ public class Invoicer {
         */
     }
 
+    /**
+     * doWorkflowStep4InvoiceDetails
+     * @param driverInv
+     * @param invoiceData
+     */
     private void doWorkflowStep4InvoiceDetails(WebDriver driverInv, InvoiceData invoiceData) {
         try {
             InvoiceDetailPage invoiceDetail = new InvoiceDetailPage(driverInv); 

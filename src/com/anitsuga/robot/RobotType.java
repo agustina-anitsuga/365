@@ -1,10 +1,12 @@
 package com.anitsuga.robot;
 
 import com.anitsuga.fwk.utils.AppProperties;
+import com.anitsuga.robot.types.PencilRobot;
 import com.anitsuga.robot.types.BookRobot;
 import com.anitsuga.robot.types.FileListURLProvider;
 import com.anitsuga.robot.types.MusicRobot;
 import com.anitsuga.robot.types.WebScraperURLProvider;
+import com.anitsuga.robot.writer.PencilPublicationExcelWriter;
 import com.anitsuga.robot.writer.BookPublicationExcelWriter;
 import com.anitsuga.robot.writer.MusicPublicationExcelWriter;
 import com.anitsuga.robot.writer.PublicationCSVWriter;
@@ -151,6 +153,40 @@ public enum RobotType {
         @Override
         public boolean shouldRetrieveImages() {
             return false;
+        }        
+    },
+    
+    PENCIL_ANALYZER {
+        @Override
+        public Robot getInstance() {
+            return new PencilRobot();
+        }
+
+        @Override
+        public String getFilename() {
+            return "pencil";
+        }
+        
+        @Override
+        public PublicationCSVWriter getWriter() {
+            return new PencilPublicationExcelWriter();
+        } 
+        
+        @Override
+        public RobotURLProvider getURLProvider() {
+            AppProperties config = AppProperties.getInstance();
+            String fileName = config.getProperty("pencil.list.file");
+            return new FileListURLProvider(fileName);
+        } 
+        
+        @Override
+        public boolean shouldNavigateURLs() {
+            return false;
+        }
+
+        @Override
+        public boolean shouldRetrieveImages() {
+            return true;
         }        
     }
     ;
