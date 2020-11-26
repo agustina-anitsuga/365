@@ -1,14 +1,16 @@
 package com.anitsuga.robot;
 
 import com.anitsuga.fwk.utils.AppProperties;
-import com.anitsuga.robot.types.PencilRobot;
 import com.anitsuga.robot.types.BookRobot;
 import com.anitsuga.robot.types.FileListURLProvider;
+import com.anitsuga.robot.types.MovieRobot;
 import com.anitsuga.robot.types.MusicRobot;
+import com.anitsuga.robot.types.PencilRobot;
 import com.anitsuga.robot.types.WebScraperURLProvider;
-import com.anitsuga.robot.writer.PencilPublicationExcelWriter;
 import com.anitsuga.robot.writer.BookPublicationExcelWriter;
+import com.anitsuga.robot.writer.MoviePublicationExcelWriter;
 import com.anitsuga.robot.writer.MusicPublicationExcelWriter;
+import com.anitsuga.robot.writer.PencilPublicationExcelWriter;
 import com.anitsuga.robot.writer.PublicationCSVWriter;
 
 /**
@@ -188,6 +190,44 @@ public enum RobotType {
         public boolean shouldRetrieveImages() {
             return true;
         }        
+    },
+    
+    MOVIE_ANALYZER {
+        @Override
+        public Robot getInstance() {
+            return new MovieRobot();
+        }
+
+        @Override
+        public String getFilename() {
+            return "movie";
+        }
+        
+        @Override
+        public PublicationCSVWriter getWriter() {
+            return new MoviePublicationExcelWriter();
+        } 
+        
+        @Override
+        public RobotURLProvider getURLProvider() {
+            AppProperties config = AppProperties.getInstance();
+            String fileName = config.getProperty("movie.list.file");
+            return new FileListURLProvider(fileName);
+        } 
+        
+        @Override
+        public boolean shouldNavigateURLs() {
+            return false;
+        }
+
+        @Override
+        public boolean shouldRetrieveImages() {
+            return true;
+        }        
+        
+        public boolean dropShippingEnabled(){
+            return false;
+        }
     }
     ;
     
@@ -198,5 +238,6 @@ public enum RobotType {
     public abstract boolean shouldNavigateURLs();
     public abstract boolean shouldRetrieveImages();
     
+    public boolean dropShippingEnabled() { return true; }
 
 }

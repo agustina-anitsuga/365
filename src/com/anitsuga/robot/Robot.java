@@ -43,4 +43,9 @@ public interface Robot {
      */
     public void shouldRetrieveImages(boolean shouldRetrieveImages);
     
+    /**
+     * dropShippingEnabled
+     * @param dropShippingEnabled
+     */
+    public void dropShippingEnabled( boolean dropShippingEnabled );
 }

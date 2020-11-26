@@ -30,7 +30,7 @@ public class Launcher {
      */
     public static void main(String[] args) {
         Launcher self = new Launcher();
-        self.run(RobotType.MUSIC_SCRAPER);
+        self.run(RobotType.MOVIE_ANALYZER);
     }
 
     /**

@@ -143,43 +143,5 @@ public class InputDataReader {
         return (cell==null)? "" : cell.getStringCellValue();
     }
 
-    /**
-     * getSampleData
-     * @return
-     */
-    private List<Publication> getSampleData() {
-        
-        List<Publication> data = new ArrayList<Publication>();
-        
-        Publication publication = new Publication();
-        publication.setId("MLA845929856");
-        publication.setPrice(82);
-        publication.setTitle("Libro - Prueba - No Comprar");
-        publication.setIsbn("1234");
-        data.add(publication);
-        
-        publication = new Publication();
-        publication.setId("MLA845929856");
-        publication.setPrice(23);
-        publication.setTitle("Libro - Prueba - No Comprar");
-        publication.setIsbn("1234");
-        data.add(publication);
-
-        publication = new Publication();
-        publication.setId("MLA845929856");
-        publication.setPrice(82);
-        publication.setTitle("Libro - Prueba - No Comprar");
-        publication.setIsbn("1234");
-        data.add(publication);
-        
-        publication = new Publication();
-        publication.setId("MLA845929856");
-        publication.setPrice(23);
-        publication.setTitle("Libro - Prueba - No Comprar");
-        publication.setIsbn("1234");
-        data.add(publication);
-        
-        return data;
-    }
 
 }

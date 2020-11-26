@@ -44,6 +44,7 @@ public abstract class AbstractRobot implements Robot {
     private RobotURLProvider urlProvider;
     private boolean shouldNavigateURLs;
     private boolean shouldRetrieveImages;
+    private boolean dropShippingEnabled;
     
     
     /**
@@ -606,4 +607,16 @@ public abstract class AbstractRobot implements Robot {
         this.shouldRetrieveImages = shouldRetrieveImages;
     }
        
+    @Override
+    public void dropShippingEnabled( boolean dropShippingEnabled ) {
+        this.dropShippingEnabled = dropShippingEnabled;
+    }   
+    
+    /**
+     * isDropShippingEnabled
+     * @return
+     */
+    public boolean isDropShippingEnabled(){
+        return this.dropShippingEnabled;
+    }
 }
