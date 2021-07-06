@@ -71,10 +71,12 @@ public class SalePage extends Page {
         List<Product> products = new ArrayList<Product>();
         for (WebElement product : productList) {
             String aTitle = product.findElement(By.xpath("./div[@class=\"sc-title\"]")).getText();
-            String aPrice = product.findElement(By.xpath("./div[@class=\"sc-price\"]")).getText();     
+            String aPrice = product.findElement(By.xpath("./div[@class=\"sc-price\"]")).getText();  
+            String aQuantity = product.findElement(By.xpath("./div[@class=\"sc-quantity\"]")).getText();  
             aPrice = aPrice.replaceAll("\\.", "");
             aPrice = aPrice.replaceAll("\\$", "");
-            Product p = new Product(aTitle,aPrice);
+            aQuantity = aQuantity.replaceAll("u\\.", "");
+            Product p = new Product(aTitle,aPrice,Integer.valueOf(aQuantity.trim()));
             products.add(p);
         }
         return products;
@@ -113,6 +115,13 @@ public class SalePage extends Page {
         int beginIndex = invoiceDataStr.indexOf('\n') +1;
         String address = invoiceDataStr.substring(beginIndex);
         return address;
+    }
+    
+    public String getCustomerName(){
+        String invoiceDataStr = invoiceData.getText();
+        int endIndex = invoiceDataStr.indexOf('-') ;
+        String name = invoiceDataStr.substring(0,endIndex-1);
+        return name;
     }
     
     public void addNote( String note ){

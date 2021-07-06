@@ -197,6 +197,7 @@ public class Invoicer {
                 invoiceDetail.setProduct( line, product.getTitle() );
                 invoiceDetail.setPrice( line, product.getFormattedPrice() );
                 invoiceDetail.setIva( line, product.getIVA() );   
+                invoiceDetail.setQuantity( line, product.getQuantity() );
                 line = line + 1;
                 if(line<=products.size()){
                     invoiceDetail.newLine();
@@ -225,11 +226,40 @@ public class Invoicer {
             doWait(1000);
             invoiceHeader.setCustomerAddress( invoiceData.getCustomer().getAddress() );
             invoiceHeader.setDefaultPaymentType();
+            
+            validateCustomerName(invoiceData, invoiceHeader);
+            
             invoiceHeader.clickNext();
         } catch( Exception e ) {
             e.printStackTrace();
             this.promptForInput("Could you fix the error, please? (and go to the next step)");
         }
+    }
+
+    /**
+     * validateCustomerName
+     * @param invoiceData
+     * @param invoiceHeader
+     */
+    private void validateCustomerName(InvoiceData invoiceData, InvoiceHeaderPage invoiceHeader) {
+        String nameInSalesSystem = invoiceData.getCustomer().getName();
+        String[] nameParts = nameInSalesSystem.split(" ");
+        String nameInInvoicingSystem = sanitize(invoiceHeader.getCustomerName());
+        boolean anyMatch = false;
+        for (String namePart : nameParts) {
+            anyMatch |= nameInInvoicingSystem.contains(sanitize(namePart));
+        }
+        if(!anyMatch)
+            this.promptForInput("Could you check the customer name, please? (input any string when done)");
+    }
+
+    /**
+     * sanitize
+     * @param string
+     * @return
+     */
+    private String sanitize(String string) {
+        return string.toUpperCase();
     }
 
     /**
@@ -284,7 +314,12 @@ public class Invoicer {
     private InvoiceData getInvoiceDataFrom(SalePage salePage) {
         InvoiceData ret = null;
         if( !salePage.includesInvoicedComment() ){
-            Customer customer = new Customer(salePage.getCustomerDocType(),salePage.getCustomerDocNumber(),salePage.getCustomerAddress());
+            Customer customer = new Customer(
+                        salePage.getCustomerDocType(),
+                        salePage.getCustomerDocNumber(),
+                        salePage.getCustomerAddress(),
+                        salePage.getCustomerName()
+                        );
             ret = new InvoiceData(customer,salePage.getProducts());
         }
         return ret;

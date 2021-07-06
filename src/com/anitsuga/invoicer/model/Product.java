@@ -9,10 +9,12 @@ public class Product {
     
     private String title;
     private String price;
+    private int quantity;
     
-    public Product( String title, String price ){
+    public Product( String title, String price, int quantity ){
         this.title = title;
         this.price = price;
+        this.quantity = quantity;
     }
     
     public String getTitle() {
@@ -27,7 +29,15 @@ public class Product {
     public void setPrice(String price) {
         this.price = price;
     }
-    
+
+    public int getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
+    }
+
     public String getFormattedPrice(){
         String aPrice = this.getPrice().replaceAll(",", ".");
         Double d = (new Double(aPrice));
@@ -42,4 +52,5 @@ public class Product {
             return "21%";
         }
     }
+
 }

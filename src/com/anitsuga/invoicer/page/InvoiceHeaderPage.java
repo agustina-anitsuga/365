@@ -46,6 +46,21 @@ public class InvoiceHeaderPage extends Page {
     }
     
     /**
+     * getCustomerName
+     * @return customer name as known by invoicing service
+     * @throws InterruptedException 
+     */
+    public String getCustomerName() {
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        String ret = customerName.getAttribute("value");
+        return ret;
+    }
+    
+    /**
      * setDefaultCustomerType
      */
     public void setDefaultCustomerType() {

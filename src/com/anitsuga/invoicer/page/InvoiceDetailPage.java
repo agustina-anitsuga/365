@@ -74,6 +74,18 @@ public class InvoiceDetailPage extends Page {
     }
 
     /**
+     * setQuantity
+     * @param line
+     * @param quantity
+     */
+    public void setQuantity(int line, int quantity) {
+        WebElement qty = driver.findElement(By.xpath("//*[@id=\"detalle_cantidad"+line+"\"]"));
+        qty.sendKeys(Keys.BACK_SPACE);
+        qty.sendKeys(String.valueOf(quantity));
+        qty.sendKeys(Keys.TAB);
+    }
+    
+    /**
      * clickNext
      */
     public void clickNext() {
