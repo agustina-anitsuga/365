@@ -11,7 +11,7 @@
 
 		<!-- generales -->
 		<junit.version>4.13.1</junit.version>
-		<commons-io.version>2.4</commons-io.version>
+		<commons-io.version>2.7</commons-io.version>
 		<slf4j-log4j12.version>1.7.7</slf4j-log4j12.version>
 		<slf4j-api.version>1.7.7</slf4j-api.version>
 
