@@ -20,20 +20,23 @@ public class SalePage extends Page {
 
     @FindBy( xpath = "//*[@id=\"root-app\"]/div/div[1]/div/div[1]/h1" )
     private WebElement product;
-    
+                        
     @FindBy( xpath = "//*[@id=\"root-app\"]/div/div[1]/div/div[4]/div/div/div[2]/div/p" )
     private WebElement invoiceData; 
+    
+    @FindBy( xpath = "//*/div[@class=\"sc-title-subtitle-action__label\"]" )
+    private WebElement userData;
     
     @FindBy( xpath = "//*[@id=\"root-app\"]/div/div[2]/div[1]/div[1]/div[2]/ul/li/div[2]/div" )
     private WebElement price;
     
-    @FindBy( xpath = "//*[@id=\"root-app\"]/div/div[1]/div/div[6]/div[1]/button/span" )
+    @FindBy( xpath = "//*[@id=\"root-app\"]/div/div[1]/div/div[@class=\"sc-notes\"]/div[1]/button/span" )
     private WebElement addNoteButton;
     
-    @FindBy( xpath = "//*[@id=\"root-app\"]/div/div[1]/div/div[6]/div[2]/label/div[1]/input" )
+    @FindBy( xpath = "//*[@id=\"root-app\"]/div/div[1]/div/div[@class=\"sc-notes\"]/div[2]/label/div[1]/input" )
     private WebElement noteTextField;
     
-    @FindBy( xpath = "//*[@id=\"root-app\"]/div/div[1]/div/div[6]/div[2]/button/span" )
+    @FindBy( xpath = "//*[@id=\"root-app\"]/div/div[1]/div/div[@class=\"sc-notes\"]/div[2]/button/span" )
     private WebElement saveNoteButton;
     
     @FindBy( xpath = "//*[@class=\"sc-notes\"]/div[@class=\"sc-notes__content\"]/p[@class=\"sc-notes__content-text\"]" )
@@ -72,7 +75,7 @@ public class SalePage extends Page {
         for (WebElement product : productList) {
             String aTitle = product.findElement(By.xpath("./div[@class=\"sc-title\"]")).getText();
             String aPrice = product.findElement(By.xpath("./div[@class=\"sc-price\"]")).getText();  
-            String aQuantity = product.findElement(By.xpath("./div[@class=\"sc-quantity\"]")).getText();  
+            String aQuantity = getQuantity(product);  
             aPrice = aPrice.replaceAll("\\.", "");
             aPrice = aPrice.replaceAll("\\$", "");
             aQuantity = aQuantity.replaceAll("u\\.", "");
@@ -80,6 +83,16 @@ public class SalePage extends Page {
             products.add(p);
         }
         return products;
+    }
+
+    private String getQuantity(WebElement product) {
+        String ret = null;
+        try {
+            ret = product.findElement(By.xpath("./div[@class=\"sc-quantity\"]")).getText();
+        } catch (Exception e) {
+            ret = product.findElement(By.xpath("./div[@class=\"sc-quantity sc-quantity__unique\"]")).getText();
+        }
+        return ret;
     }
     
     public String getTotalPrice(){
@@ -90,37 +103,96 @@ public class SalePage extends Page {
     }
     
     public String getCustomerDocType(){
-        String invoiceDataStr = invoiceData.getText();
+        String docType = getCustomerDocTypeFromInvoiceData();
+        return (docType == null) ? getCustomerDocTypeFromUserData() : docType;
+    }
+    
+    private String getCustomerDocTypeFromUserData() {
+        String userDataStr = userData.getText();
+        String ret = null;
+        if ( userDataStr.indexOf("DNI") >= 0 )  ret = "DNI";
+        if ( userDataStr.indexOf("CUIT") >= 0 )  ret = "CUIT";
+        return ret;
+    }
+
+    private String getCustomerDocTypeFromInvoiceData() {
         String docType = null;
-        if( invoiceDataStr.contains("DNI") ){
-            docType = "DNI";
-        }
-        if( invoiceDataStr.contains("CUIT") ){
-            docType = "CUIT";
+        try {
+            String invoiceDataStr = invoiceData.getText();
+            if( invoiceDataStr.contains("DNI") ){
+                docType = "DNI";
+            }
+            if( invoiceDataStr.contains("CUIT") ){
+                docType = "CUIT";
+            }
+        } catch (Exception e) {
+            // do nothing
         }
         return docType;
     }
     
     public String getCustomerDocNumber(){
-        String docType = this.getCustomerDocType();
-        String invoiceDataStr = invoiceData.getText();
-        int beginIndex = invoiceDataStr.indexOf(docType) + docType.length();
-        int endIndex = invoiceDataStr.indexOf('\n');
-        String docNumber = invoiceDataStr.substring(beginIndex,endIndex);
-        return docNumber.trim();
+        String ret = getCustmerDocNumberFromInvoiceData();
+        return ret == null? getCustomerDocNumberFromUserData():ret ;
+    }
+
+    private String getCustmerDocNumberFromInvoiceData() {
+        String docNumber = null;
+        try {
+            String docType = this.getCustomerDocType();
+            String invoiceDataStr = invoiceData.getText();
+            int beginIndex = invoiceDataStr.indexOf(docType) + docType.length();
+            int endIndex = invoiceDataStr.indexOf('\n');
+            docNumber = invoiceDataStr.substring(beginIndex,endIndex).trim();
+        } catch ( Exception e ) {
+            // do nothing
+        }
+        return docNumber;
+    }
+    
+    private String getCustomerDocNumberFromUserData() {
+        String userDataStr = userData.getText();
+        String parts[] = userDataStr.split("\\|");
+        String ret = parts[2].replaceAll("DNI","");
+        ret = ret.replaceAll("CUIT","");        
+        return ret.trim();
     }
     
     public String getCustomerAddress(){
-        String invoiceDataStr = invoiceData.getText();
-        int beginIndex = invoiceDataStr.indexOf('\n') +1;
-        String address = invoiceDataStr.substring(beginIndex);
+        String address = null;
+        try {
+            String invoiceDataStr = invoiceData.getText();
+            int beginIndex = invoiceDataStr.indexOf('\n') +1;
+            address = invoiceDataStr.substring(beginIndex);
+        } catch (Exception e) {
+            address = "";
+        }
         return address;
     }
     
     public String getCustomerName(){
-        String invoiceDataStr = invoiceData.getText();
-        int endIndex = invoiceDataStr.indexOf('-') ;
-        String name = invoiceDataStr.substring(0,endIndex-1);
+        String name = getCustomerNameFromInvoiceData();
+        return (name==null)? getCustomerNameFromUserData(): name;
+    }
+
+    private String getCustomerNameFromUserData() {
+        String userDataStr = userData.getText();
+        String parts[] = userDataStr.split("\\|");
+        String name = parts[0];
+        name = name.replaceAll("<b>","");
+        name = name.replaceAll("</b>","");
+        return name.trim();
+    }
+    
+    private String getCustomerNameFromInvoiceData() {
+        String name = null;
+        try {
+            String invoiceDataStr = invoiceData.getText();
+            int endIndex = invoiceDataStr.indexOf('-') ;
+            name = invoiceDataStr.substring(0,endIndex-1);
+        } catch (Exception e) {
+            // do nothing
+        }
         return name;
     }
     
