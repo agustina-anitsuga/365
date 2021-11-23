@@ -70,9 +70,21 @@ public class InvoiceStatusChecker {
             sale.setResult(result);
             System.out.println(result);   
             System.out.println("---");
+            sleep();
         }
         
         writeResults(sales);
+    }
+
+    /**
+     * sleep
+     */
+    private void sleep() {
+        try {
+            Thread.sleep(500);
+        } catch (Exception e) {
+            // nothing
+        }
     }
 
     /**

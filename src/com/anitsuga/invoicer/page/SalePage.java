@@ -18,25 +18,25 @@ import com.anitsuga.invoicer.model.Product;
  */
 public class SalePage extends Page {
 
-    @FindBy( xpath = "//*[@id=\"root-app\"]/div/div[1]/div/div[1]/h1" )
+    @FindBy( xpath = "//*[@class=\"sc_product\"]" )
     private WebElement product;
-                        
-    @FindBy( xpath = "//*[@id=\"root-app\"]/div/div[1]/div/div[4]/div/div/div[2]/div/p" )
+
+    @FindBy( xpath = "//*[@class=\"sc-title-subtitle-action__sublabel\"]/p" )
     private WebElement invoiceData; 
     
-    @FindBy( xpath = "//*/div[@class=\"sc-title-subtitle-action__label\"]" )
+    @FindBy( xpath = "//*/div[@class=\"sc-buyer__content\"]/div" )
     private WebElement userData;
     
-    @FindBy( xpath = "//*[@id=\"root-app\"]/div/div[2]/div[1]/div[1]/div[2]/ul/li/div[2]/div" )
+    @FindBy( xpath = "//*[@class=\"sc-account-rows__row__price\"]" )
     private WebElement price;
     
-    @FindBy( xpath = "//*[@id=\"root-app\"]/div/div[1]/div/div[@class=\"sc-notes\"]/div[1]/button/span" )
+    @FindBy( xpath = "//*[@class=\"sc-notes\"]/div/button/span" )
     private WebElement addNoteButton;
     
-    @FindBy( xpath = "//*[@id=\"root-app\"]/div/div[1]/div/div[@class=\"sc-notes\"]/div[2]/label/div[1]/input" )
+    @FindBy( xpath = "//*[@class=\"sc-notes\"]/div[2]/label/div[2]/input" )
     private WebElement noteTextField;
     
-    @FindBy( xpath = "//*[@id=\"root-app\"]/div/div[1]/div/div[@class=\"sc-notes\"]/div[2]/button/span" )
+    @FindBy( xpath = "//*[@class=\"sc-notes\"]/div[2]/button/span" )
     private WebElement saveNoteButton;
     
     @FindBy( xpath = "//*[@class=\"sc-notes\"]/div[@class=\"sc-notes__content\"]/p[@class=\"sc-notes__content-text\"]" )
@@ -104,13 +104,13 @@ public class SalePage extends Page {
     
     public String getCustomerDocType(){
         String docType = getCustomerDocTypeFromInvoiceData();
-        return (docType == null) ? getCustomerDocTypeFromUserData() : docType;
+        return (docType == "") ? getCustomerDocTypeFromUserData() : docType;
     }
     
     private String getCustomerDocTypeFromUserData() {
         String userDataStr = userData.getText();
         String ret = null;
-        if ( userDataStr.indexOf("DNI") >= 0 )  ret = "DNI";
+        if ( userDataStr.indexOf("DNI ") >= 0 )  ret = "DNI";
         if ( userDataStr.indexOf("CUIT") >= 0 )  ret = "CUIT";
         return ret;
     }
