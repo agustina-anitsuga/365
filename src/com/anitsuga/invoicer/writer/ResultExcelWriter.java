@@ -62,7 +62,7 @@ public class ResultExcelWriter {
                 try {
                     outputStream.close();
                 } catch (Exception e) { 
-                    LOGGER.error(e.getMessage());
+                    LOGGER.error(e.getMessage()+"");
                 }
             }
         }

@@ -166,7 +166,7 @@ public class Invoicer {
     private void executeInvoiceWorkflow(WebDriver driverInv, InvoiceData invoiceData) {
         
         MenuPage menuPage = new MenuPage(driverInv);
-        menuPage.go("https://serviciosjava2.afip.gob.ar/rcel/jsp/menu_ppal.jsp");
+        menuPage.go("https://fe.afip.gob.ar/rcel/jsp/menu_ppal.jsp");
         menuPage.clickGenerateInvoice();
         
         doWorkflowStep1InvoiceType(driverInv);

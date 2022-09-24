@@ -125,7 +125,7 @@ public class InvoiceStatusChecker {
             }
             
         } catch (Exception e) {
-            ret = e.getMessage();
+            ret = e.getMessage() + "";
         }
         return ret;
     }

@@ -24,7 +24,7 @@ public class SalePage extends Page {
     @FindBy( xpath = "//*[@class=\"sc-title-subtitle-action__sublabel\"]/p" )
     private WebElement invoiceData; 
     
-    @FindBy( xpath = "//*/div[@class=\"sc-buyer__content\"]/div" )
+    @FindBy( xpath = "//*/div[@class=\"sc-buyer__content\"]/div/div/p" )
     private WebElement userData;
     
     @FindBy( xpath = "//*[@class=\"sc-account-rows__row__price\"]" )
@@ -33,7 +33,7 @@ public class SalePage extends Page {
     @FindBy( xpath = "//*[@class=\"sc-notes\"]/div/button/span" )
     private WebElement addNoteButton;
     
-    @FindBy( xpath = "//*[@class=\"sc-notes\"]/div[2]/label/div[2]/input" )
+    @FindBy( xpath = "//*[@class=\"sc-notes\"]/div[2]/div/label/div/input" )
     private WebElement noteTextField;
     
     @FindBy( xpath = "//*[@class=\"sc-notes\"]/div[2]/button/span" )
@@ -67,13 +67,15 @@ public class SalePage extends Page {
     }
 
     public String getTitle(){
-        return product.getText();
+        String ret = product.getText();
+        return ret;
     }
     
     public List<Product> getProducts(){
         List<Product> products = new ArrayList<Product>();
         for (WebElement product : productList) {
             String aTitle = product.findElement(By.xpath("./div[@class=\"sc-title\"]")).getText();
+            aTitle = aTitle.replace("Venta por publicidad", "");
             String aPrice = product.findElement(By.xpath("./div[@class=\"sc-price\"]")).getText();  
             String aQuantity = getQuantity(product);  
             aPrice = aPrice.replaceAll("\\.", "");
@@ -104,13 +106,13 @@ public class SalePage extends Page {
     
     public String getCustomerDocType(){
         String docType = getCustomerDocTypeFromInvoiceData();
-        return (docType == "") ? getCustomerDocTypeFromUserData() : docType;
+        return ((docType == "") || (docType == null)) ? getCustomerDocTypeFromUserData() : docType;
     }
     
     private String getCustomerDocTypeFromUserData() {
         String userDataStr = userData.getText();
         String ret = null;
-        if ( userDataStr.indexOf("DNI ") >= 0 )  ret = "DNI";
+        if ( userDataStr.indexOf("DNI") >= 0 )  ret = "DNI";
         if ( userDataStr.indexOf("CUIT") >= 0 )  ret = "CUIT";
         return ret;
     }
@@ -153,7 +155,7 @@ public class SalePage extends Page {
     private String getCustomerDocNumberFromUserData() {
         String userDataStr = userData.getText();
         String parts[] = userDataStr.split("\\|");
-        String ret = parts[2].replaceAll("DNI","");
+        String ret = parts[1].replaceAll("DNI","");
         ret = ret.replaceAll("CUIT","");        
         return ret.trim();
     }
