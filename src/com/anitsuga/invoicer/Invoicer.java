@@ -201,7 +201,7 @@ public class Invoicer {
                 line = line + 1;
                 if(line<=products.size()){
                     invoiceDetail.newLine();
-                    doWait(1000);
+                    doWait(500);
                 }
         }
         invoiceDetail.clickNext();
@@ -220,10 +220,10 @@ public class Invoicer {
         try {
             InvoiceHeaderPage invoiceHeader = new InvoiceHeaderPage(driverInv); 
             invoiceHeader.setDefaultCustomerType();
-            doWait(1000);
+            doWait(500);
             invoiceHeader.setCustomerDocType( invoiceData.getCustomer().getDocType() );
             invoiceHeader.setCustomerDocNumber( invoiceData.getCustomer().getDocNumber() );
-            doWait(1000);
+            doWait(500);
             invoiceHeader.setCustomerAddress( invoiceData.getCustomer().getAddress() );
             invoiceHeader.setDefaultPaymentType();
             
@@ -279,7 +279,7 @@ public class Invoicer {
     private void doWorkflowStep1InvoiceType(WebDriver driverInv) {
         InvoiceTypePage invoiceType = new InvoiceTypePage(driverInv);
         invoiceType.selectDefaultSalesPoint();
-        doWait(1000);
+        doWait(500);
         invoiceType.selecteDefaultInvoiceType();
         invoiceType.clickNext();
     }

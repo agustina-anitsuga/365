@@ -3,6 +3,8 @@ package com.anitsuga.fwk.utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.FileReader;
+
 /**
  * AppProperties
  * @author agustina.dagnino
@@ -42,7 +44,8 @@ public class AppProperties {
      */
     private AppProperties() {
         try {
-            config.load(this.getClass().getClassLoader().getResourceAsStream("app.properties"));
+            config.load(new FileReader("resources/app.properties"));
+            //config.load(this.getClass().getClassLoader().getResourceAsStream("app.properties"));
         } catch (Exception e) {
             LOGGER.error("Could not read properties file.", e);
         }

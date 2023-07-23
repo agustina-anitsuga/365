@@ -80,6 +80,8 @@ public class SalePage extends Page {
             String aQuantity = getQuantity(product);  
             aPrice = aPrice.replaceAll("\\.", "");
             aPrice = aPrice.replaceAll("\\$", "");
+            aQuantity = aQuantity.replaceAll("unidades", "");
+            aQuantity = aQuantity.replaceAll("unidad", "");
             aQuantity = aQuantity.replaceAll("u\\.", "");
             Product p = new Product(aTitle,aPrice,Integer.valueOf(aQuantity.trim()));
             products.add(p);

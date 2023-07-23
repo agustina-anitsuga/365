@@ -81,7 +81,7 @@ public class InvoiceStatusChecker {
      */
     private void sleep() {
         try {
-            Thread.sleep(500);
+            Thread.sleep(200);
         } catch (Exception e) {
             // nothing
         }

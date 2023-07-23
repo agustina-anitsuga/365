@@ -1,15 +1,18 @@
 package com.anitsuga.fwk.utils;
 
 import java.io.File;
+import java.time.Duration;
 
 import org.apache.commons.io.FileUtils;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 import org.openqa.selenium.ie.InternetExplorerDriver;
+import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,7 +56,10 @@ public class SeleniumUtils {
             driver = new FirefoxDriver();
             break;
         case CHROME:
-            driver = new ChromeDriver();
+            String path = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome";
+            ChromeOptions options = new ChromeOptions();
+            options.setBinary(path);
+            driver = new ChromeDriver(options);
             break;
         case IEXPLORE:
             driver = new InternetExplorerDriver();
@@ -76,7 +82,9 @@ public class SeleniumUtils {
      * @return
      */
     public static WebDriverWait getWait(WebDriver driver) {
-        return new WebDriverWait(driver, 3);
+        Duration duration = Duration.ofSeconds(3);
+        WebDriverWait webDriverWait = new WebDriverWait(driver,duration);
+        return webDriverWait;
     }
 
     /**
@@ -85,7 +93,8 @@ public class SeleniumUtils {
      * @return
      */
     public static WebDriverWait getWait(WebDriver driver, int maxWait ) {
-        return new WebDriverWait(driver, maxWait);
+        java.time.Duration duration = Duration.ofSeconds(maxWait);
+        return new WebDriverWait(driver, duration);
     }
     
     /**
