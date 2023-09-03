@@ -60,4 +60,12 @@ public class AppProperties {
         return config.getProperty(property);
     }
 
+    /**
+     * getBooleanProperty
+     * @param property
+     * @return
+     */
+    public boolean getBooleanProperty(String property){
+        return Boolean.parseBoolean(config.getProperty(property));
+    }
 }

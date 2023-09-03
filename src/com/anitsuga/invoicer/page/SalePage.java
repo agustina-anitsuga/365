@@ -29,16 +29,16 @@ public class SalePage extends Page {
     
     @FindBy( xpath = "//*[@class=\"sc-account-rows__row__price\"]" )
     private WebElement price;
-    
+
     @FindBy( xpath = "//*[@class=\"sc-notes\"]/div/button/span" )
     private WebElement addNoteButton;
     
-    @FindBy( xpath = "//*[@class=\"sc-notes\"]/div[2]/div/label/div/input" )
+    @FindBy( xpath = "//*[@id=\"react-aria-1\"]" )
     private WebElement noteTextField;
-    
+
     @FindBy( xpath = "//*[@class=\"sc-notes\"]/div[2]/button/span" )
     private WebElement saveNoteButton;
-    
+
     @FindBy( xpath = "//*[@class=\"sc-notes\"]/div[@class=\"sc-notes__content\"]/p[@class=\"sc-notes__content-text\"]" )
     private List<WebElement> existingNotes;
     

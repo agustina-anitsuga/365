@@ -1,17 +1,21 @@
 package com.anitsuga.invoicer;
 
+import java.io.ByteArrayOutputStream;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.ProtocolException;
+import java.net.URL;
 import java.util.List;
 import java.util.Scanner;
 
+import com.anitsuga.fwk.utils.*;
+import com.anitsuga.invoicer.api.MeliRestClient;
+import com.anitsuga.invoicer.api.Note;
 import org.openqa.selenium.WebDriver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.anitsuga.fwk.page.LoginPage;
-import com.anitsuga.fwk.utils.AppProperties;
-import com.anitsuga.fwk.utils.Browser;
-import com.anitsuga.fwk.utils.FileUtils;
-import com.anitsuga.fwk.utils.SeleniumUtils;
 import com.anitsuga.invoicer.model.Sale;
 import com.anitsuga.invoicer.page.SalePage;
 import com.anitsuga.invoicer.reader.InputDataReader;
@@ -28,24 +32,31 @@ public class InvoiceStatusChecker {
      * SALES_TO_INVOICE_FILE
      */
     protected static final String SALES_TO_INVOICE_FILE = "sales.to.invoice.file";
-    
+
+    /**
+     * API_ENABLED
+     */
+    protected static final String API_ENABLED = "api.enabled";
+
+
     /**
      * logger
      */
     private static final Logger LOGGER = LoggerFactory.getLogger(InvoiceStatusChecker.class.getName());
     
-    /**
-     * Input scanner
-     */
-    private Scanner scanner;
-    
-    
+
     /**
      * main
      * @param args
      */
     public static void main(String[] args) {
-        InvoiceStatusChecker invoicer = new InvoiceStatusChecker();
+        boolean isApiEnabled = AppProperties.getInstance().getBooleanProperty(API_ENABLED);
+        InvoiceStatusChecker invoicer = null;
+        if( isApiEnabled ) {
+            invoicer = new ApiInvoiceStatusChecker();
+        } else {
+            invoicer = new WebInvoiceStatusChecker();
+        }
         invoicer.run();
     }
 
@@ -53,20 +64,15 @@ public class InvoiceStatusChecker {
      * run
      */
     public void run(){
-        
+
         List<Sale> sales = getSales();
-        
-        scanner = new Scanner(System.in);
-        
-        WebDriver driverMeli = SeleniumUtils.buildDriver(Browser.CHROME);
-        this.login(driverMeli,"https://www.mercadolibre.com.ar/");
-        this.promptForInput("Please log in and press ok");
-        
+        initialize();
+
         int count = 0;
         int total = sales.size();
         for (Sale sale : sales) {
             System.out.println("Checking sale "+sale.getId()+ " ["+(++count)+"/"+total+"]");
-            String result = getSaleStatus(driverMeli, sale);
+            String result = getSaleStatus(sale);
             sale.setResult(result);
             System.out.println(result);   
             System.out.println("---");
@@ -76,10 +82,18 @@ public class InvoiceStatusChecker {
         writeResults(sales);
     }
 
+    protected void initialize() {
+
+    }
+
+    protected String getSaleStatus(Sale sale) {
+        return "";
+    }
+
     /**
      * sleep
      */
-    private void sleep() {
+    protected void sleep() {
         try {
             Thread.sleep(200);
         } catch (Exception e) {
@@ -107,30 +121,6 @@ public class InvoiceStatusChecker {
     }
 
     /**
-     * invoice
-     * @param driverMeli
-     * @param sale
-     * @return
-     */
-    private String getSaleStatus(WebDriver driverMeli, Sale sale) {
-        String ret = "";
-        try {
-            
-            String saleUrl = sale.getSaleUrl();
-            SalePage salePage = new SalePage(driverMeli).go(saleUrl);
-            if ( salePage.includesInvoicedComment() ){
-                ret = "Already invoiced";
-            } else {
-                ret = "Invoice Pending";
-            }
-            
-        } catch (Exception e) {
-            ret = e.getMessage() + "";
-        }
-        return ret;
-    }
-
-    /**
      * getSalesToInvoice
      * @return
      */
@@ -139,28 +129,5 @@ public class InvoiceStatusChecker {
         InputDataReader reader = new InputDataReader(); 
         return reader.read(filename);
     }
-    
-    /**
-     * login
-     */
-    protected void login( WebDriver driver, String url ){   
-        LoginPage page = new LoginPage(driver);
-        page.go(url);
-    }
 
-    /**
-     * promptForInput
-     */
-    protected String promptForInput(String prompt) {
-        String ret = null;
-        try {
-            System.out.println(prompt);
-            ret = scanner.nextLine();
-            System.out. println("You entered string "+ret);
-        } catch (Exception e){
-            LOGGER.error(e.getMessage());
-        } 
-        return ret;
-    }
-    
 }

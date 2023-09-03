@@ -1,15 +1,19 @@
 package com.anitsuga.invoicer.api;
 
 import java.util.Map;
+import java.util.List;
+
 
 /**
- * BilingInfo
+ * BillingInfo
  */
-public class BilingInfo {
+public class BillingInfo {
 
     private String doc_type;
     private String doc_number;
-    private Map<String,String> additional_info;
+
+    private List<AdditionalInfo> additional_info;
+
 
     public String getDoc_type() {
         return doc_type;
@@ -27,11 +31,11 @@ public class BilingInfo {
         this.doc_number = doc_number;
     }
 
-    public Map<String, String> getAdditional_info() {
+    public List<AdditionalInfo> getAdditional_info() {
         return additional_info;
     }
 
-    public void setAdditional_info(Map<String, String> additional_info) {
+    public void setAdditional_info(List<AdditionalInfo> additional_info) {
         this.additional_info = additional_info;
     }
 }
