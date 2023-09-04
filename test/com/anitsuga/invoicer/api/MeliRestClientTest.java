@@ -12,6 +12,14 @@ public class MeliRestClientTest {
 
     private String orderId = "2000006332896030";
 
+
+    @Test
+    public void testAddNote(){
+        MeliRestClient client = new MeliRestClient();
+        Note note = client.addNote(orderId,"test");
+        Assert.assertNotNull(note);
+    }
+
     @Test
     public void testGetNotes(){
         MeliRestClient client = new MeliRestClient();

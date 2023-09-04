@@ -43,6 +43,25 @@ public class MeliRestClient {
     }
 
     /**
+     * addNote
+     * @param orderId
+     * @param note
+     * @return
+     */
+    public Note addNote(String orderId, String note ){
+
+        String json = "{ \"note\": \"" + note + "\" }";
+        String response = restClient.postJson("https://api.mercadolibre.com/orders/"+orderId.trim()+"/notes", buildHeader(), json);
+
+        Note ret = null;
+        if( response!=null ) {
+            NoteContainer notes = new Gson().fromJson(response, NoteContainer.class);
+            ret = notes.getNote();
+        }
+        return ret;
+    }
+
+    /**
      * getNotes
      * @param orderId
      * @return

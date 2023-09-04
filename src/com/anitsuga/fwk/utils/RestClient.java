@@ -2,6 +2,9 @@ package com.anitsuga.fwk.utils;
 
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
@@ -49,4 +52,41 @@ public class RestClient {
         return ret;
     }
 
+    /**
+     * postJson
+     * @param url
+     * @return
+     */
+    public String postJson(String url, Map<String, String> headerMap, String body ){
+        String ret = null;
+        try {
+            CloseableHttpClient httpClient = HttpClients.createDefault();
+            HttpPost httpPost = new HttpPost(url); // http get request
+            System.out.println("Url: "+url);
+
+            // add header
+            for (Map.Entry<String, String> entry : headerMap.entrySet()) {
+                httpPost.addHeader(entry.getKey(), entry.getValue());
+            }
+
+            // add body
+            StringEntity entity = new StringEntity(body, ContentType.APPLICATION_JSON);
+            httpPost.setEntity(entity);
+
+            // execute post
+            CloseableHttpResponse closeableHttpResponse = httpClient.execute(httpPost); // h
+            int statusCode = closeableHttpResponse.getStatusLine().getStatusCode();
+
+            // check response
+            System.out.println("Status code: "+statusCode);
+            if( statusCode == 201 ) {
+                String responseString = EntityUtils.toString(closeableHttpResponse.getEntity(), "UTF-8");
+                System.out.println("Response: "+responseString);
+                ret = responseString;
+            }
+        } catch(Exception e){
+            e.printStackTrace();
+        }
+        return ret;
+    }
 }

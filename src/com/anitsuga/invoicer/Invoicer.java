@@ -15,7 +15,6 @@ import com.anitsuga.fwk.utils.AppProperties;
 import com.anitsuga.fwk.utils.Browser;
 import com.anitsuga.fwk.utils.FileUtils;
 import com.anitsuga.fwk.utils.SeleniumUtils;
-import com.anitsuga.invoicer.model.Customer;
 import com.anitsuga.invoicer.model.InvoiceData;
 import com.anitsuga.invoicer.model.Product;
 import com.anitsuga.invoicer.model.Sale;
@@ -24,7 +23,6 @@ import com.anitsuga.invoicer.page.InvoiceHeaderPage;
 import com.anitsuga.invoicer.page.InvoiceTypePage;
 import com.anitsuga.invoicer.page.MenuPage;
 import com.anitsuga.invoicer.page.ProductTypePage;
-import com.anitsuga.invoicer.page.SalePage;
 import com.anitsuga.invoicer.reader.InputDataReader;
 import com.anitsuga.invoicer.writer.ResultExcelWriter;
 
@@ -33,7 +31,7 @@ import com.anitsuga.invoicer.writer.ResultExcelWriter;
  * @author agustina
  *
  */
-public class Invoicer {
+public abstract class Invoicer {
 
     /**
      * SALES_TO_INVOICE_FILE
@@ -44,19 +42,31 @@ public class Invoicer {
      * logger
      */
     private static final Logger LOGGER = LoggerFactory.getLogger(InvoiceStatusChecker.class.getName());
-    
+
+    /**
+     * API_ENABLED
+     */
+    protected static final String API_ENABLED = "api.enabled";
+
     /**
      * Input scanner
      */
     private Scanner scanner;
-    
-    
+
+    private WebDriver driverInv;
+
     /**
      * main
      * @param args
      */
     public static void main(String[] args) {
-        Invoicer invoicer = new Invoicer();
+        boolean isApiEnabled = AppProperties.getInstance().getBooleanProperty(API_ENABLED);
+        Invoicer invoicer = null;
+        if( isApiEnabled ) {
+            invoicer = new ApiInvoicer();
+        } else {
+            invoicer = new WebInvoicer();
+        }
         invoicer.run();
     }
 
@@ -68,20 +78,15 @@ public class Invoicer {
         List<Sale> sales = getSalesToInvoice();
         
         scanner = new Scanner(System.in);
-        
-        WebDriver driverMeli = SeleniumUtils.buildDriver(Browser.CHROME);
-        this.login(driverMeli,"https://www.mercadolibre.com.ar/");
-        
-        WebDriver driverInv = SeleniumUtils.buildDriver(Browser.CHROME);
-        this.login(driverInv, "http://www.afip.gob.ar/sitio/externos/default.asp");
-        
-        initializeProcess(driverInv);
-        
+
+        initializeMeliConnection();
+        initializeInvConnection();
+
         int count = 0;
         int total = sales.size();
         for (Sale sale : sales) {
             System.out.println("Invoicing sale "+sale.getId()+ " ["+(++count)+"/"+total+"]");
-            String result = invoice(driverMeli, driverInv, sale);
+            String result = invoice(sale);
             sale.setResult(result);
             System.out.println(result);   
             System.out.println("---");
@@ -92,6 +97,16 @@ public class Invoicer {
         }
         
         writeResults(sales);
+    }
+
+    protected void initializeInvConnection() {
+        WebDriver driverInv = SeleniumUtils.buildDriver(Browser.CHROME);
+        this.login(driverInv, "http://www.afip.gob.ar/sitio/externos/default.asp");
+        initializeProcess(driverInv);
+        return;
+    }
+
+    protected void initializeMeliConnection() {
     }
 
     /**
@@ -115,23 +130,21 @@ public class Invoicer {
 
     /**
      * invoice
-     * @param driverMeli
-     * @param driverInv
      * @param sale
      * @return
      */
-    private String invoice(WebDriver driverMeli, WebDriver driverInv, Sale sale) {
+    private String invoice(Sale sale) {
         String ret = "";
         try {
-            
-            String saleUrl = sale.getSaleUrl();
-            SalePage salePage = new SalePage(driverMeli).go(saleUrl);
-            if ( salePage.includesInvoicedComment() ){
+
+            initializeSaleData(sale);
+
+            if (saleIsAlreadyInvoiced()){
                 ret = "Already invoiced";
             } else {
-                InvoiceData invoiceData = this.getInvoiceDataFrom(salePage);
+                InvoiceData invoiceData = getInvoiceData();
                 if( invoiceData==null ){
-                    ret = "No data invoice";
+                    ret = "No invoice data";
                 } else {
                     
                     String title = invoiceData.getProducts().get(0).getTitle();
@@ -143,7 +156,7 @@ public class Invoicer {
                     String input = this.promptForInput("Mark sale as invoiced? (yes/no): ");
                     if( "yes".equals(input) )
                     {
-                        salePage.addNote("F");
+                        markAsInvoiced();
                         ret = "Marked as invoiced";
                     } else {
                         ret = "Not marked as invoiced ["+input+"]";
@@ -156,6 +169,14 @@ public class Invoicer {
         }
         return ret;
     }
+
+    protected abstract void markAsInvoiced() ;
+
+    protected abstract InvoiceData getInvoiceData() ;
+
+    protected abstract boolean saleIsAlreadyInvoiced() ;
+
+    protected abstract void initializeSaleData(Sale sale) ;
 
     /**
      * executeInvoiceWorkflow
@@ -306,24 +327,7 @@ public class Invoicer {
         return reader.read(filename);
     }
 
-    /**
-     * getInvoiceDataFrom
-     * @param salePage
-     * @return
-     */
-    private InvoiceData getInvoiceDataFrom(SalePage salePage) {
-        InvoiceData ret = null;
-        if( !salePage.includesInvoicedComment() ){
-            Customer customer = new Customer(
-                        salePage.getCustomerDocType(),
-                        salePage.getCustomerDocNumber(),
-                        salePage.getCustomerAddress(),
-                        salePage.getCustomerName()
-                        );
-            ret = new InvoiceData(customer,salePage.getProducts());
-        }
-        return ret;
-    }
+
     
     /**
      * login
