@@ -53,4 +53,16 @@ public class Product {
         }
     }
 
+    public String toString(){
+        StringBuffer sb = new StringBuffer();
+        sb.append(this.getTitle());
+        sb.append('\n');
+        sb.append("Quantity:");
+        sb.append(this.getQuantity());
+        sb.append('\n');
+        sb.append("Price:");
+        sb.append(this.getFormattedPrice());
+        return sb.toString();
+    }
+
 }

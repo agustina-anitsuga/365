@@ -34,20 +34,25 @@ public class RestClient {
         try {
             CloseableHttpClient httpClient = HttpClients.createDefault();
             HttpGet httpget = new HttpGet(url); // http get request
-            System.out.println("Url: "+url);
+            //System.out.println("Url: "+url);
             for (Map.Entry<String, String> entry : headerMap.entrySet()) {
                 httpget.addHeader(entry.getKey(), entry.getValue());
             }
+
             CloseableHttpResponse closeableHttpResponse = httpClient.execute(httpget); // h
             int statusCode = closeableHttpResponse.getStatusLine().getStatusCode();
-            System.out.println("Status code: "+statusCode);
+            //System.out.println("Status code: "+statusCode);
             if( statusCode == 200 ) {
                 String responseString = EntityUtils.toString(closeableHttpResponse.getEntity(), "UTF-8");
-                System.out.println("Response: "+responseString);
+                //System.out.println("Response: "+responseString);
                 ret = responseString;
             }
+            if(statusCode == 401){
+                throw new RuntimeException("Unauthorized access.");
+            }
         } catch(Exception e){
-            e.printStackTrace();
+            ret = null;
+            LOGGER.error(e.getMessage(),e.getStackTrace());
         }
         return ret;
     }
@@ -62,7 +67,7 @@ public class RestClient {
         try {
             CloseableHttpClient httpClient = HttpClients.createDefault();
             HttpPost httpPost = new HttpPost(url); // http get request
-            System.out.println("Url: "+url);
+            //System.out.println("Url: "+url);
 
             // add header
             for (Map.Entry<String, String> entry : headerMap.entrySet()) {
@@ -78,14 +83,18 @@ public class RestClient {
             int statusCode = closeableHttpResponse.getStatusLine().getStatusCode();
 
             // check response
-            System.out.println("Status code: "+statusCode);
+            //System.out.println("Status code: "+statusCode);
             if( statusCode == 201 ) {
                 String responseString = EntityUtils.toString(closeableHttpResponse.getEntity(), "UTF-8");
-                System.out.println("Response: "+responseString);
+                //System.out.println("Response: "+responseString);
                 ret = responseString;
             }
+            if(statusCode == 401){
+                throw new RuntimeException("Unauthorized access.");
+            }
         } catch(Exception e){
-            e.printStackTrace();
+            ret = null;
+            LOGGER.error(e.getMessage(),e.getStackTrace());
         }
         return ret;
     }

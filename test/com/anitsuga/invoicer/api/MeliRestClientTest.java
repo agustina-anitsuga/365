@@ -10,7 +10,10 @@ import java.util.List;
  */
 public class MeliRestClientTest {
 
-    private String orderId = "2000006332896030";
+    private String orderId = "2000006440171252";
+        // uploaded invoice "2000006440171252";
+        // pack "2000004329269457";
+        // regular "2000006332896030";
 
 
     @Test
@@ -28,10 +31,10 @@ public class MeliRestClientTest {
     }
 
     @Test
-    public void testGetOrderDetails(){
+    public void testGetOrder(){
         MeliRestClient client = new MeliRestClient();
-        List<OrderItem> details = client.getOrderDetails(orderId);
-        Assert.assertNotNull(details);
+        Order order = client.getOrder(orderId);
+        Assert.assertNotNull(order);
     }
 
     @Test
@@ -41,4 +44,10 @@ public class MeliRestClientTest {
         Assert.assertNotNull(info);
     }
 
+    @Test
+    public void testIsInvoiced(){
+        MeliRestClient client = new MeliRestClient();
+        boolean ret = client.isInvoiced(orderId);
+        Assert.assertTrue(ret);
+    }
 }

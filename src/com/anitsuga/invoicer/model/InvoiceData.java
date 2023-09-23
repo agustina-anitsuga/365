@@ -37,5 +37,19 @@ public class InvoiceData {
     public void setCustomer(Customer customer) {
         this.customer = customer;
     }
+
+    public String toString(){
+        StringBuffer sb = new StringBuffer();
+        sb.append('\n');
+        sb.append(customer.toString());
+        sb.append('\n');
+        sb.append('\n');
+        for (Product product: products) {
+            sb.append(product.toString());
+            sb.append('\n');
+            sb.append('\n');
+        }
+        return sb.toString();
+    }
     
 }

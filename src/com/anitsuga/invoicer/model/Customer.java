@@ -43,5 +43,17 @@ public class Customer {
     public void setName(String name) {
         this.name = name;
     }
-    
+
+    public String toString(){
+        StringBuffer sb = new StringBuffer();
+        sb.append("Customer: ");
+        sb.append(this.getDocType());
+        sb.append(' ');
+        sb.append(this.getDocNumber());
+        sb.append(' ');
+        sb.append(this.getName());
+        sb.append('\n');
+        sb.append(this.getAddress());
+        return sb.toString();
+    }
 }

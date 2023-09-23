@@ -26,11 +26,12 @@ public class WebInvoicer  extends Invoicer {
         return this.getInvoiceDataFrom(salePage);
     }
 
-    protected void markAsInvoiced() {
+    protected boolean markAsInvoiced() {
         salePage.addNote("F");
+        return true;
     }
 
-    protected boolean saleIsAlreadyInvoiced() {
+    protected boolean saleIsAlreadyInvoiced() throws Exception {
         return salePage.includesInvoicedComment();
     }
 

@@ -100,7 +100,7 @@ public abstract class Invoicer {
     }
 
     protected void initializeInvConnection() {
-        WebDriver driverInv = SeleniumUtils.buildDriver(Browser.CHROME);
+        driverInv = SeleniumUtils.buildDriver(Browser.CHROME);
         this.login(driverInv, "http://www.afip.gob.ar/sitio/externos/default.asp");
         initializeProcess(driverInv);
         return;
@@ -149,15 +149,18 @@ public abstract class Invoicer {
                     
                     String title = invoiceData.getProducts().get(0).getTitle();
                     sale.setTitle(title);
-                    System.out.println("    "+title);
-                    
+
                     this.executeInvoiceWorkflow(driverInv, invoiceData);
                     
                     String input = this.promptForInput("Mark sale as invoiced? (yes/no): ");
                     if( "yes".equals(input) )
                     {
-                        markAsInvoiced();
-                        ret = "Marked as invoiced";
+                        boolean marked = markAsInvoiced();
+                        if(marked) {
+                            ret = "Marked as invoiced";
+                        } else {
+                            ret = "Error marking as invoiced";
+                        }
                     } else {
                         ret = "Not marked as invoiced ["+input+"]";
                     }
@@ -170,11 +173,11 @@ public abstract class Invoicer {
         return ret;
     }
 
-    protected abstract void markAsInvoiced() ;
+    protected abstract boolean markAsInvoiced() ;
 
     protected abstract InvoiceData getInvoiceData() ;
 
-    protected abstract boolean saleIsAlreadyInvoiced() ;
+    protected abstract boolean saleIsAlreadyInvoiced() throws Exception;
 
     protected abstract void initializeSaleData(Sale sale) ;
 
@@ -245,7 +248,9 @@ public abstract class Invoicer {
             invoiceHeader.setCustomerDocType( invoiceData.getCustomer().getDocType() );
             invoiceHeader.setCustomerDocNumber( invoiceData.getCustomer().getDocNumber() );
             doWait(500);
-            invoiceHeader.setCustomerAddress( invoiceData.getCustomer().getAddress() );
+            if( !"CUIT".equals(invoiceData.getCustomer().getDocType()) ) {
+                invoiceHeader.setCustomerAddress(invoiceData.getCustomer().getAddress());
+            }
             invoiceHeader.setDefaultPaymentType();
             
             validateCustomerName(invoiceData, invoiceHeader);
@@ -342,7 +347,7 @@ public abstract class Invoicer {
      * @param driver
      */
     private void initializeProcess(WebDriver driver) {
-        promptForInput("Enter any message once you have logged in to both Meli and Afip ");
+        promptForInput("Enter any message once you have logged in to Afip (and Meli if using web version)");
         String lastTab = "";
         Set<String> tabsAfter = driver.getWindowHandles();
         for (String tabName : tabsAfter) {
