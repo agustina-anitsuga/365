@@ -50,4 +50,11 @@ public class MeliRestClientTest {
         boolean ret = client.isInvoiced(orderId);
         Assert.assertTrue(ret);
     }
+
+    @Test
+    public void testGetToken(){
+        MeliRestClient client = new MeliRestClient();
+        Token token = client.getToken();
+        Assert.assertNotNull(token);
+    }
 }
