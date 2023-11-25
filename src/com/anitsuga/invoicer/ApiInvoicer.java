@@ -143,7 +143,17 @@ public class ApiInvoicer extends Invoicer {
     }
 
     private String getAddress( Map<String,String> info ){
-        return info.get("STREET_NAME") + " " + info.get("STREET_NUMBER") + ", " + info.get("CITY_NAME") + ", " + info.get("STATE_NAME") ;
+        return strClean(info.get("STREET_NAME")) + " "
+                + strClean(info.get("STREET_NUMBER")) + ", "
+                + strClean(info.get("CITY_NAME")) + ", "
+                + strClean(info.get("STATE_NAME")) ;
+    }
+
+    private String strClean(String street_name) {
+        if(street_name==null||street_name.equals("null")){
+            return "";
+        }
+        return street_name;
     }
 
     private String getName( Map<String,String> info ){

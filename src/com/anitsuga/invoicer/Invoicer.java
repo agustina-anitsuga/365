@@ -277,6 +277,10 @@ public abstract class Invoicer {
         }
         if(!anyMatch)
             this.promptForInput("Could you check the customer name, please? (input any string when done)");
+        String address = invoiceData.getCustomer().getAddress();
+        if( address.replaceAll(",","").trim().isEmpty() ){
+            this.promptForInput("Could you check the customer address, please? (input any string when done)");
+        }
     }
 
     /**
