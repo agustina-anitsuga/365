@@ -61,6 +61,7 @@ public class ApiInvoicer extends Invoicer {
             order.getTags().remove("pack_order");
             order.getTags().remove("catalog");
             order.getTags().remove("not_delivered");
+            order.getTags().remove("3x_campaign");
         }
         if( order.getTags().size()>0 ){
             throw new Exception("Order tags not recognized. Should not be invoiced.");

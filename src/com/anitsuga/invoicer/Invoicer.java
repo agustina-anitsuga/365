@@ -275,7 +275,7 @@ public abstract class Invoicer {
         for (String namePart : nameParts) {
             anyMatch |= nameInInvoicingSystem.contains(sanitize(namePart));
         }
-        if(!anyMatch)
+        if(!anyMatch || nameInInvoicingSystem.contains("SUCESI"))
             this.promptForInput("Could you check the customer name, please? (input any string when done)");
         String address = invoiceData.getCustomer().getAddress();
         if( address.replaceAll(",","").trim().isEmpty() ){
