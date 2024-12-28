@@ -62,8 +62,19 @@ public class ApiInvoicer extends Invoicer {
             order.getTags().remove("catalog");
             order.getTags().remove("not_delivered");
             order.getTags().remove("3x_campaign");
+            order.getTags().remove("pcj-co-funded");
+            order.getTags().remove("new_buyer_free_shipping");
+            order.getTags().remove("b2b");
+            order.getTags().remove("order_has_discount");
+            order.getTags().remove("no_shipping");
         }
         if( order.getTags().size()>0 ){
+            StringBuffer sb = new StringBuffer("");
+            for( String tag : order.getTags()){
+                sb.append(tag);
+                sb.append(" ");
+            }
+            LOGGER.info(sb.toString());
             throw new Exception("Order tags not recognized. Should not be invoiced.");
         }
         if( order.getCancel_details()!=null ){
