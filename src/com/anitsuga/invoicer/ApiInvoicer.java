@@ -67,6 +67,9 @@ public class ApiInvoicer extends Invoicer {
             order.getTags().remove("b2b");
             order.getTags().remove("order_has_discount");
             order.getTags().remove("no_shipping");
+            order.getTags().remove("mshops");
+            order.getTags().remove("d2c");
+            order.getTags().remove("one_shot");
         }
         if( order.getTags().size()>0 ){
             StringBuffer sb = new StringBuffer("");
