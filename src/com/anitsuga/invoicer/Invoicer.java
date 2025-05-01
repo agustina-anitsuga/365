@@ -49,6 +49,11 @@ public abstract class Invoicer {
     protected static final String API_ENABLED = "api.enabled";
 
     /**
+     * Time to sleep in between webpage reads
+     */
+    public static final int SLEEP_TIME = 1000;
+
+    /**
      * Input scanner
      */
     private Scanner scanner;
@@ -214,7 +219,8 @@ public abstract class Invoicer {
      */
     private void doWorkflowStep4InvoiceDetails(WebDriver driverInv, InvoiceData invoiceData) {
         try {
-            InvoiceDetailPage invoiceDetail = new InvoiceDetailPage(driverInv); 
+            InvoiceDetailPage invoiceDetail = new InvoiceDetailPage(driverInv);
+            doWait(SLEEP_TIME);
             List<Product> products = invoiceData.getProducts();
             int line = 1;
             for (Product product : products) {
@@ -225,7 +231,7 @@ public abstract class Invoicer {
                 line = line + 1;
                 if(line<=products.size()){
                     invoiceDetail.newLine();
-                    doWait(500);
+                    doWait(SLEEP_TIME);
                 }
         }
         invoiceDetail.clickNext();
@@ -242,19 +248,18 @@ public abstract class Invoicer {
      */
     private void doWorkflowStep3InvoiceHeader(WebDriver driverInv, InvoiceData invoiceData) {
         try {
-            InvoiceHeaderPage invoiceHeader = new InvoiceHeaderPage(driverInv); 
+            InvoiceHeaderPage invoiceHeader = new InvoiceHeaderPage(driverInv);
+            doWait(SLEEP_TIME);
             invoiceHeader.setDefaultCustomerType();
-            doWait(500);
+            doWait(SLEEP_TIME);
             invoiceHeader.setCustomerDocType( invoiceData.getCustomer().getDocType() );
             invoiceHeader.setCustomerDocNumber( invoiceData.getCustomer().getDocNumber() );
-            doWait(500);
+            doWait(SLEEP_TIME);
             if( !"CUIT".equals(invoiceData.getCustomer().getDocType()) ) {
                 invoiceHeader.setCustomerAddress(invoiceData.getCustomer().getAddress());
             }
             invoiceHeader.setDefaultPaymentType();
-            
             validateCustomerName(invoiceData, invoiceHeader);
-            
             invoiceHeader.clickNext();
         } catch( Exception e ) {
             e.printStackTrace();
@@ -297,7 +302,9 @@ public abstract class Invoicer {
      * @param driverInv
      */
     private void doWorkflowStep2ProductType(WebDriver driverInv) {
-        ProductTypePage productType = new ProductTypePage(driverInv);     
+        ProductTypePage productType = new ProductTypePage(driverInv);
+        doWait(SLEEP_TIME);
+        productType.setDate();
         productType.selectDefaultProductType();
         productType.clickNext();
     }
@@ -308,8 +315,9 @@ public abstract class Invoicer {
      */
     private void doWorkflowStep1InvoiceType(WebDriver driverInv) {
         InvoiceTypePage invoiceType = new InvoiceTypePage(driverInv);
+        doWait(SLEEP_TIME);
         invoiceType.selectDefaultSalesPoint();
-        doWait(500);
+        doWait(SLEEP_TIME);
         invoiceType.selecteDefaultInvoiceType();
         invoiceType.clickNext();
     }
