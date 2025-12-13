@@ -44,6 +44,15 @@ public class Product {
         Long l = Math.round(d);
         return l.toString();
     }
+
+    public String getFormattedPriceWithoutTax(){
+        String aPrice = this.getPrice().replaceAll(",", ".");
+        Double d = (new Double(aPrice));
+        if( !"Exento".equals(this.getIVA())) {
+            d = ( (double) Math.round( (d*100) / 1.21) / 100 );
+        }
+        return d.toString();
+    }
     
     public String getIVA(){
         if( this.getTitle().startsWith("Libro") ){

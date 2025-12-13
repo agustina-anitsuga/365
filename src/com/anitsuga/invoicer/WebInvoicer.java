@@ -53,7 +53,8 @@ public class WebInvoicer  extends Invoicer {
                     salePage.getCustomerDocType(),
                     salePage.getCustomerDocNumber(),
                     salePage.getCustomerAddress(),
-                    salePage.getCustomerName()
+                    salePage.getCustomerName(),
+                    ""
             );
             ret = new InvoiceData(customer,salePage.getProducts());
         }

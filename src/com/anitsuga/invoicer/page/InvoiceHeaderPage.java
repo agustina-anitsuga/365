@@ -69,6 +69,14 @@ public class InvoiceHeaderPage extends Page {
     }
 
     /**
+     * setCustomerTypeResponsableInscripto
+     */
+    public void setCustomerTypeResponsableInscripto() {
+        Select customerTypeSelect = new Select(customerType);
+        customerTypeSelect.selectByVisibleText(" IVA Responsable Inscripto");
+    }
+
+    /**
      * setCustomerDocType
      * @param docType
      */
@@ -108,5 +116,6 @@ public class InvoiceHeaderPage extends Page {
     public void clickNext() {
         nextButton.click();
     }
+
 
 }

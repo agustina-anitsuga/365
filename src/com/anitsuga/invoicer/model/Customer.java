@@ -11,12 +11,15 @@ public class Customer {
     private String docNumber;
     private String address;
     private String name;
+
+    private String customerType;
     
-    public Customer( String docType, String docNumber, String address, String name ){
+    public Customer( String docType, String docNumber, String address, String name, String customerType ){
         this.docType = docType ;
         this.docNumber = docNumber ;
         this.address = address;
         this.name = name;
+        this.customerType = customerType;
     }
     
     public String getDocType() {
@@ -43,6 +46,9 @@ public class Customer {
     public void setName(String name) {
         this.name = name;
     }
+    public String getCustomerType(){
+        return this.customerType;
+    }
 
     public String toString(){
         StringBuffer sb = new StringBuffer();
@@ -54,6 +60,8 @@ public class Customer {
         sb.append(this.getName());
         sb.append('\n');
         sb.append(this.getAddress());
+        sb.append('\n');
+        sb.append(this.getCustomerType());
         return sb.toString();
     }
 }

@@ -30,7 +30,9 @@ public class InvoiceDetailPage extends Page {
     
     @FindBy( xpath = "//*[@id=\"contenido\"]/form/input[8]" )
     private WebElement nextButton;
-    
+
+    @FindBy( xpath = "//*[@id=\"contenido\"]/form/input[2]")
+    private WebElement nextButton2;
 
     /**
      * InvoiceDetailPage
@@ -84,12 +86,25 @@ public class InvoiceDetailPage extends Page {
         qty.sendKeys(String.valueOf(quantity));
         qty.sendKeys(Keys.TAB);
     }
+
+    public void setDefaultUnits(int line) {
+        WebElement units = driver.findElement(By.xpath("//*[@id=\"detalle_medida"+line+"\"]"));
+        Select unitsSelect = new Select(units);
+        unitsSelect.selectByVisibleText(" unidades");
+    }
     
     /**
      * clickNext
      */
     public void clickNext() {
         nextButton.click();
+    }
+
+    /**
+     * clickNext
+     */
+    public void clickNext2() {
+        nextButton2.click();
     }
 
     /**

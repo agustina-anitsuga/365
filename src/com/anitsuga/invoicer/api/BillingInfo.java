@@ -2,6 +2,7 @@ package com.anitsuga.invoicer.api;
 
 import java.util.Map;
 import java.util.List;
+import java.util.Optional;
 
 
 /**
@@ -37,5 +38,10 @@ public class BillingInfo {
 
     public void setAdditional_info(List<AdditionalInfo> additional_info) {
         this.additional_info = additional_info;
+    }
+
+    public String getCustomerType(){
+        Optional<AdditionalInfo> info = this.getAdditional_info().stream().filter(ai -> ai.getType().equals("TAXPAYER_TYPE_ID") ).findFirst();
+        return info.get().getValue();
     }
 }

@@ -45,17 +45,22 @@ public class InvoiceTypePage extends Page {
     /**
      * selecteDefaultInvoiceType
      */
-    public void selecteDefaultInvoiceType(){
+    public void selectDefaultInvoiceType(){
         Select invoiceTypeSelect = new Select(invoiceType);
         invoiceTypeSelect.selectByVisibleText("Factura B");
         //invoiceTypeSelect.selectByValue("2");
     }
-    
+
+    public void selectInvoiceTypeA() {
+        Select invoiceTypeSelect = new Select(invoiceType);
+        invoiceTypeSelect.selectByVisibleText("Factura A");
+    }
+
     /**
      * clickNext
      */
     public void clickNext(){
         nextButton.click();
     }
-    
+
 }

@@ -198,8 +198,8 @@ public abstract class Invoicer {
         menuPage.go("https://fe.afip.gob.ar/rcel/jsp/menu_ppal.jsp");
         menuPage.clickGenerateInvoice();
         
-        doWorkflowStep1InvoiceType(driverInv);
-        doWorkflowStep2ProductType(driverInv);
+        doWorkflowStep1InvoiceType(driverInv, invoiceData);
+        doWorkflowStep2ProductType(driverInv, invoiceData);
         doWorkflowStep3InvoiceHeader(driverInv, invoiceData);
         doWorkflowStep4InvoiceDetails(driverInv, invoiceData);
         
@@ -225,16 +225,26 @@ public abstract class Invoicer {
             int line = 1;
             for (Product product : products) {
                 invoiceDetail.setProduct( line, product.getTitle() );
-                invoiceDetail.setPrice( line, product.getFormattedPrice() );
-                invoiceDetail.setIva( line, product.getIVA() );   
                 invoiceDetail.setQuantity( line, product.getQuantity() );
+                if( !isResponsableInscripto(invoiceData) ) {
+                    invoiceDetail.setPrice(line, product.getFormattedPrice());
+                    invoiceDetail.setIva(line, product.getIVA());
+                } else {
+                    invoiceDetail.setDefaultUnits(line);
+                    invoiceDetail.setPrice(line, product.getFormattedPriceWithoutTax());
+                    invoiceDetail.setIva(line, product.getIVA());
+                }
                 line = line + 1;
                 if(line<=products.size()){
                     invoiceDetail.newLine();
                     doWait(SLEEP_TIME);
                 }
-        }
-        invoiceDetail.clickNext();
+            }
+            if(!isResponsableInscripto(invoiceData)) {
+                invoiceDetail.clickNext();
+            } else {
+                invoiceDetail.clickNext2();
+            }
         } catch( Exception e ){
             e.printStackTrace();
             this.promptForInput("Could you fix the error, please? (and go to the next step)");
@@ -250,12 +260,18 @@ public abstract class Invoicer {
         try {
             InvoiceHeaderPage invoiceHeader = new InvoiceHeaderPage(driverInv);
             doWait(SLEEP_TIME);
-            invoiceHeader.setDefaultCustomerType();
+            if( isResponsableInscripto(invoiceData) ){
+                invoiceHeader.setCustomerTypeResponsableInscripto();
+            }else {
+                invoiceHeader.setDefaultCustomerType();
+            }
             doWait(SLEEP_TIME);
-            invoiceHeader.setCustomerDocType( invoiceData.getCustomer().getDocType() );
+            if( !isResponsableInscripto(invoiceData) ) {
+                invoiceHeader.setCustomerDocType(invoiceData.getCustomer().getDocType());
+            }
             invoiceHeader.setCustomerDocNumber( invoiceData.getCustomer().getDocNumber() );
             doWait(SLEEP_TIME);
-            if( !"CUIT".equals(invoiceData.getCustomer().getDocType()) ) {
+            if(!isCUITDocumentType(invoiceData)) {
                 invoiceHeader.setCustomerAddress(invoiceData.getCustomer().getAddress());
             }
             invoiceHeader.setDefaultPaymentType();
@@ -265,6 +281,14 @@ public abstract class Invoicer {
             e.printStackTrace();
             this.promptForInput("Could you fix the error, please? (and go to the next step)");
         }
+    }
+
+    private static boolean isCUITDocumentType(InvoiceData invoiceData) {
+        return "CUIT".equals(invoiceData.getCustomer().getDocType());
+    }
+
+    private static boolean isResponsableInscripto(InvoiceData invoiceData) {
+        return "IVA Responsable Inscripto".equals(invoiceData.getCustomer().getCustomerType());
     }
 
     /**
@@ -301,7 +325,7 @@ public abstract class Invoicer {
      * doWorkflowStep2ProductType
      * @param driverInv
      */
-    private void doWorkflowStep2ProductType(WebDriver driverInv) {
+    private void doWorkflowStep2ProductType(WebDriver driverInv, InvoiceData invoiceData) {
         ProductTypePage productType = new ProductTypePage(driverInv);
         doWait(SLEEP_TIME);
         productType.setDate();
@@ -313,12 +337,16 @@ public abstract class Invoicer {
      * doWorkflowStep1InvoiceType
      * @param driverInv
      */
-    private void doWorkflowStep1InvoiceType(WebDriver driverInv) {
+    private void doWorkflowStep1InvoiceType(WebDriver driverInv, InvoiceData invoiceData) {
         InvoiceTypePage invoiceType = new InvoiceTypePage(driverInv);
         doWait(SLEEP_TIME);
         invoiceType.selectDefaultSalesPoint();
         doWait(SLEEP_TIME);
-        invoiceType.selecteDefaultInvoiceType();
+        if( isResponsableInscripto(invoiceData) ){
+            invoiceType.selectInvoiceTypeA();
+        } else {
+            invoiceType.selectDefaultInvoiceType();
+        }
         invoiceType.clickNext();
     }
     

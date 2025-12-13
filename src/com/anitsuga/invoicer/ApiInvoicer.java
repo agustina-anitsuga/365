@@ -142,10 +142,11 @@ public class ApiInvoicer extends Invoicer {
         BillingInfo billingInfo = client.getBillingInfo(this.getCurrentSale().getId());
         String docType = billingInfo.getDoc_type();
         String docNumber = billingInfo.getDoc_number();
+        String customerType = billingInfo.getCustomerType();
         Map<String, String> info = map(billingInfo.getAdditional_info());
         String address = getAddress(info);
         String name = getName(info);
-        Customer customer = new Customer( docType,  docNumber,  address,  name);
+        Customer customer = new Customer( docType,  docNumber,  address,  name, customerType);
         return customer;
     }
 
