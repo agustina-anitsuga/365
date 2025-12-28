@@ -162,7 +162,7 @@ public abstract class Invoicer {
                     {
                         boolean marked = markAsInvoiced();
                         if(marked) {
-                            ret = "Marked as invoiced";
+                            ret = "Marked as invoiced (" + invoiceData.getCustomer().getCustomerType() + ")";
                         } else {
                             ret = "Error marking as invoiced";
                         }
