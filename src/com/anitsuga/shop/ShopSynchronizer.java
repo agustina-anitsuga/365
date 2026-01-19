@@ -68,11 +68,11 @@ public class ShopSynchronizer {
         int count = 0;
         int total = listings.size();
         for (Listing listing : listings) {
-            System.out.println("Synchronizing list item "+listing.getId()+ " ["+(++count)+"/"+total+"]");
+            LOGGER.info("Synchronizing list item "+listing.getId()+ " ["+(++count)+"/"+total+"]");
             String result = synch(listing);
             listing.setResult(result);
-            System.out.println(result);
-            System.out.println("---");
+            LOGGER.info(result);
+            LOGGER.info("---");
         }
 
         writeResults(listings);
@@ -113,14 +113,15 @@ public class ShopSynchronizer {
 
             // Look up listing in tienda nube
             String sku = item.getId();
-            // sku = "SKU1234";
             BaseProduct product = nubeClient.getProductBySKU(sku);
 
             BaseProduct result = null;
-            if( product!=null ){ // If listing exists, update price and stock
+            if( product!=null ){
+                // If listing exists, update price and stock
                 product = patchProductFromListing(item, (Product) product);
                 result = nubeClient.patchProductStockPrice( (Product) product);
-            } else { // If listing does not exist, create it
+            } else {
+                // If listing does not exist, create it
                 ItemDescription description = meliClient.getItemDescriptionById(item.getId());
                 product = createProductFromListing(item,description,item.getCategory_id());
                 result = nubeClient.createProduct( (NewProduct) product);
@@ -147,9 +148,11 @@ public class ShopSynchronizer {
         Variant variant = new Variant();
         variant.setId(variantId);
         variant.setPrice(item.getPrice().toString());
+
         InventoryLevel il = new InventoryLevel();
         il.setStock(item.getAvailable_quantity());
         variant.setInventory_levels(List.of(il));
+
         ret.setVariants(List.of(variant));
 
         return ret;
