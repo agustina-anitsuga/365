@@ -4,12 +4,16 @@ import com.anitsuga.fwk.utils.AppProperties;
 import com.anitsuga.shop.api.meli.MeliRestClient;
 import com.anitsuga.shop.api.meli.model.Item;
 import com.anitsuga.shop.api.meli.model.ItemDescription;
+import com.anitsuga.shop.api.meli.model.Picture;
+import com.anitsuga.shop.api.nube.LanguageConfig;
+import com.anitsuga.shop.api.nube.NubeRestClient;
+import com.anitsuga.shop.api.nube.model.*;
 import com.anitsuga.shop.model.Listing;
 import com.anitsuga.shop.reader.InputDataReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.List;
+import java.util.*;
 
 public class ShopSynchronizer {
 
@@ -22,6 +26,28 @@ public class ShopSynchronizer {
      * logger
      */
     private static final Logger LOGGER = LoggerFactory.getLogger(ShopSynchronizer.class.getName());
+
+    /**
+     * Nube Category Service
+     */
+    CategorySynchronizer categorySynchronizer = null;
+
+    /**
+     * Client to Meli
+     */
+    MeliRestClient meliClient = null;
+
+    /**
+     * Client to Nube
+     */
+    NubeRestClient nubeClient = null;
+
+
+    public ShopSynchronizer(){
+        categorySynchronizer = new CategorySynchronizer();
+        meliClient = new MeliRestClient();
+        nubeClient = new NubeRestClient();
+    }
 
     /**
      * main
@@ -49,13 +75,13 @@ public class ShopSynchronizer {
             System.out.println("---");
         }
 
-        //writeResults(products);
+        writeResults(listings);
     }
 
     /**
-     * writeResults
+     * writeResults TODO
      */
-    private void writeResults(List<Listing> sales) {
+    private void writeResults(List<Listing> listings) {
         /*
         String localPath = FileUtils.getLocalPath();
         String filename = localPath + outputFilePrefix();
@@ -75,24 +101,37 @@ public class ShopSynchronizer {
 
     /**
      * synch
-     * @param product
+     * @param listing
      * @return
      */
-    private String synch(Listing product) {
+    private String synch(Listing listing) {
         String ret = "";
         try {
-            MeliRestClient client = new MeliRestClient();
 
             // Get data from MercadoLibre
-            Item item = client.getItemById(product.getId());
-            ItemDescription id = client.getItemDescriptionById(product.getId());
+            Item item = meliClient.getItemById(listing.getId());
 
             // Look up listing in tienda nube
+            String sku = item.getId();
+            // sku = "SKU1234";
+            BaseProduct product = nubeClient.getProductBySKU(sku);
 
-            // If listing exists, update price and stock
+            BaseProduct result = null;
+            if( product!=null ){ // If listing exists, update price and stock
+                product = patchProductFromListing(item, (Product) product);
+                result = nubeClient.patchProductStockPrice( (Product) product);
+            } else { // If listing does not exist, create it
+                ItemDescription description = meliClient.getItemDescriptionById(item.getId());
+                product = createProductFromListing(item,description,item.getCategory_id());
+                result = nubeClient.createProduct( (NewProduct) product);
+            }
 
-            // If listing does not exist, create it
-
+            // verify creation/update - TODO
+            if(result!=null) {
+                ret = String.valueOf(result.getId());
+            } else {
+                ret = "Error";
+            }
 
         } catch (Exception e) {
             ret = e.getMessage();
@@ -100,6 +139,62 @@ public class ShopSynchronizer {
         return ret;
     }
 
+    private Product patchProductFromListing(Item item, Product product) {
+        Product ret = new Product();
+        ret.setId(product.getId());
+
+        Long variantId = product.getVariants().get(0).getId();
+        Variant variant = new Variant();
+        variant.setId(variantId);
+        variant.setPrice(item.getPrice().toString());
+        InventoryLevel il = new InventoryLevel();
+        il.setStock(item.getAvailable_quantity());
+        variant.setInventory_levels(List.of(il));
+        ret.setVariants(List.of(variant));
+
+        return ret;
+    }
+
+    private NewProduct createProductFromListing(Item item, ItemDescription description, String categoryId) {
+        NewProduct ret = new NewProduct();
+        String language = LanguageConfig.getDefaultLanguage();
+
+        Map<String, String> title = new HashMap();
+        title.put(language,item.getTitle());
+        ret.setName(title);
+
+        Map<String, String> desc = new HashMap();
+        desc.put(language,description.getPlain_text());
+        ret.setDescription(desc);
+
+        List<Image> images = item.getPictures().stream()
+                .map(this::extractImage)
+                .filter(Objects::nonNull)
+                .toList();
+        ret.setImages(images);
+
+        Variant variant = new Variant();
+        variant.setPrice(item.getPrice().toString());
+        variant.setSku(item.getId());
+        variant.setStock(item.getAvailable_quantity());
+        variant.setStock_management(true);
+        variant.setVisible(true);
+        ret.setVariants(List.of(variant));
+
+        List<Long> categories = categorySynchronizer.mapToCategories(categoryId);
+        ret.setCategories(categories);
+
+        ret.setRequires_shipping(true);
+        ret.setPublished(true);
+
+        return ret;
+    }
+
+    private Image extractImage(Picture picture) {
+        Image image = new Image();
+        image.setSrc(picture.getSecure_url());
+        return image;
+    }
 
     /**
      * getProductsToSynch

@@ -4,6 +4,7 @@ import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPatch;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
@@ -129,6 +130,39 @@ public class RestClient {
 
             // execute post
             CloseableHttpResponse closeableHttpResponse = httpClient.execute(httpPost); // h
+            int statusCode = closeableHttpResponse.getStatusLine().getStatusCode();
+
+            // check response
+            System.out.println("Status code: "+statusCode);
+            if( statusCode == 200 ) {
+                String responseString = EntityUtils.toString(closeableHttpResponse.getEntity(), "UTF-8");
+                System.out.println("Response: "+responseString);
+                ret = responseString;
+            }
+            if(statusCode == 400){
+                throw new RuntimeException("Bad request.");
+            }
+        } catch(Exception e){
+            ret = null;
+            LOGGER.error(e.getMessage(),e.getStackTrace());
+        }
+        return ret;
+    }
+
+    public String patchJson(String url, Map<String, String> headerMap, String body) {
+        String ret = null;
+        try {
+            CloseableHttpClient httpClient = HttpClients.createDefault();
+            HttpPatch httpPatch = new HttpPatch(url); // http get request
+            System.out.println("Url: "+url);
+
+            // add header
+            for (Map.Entry<String, String> entry : headerMap.entrySet()) {
+                httpPatch.addHeader(entry.getKey(), entry.getValue());
+            }
+
+            // execute patch
+            CloseableHttpResponse closeableHttpResponse = httpClient.execute(httpPatch);
             int statusCode = closeableHttpResponse.getStatusLine().getStatusCode();
 
             // check response
