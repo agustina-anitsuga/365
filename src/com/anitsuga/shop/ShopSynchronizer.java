@@ -30,17 +30,17 @@ public class ShopSynchronizer {
     /**
      * Nube Category Service
      */
-    CategorySynchronizer categorySynchronizer = null;
+    CategorySynchronizer categorySynchronizer;
 
     /**
      * Client to Meli
      */
-    MeliRestClient meliClient = null;
+    MeliRestClient meliClient;
 
     /**
      * Client to Nube
      */
-    NubeRestClient nubeClient = null;
+    NubeRestClient nubeClient;
 
 
     public ShopSynchronizer(){
@@ -51,7 +51,6 @@ public class ShopSynchronizer {
 
     /**
      * main
-     * @param args
      */
     public static void main(String[] args) {
         ShopSynchronizer self = new ShopSynchronizer();
@@ -93,7 +92,6 @@ public class ShopSynchronizer {
 
     /**
      * outputFilePrefix
-     * @return
      */
     private String outputFilePrefix() {
         return "synchronized-products";
@@ -101,8 +99,6 @@ public class ShopSynchronizer {
 
     /**
      * synch
-     * @param listing
-     * @return
      */
     private String synch(Listing listing) {
         String ret = "";
@@ -115,7 +111,7 @@ public class ShopSynchronizer {
             String sku = item.getId();
             BaseProduct product = nubeClient.getProductBySKU(sku);
 
-            BaseProduct result = null;
+            BaseProduct result;
             if( product!=null ){
                 // If listing exists, update price and stock
                 product = patchProductFromListing(item, (Product) product);
@@ -162,11 +158,11 @@ public class ShopSynchronizer {
         NewProduct ret = new NewProduct();
         String language = LanguageConfig.getDefaultLanguage();
 
-        Map<String, String> title = new HashMap();
+        Map<String, String> title = new HashMap<>();
         title.put(language,item.getTitle());
         ret.setName(title);
 
-        Map<String, String> desc = new HashMap();
+        Map<String, String> desc = new HashMap<>();
         desc.put(language,description.getPlain_text());
         ret.setDescription(desc);
 
@@ -201,7 +197,6 @@ public class ShopSynchronizer {
 
     /**
      * getProductsToSynch
-     * @return
      */
     private List<Listing> getListingsToSynch() {
         String filename = AppProperties.getInstance().getProperty(PRODUCTS_TO_SYNCH_FILE);
