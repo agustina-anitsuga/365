@@ -2,6 +2,7 @@ package com.anitsuga.shop;
 
 import com.anitsuga.fwk.utils.AppProperties;
 import com.anitsuga.shop.api.meli.MeliRestClient;
+import com.anitsuga.shop.api.meli.model.Attribute;
 import com.anitsuga.shop.api.meli.model.Item;
 import com.anitsuga.shop.api.meli.model.ItemDescription;
 import com.anitsuga.shop.api.meli.model.Picture;
@@ -137,10 +138,13 @@ public class ShopSynchronizer {
     }
 
     private Product patchProductFromListing(Item item, Product product) {
+
+        Variant existingVariant = product.getVariants().get(0);
+
         Product ret = new Product();
         ret.setId(product.getId());
 
-        Long variantId = product.getVariants().get(0).getId();
+        Long variantId = existingVariant.getId();
         Variant variant = new Variant();
         variant.setId(variantId);
         variant.setPrice(item.getPrice().toString());
@@ -163,7 +167,8 @@ public class ShopSynchronizer {
         ret.setName(title);
 
         Map<String, String> desc = new HashMap<>();
-        desc.put(language,description.getPlain_text());
+        String nubeDesc = buildDescription(item,description);
+        desc.put(language,nubeDesc);
         ret.setDescription(desc);
 
         List<Image> images = item.getPictures().stream()
@@ -180,12 +185,51 @@ public class ShopSynchronizer {
         variant.setVisible(true);
         ret.setVariants(List.of(variant));
 
-        List<Long> categories = categorySynchronizer.mapToCategories(categoryId);
+        List<Long> categories = categorySynchronizer.mapToCategories(categoryId,getLeafCategoryAttribute(item));
         ret.setCategories(categories);
 
         ret.setRequires_shipping(true);
         ret.setPublished(true);
 
+        return ret;
+    }
+
+    private Attribute getLeafCategoryAttribute(Item item) {
+        Optional<Attribute> att = item.getAttributes().stream().filter(a -> a.getId().equals("BRAND") ).findFirst();
+        return att.isPresent() ? att.get() : null ;
+    }
+
+    private String buildDescription(Item item, ItemDescription description) {
+        StringBuffer ret = new StringBuffer();
+
+        ret.append("<p class=\"text-md-left\">");
+        ret.append(description.getPlain_text().replaceAll("\n","<br/>"));
+        ret.append("</p><p>&nbsp;</p>");
+
+        if(!item.getAttributes().isEmpty()) {
+            ret.append("<p class=\"text-md-left\"><strong>Especificaciones t&eacute;cnicas</strong></p>");
+            ret.append("<p class=\"text-md-left\">");
+            List<String> excludedIds = getExcludedAttributeIds();
+            List<Attribute> attributesToShow = item.getAttributes().stream().filter(a -> !excludedIds.contains(a.getId())).toList();
+            for (Attribute attribute: attributesToShow) {
+                ret.append("<ul class=\"text-md-left\"><li><strong>");
+                ret.append(attribute.getName());
+                ret.append(":</strong> " );
+                ret.append(attribute.getValue_name());
+                ret.append("</li></ul>");
+            }
+            ret.append("</p><p>&nbsp;</p><p>&nbsp;</p>");
+        }
+
+        return ret.toString();
+    }
+
+    private static List<String> getExcludedAttributeIds() {
+        List<String> ret = new ArrayList<>();
+        ret.add("BRAND");
+        ret.add("GTIN");
+        ret.add("IMPORT_DUTY");
+        ret.add("VALUE_ADDED_TAX");
         return ret;
     }
 

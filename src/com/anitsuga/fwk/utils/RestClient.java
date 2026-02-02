@@ -71,8 +71,7 @@ public class RestClient {
         String ret = null;
         try {
             CloseableHttpClient httpClient = HttpClients.createDefault();
-            HttpPost httpPost = new HttpPost(url); // http get request
-            //System.out.println("Url: "+url);
+            HttpPost httpPost = new HttpPost(url); // http post request
 
             // add header
             for (Map.Entry<String, String> entry : headerMap.entrySet()) {
@@ -88,7 +87,6 @@ public class RestClient {
             int statusCode = closeableHttpResponse.getStatusLine().getStatusCode();
 
             // check response
-            //System.out.println("Status code: "+statusCode);
             if( statusCode == 201 ) {
                 String responseString = EntityUtils.toString(closeableHttpResponse.getEntity(), "UTF-8");
                 //System.out.println("Response: "+responseString);
@@ -122,6 +120,7 @@ public class RestClient {
                 httpPost.addHeader(entry.getKey(), entry.getValue());
             }
 
+            // add parameters
             ArrayList<NameValuePair> postParameters = new ArrayList<NameValuePair>();
             for (String key: parameters.keySet()) {
                 postParameters.add(new BasicNameValuePair(key, parameters.get(key)));
@@ -161,6 +160,10 @@ public class RestClient {
                 httpPatch.addHeader(entry.getKey(), entry.getValue());
             }
 
+            // add body
+            StringEntity entity = new StringEntity(body, ContentType.APPLICATION_JSON);
+            httpPatch.setEntity(entity);
+
             // execute patch
             CloseableHttpResponse closeableHttpResponse = httpClient.execute(httpPatch);
             int statusCode = closeableHttpResponse.getStatusLine().getStatusCode();
@@ -169,7 +172,7 @@ public class RestClient {
             System.out.println("Status code: "+statusCode);
             if( statusCode == 200 ) {
                 String responseString = EntityUtils.toString(closeableHttpResponse.getEntity(), "UTF-8");
-                System.out.println("Response: "+responseString);
+                //System.out.println("Response: "+responseString);
                 ret = responseString;
             }
             if(statusCode == 400){

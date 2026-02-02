@@ -76,8 +76,9 @@ public class NubeRestClient {
         String body = new Gson().toJson(List.of(product));
         String response = restClient.patchJson(url, buildHeader(), body);
         if (response != null) {
-            // TODO use correct list of response entity
-            ret = new Gson().fromJson(response, Product.class);
+            Type productListType = new TypeToken<List<Product>>() {}.getType();
+            List<Product> responseObject = new Gson().fromJson(response, productListType);
+            ret = responseObject.get(0);
         }
         return ret;
     }

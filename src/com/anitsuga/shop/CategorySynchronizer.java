@@ -1,6 +1,7 @@
 package com.anitsuga.shop;
 
 import com.anitsuga.shop.api.meli.MeliRestClient;
+import com.anitsuga.shop.api.meli.model.Attribute;
 import com.anitsuga.shop.api.meli.model.CategoryPath;
 import com.anitsuga.shop.api.nube.LanguageConfig;
 import com.anitsuga.shop.api.nube.NubeRestClient;
@@ -42,7 +43,7 @@ public class CategorySynchronizer {
         return ret;
     }
 
-    public List<Long> mapToCategories( String categoryId ){
+    public List<Long> mapToCategories( String categoryId, Attribute leafCategory ){
 
         com.anitsuga.shop.api.meli.model.Category category = meliClient.getCategory(categoryId);
 
@@ -50,7 +51,46 @@ public class CategorySynchronizer {
             createNubeCategoryPath(category);
         }
 
-        return categories.get(category.getName()).stream().map(Category::getId).toList();
+        if( (leafCategory!=null) && !categories.containsKey(leafCategory.getValue_name())){
+            createNubeLeafCategoryPath(category,leafCategory);
+        }
+
+        List<Long> ret = categories.get(category.getName()).stream().map(Category::getId).toList();
+        if( leafCategory!=null ){
+            ret = categories.get(leafCategory.getValue_name()).stream().map(Category::getId).toList();
+        }
+
+        return ret;
+    }
+
+    private void createNubeLeafCategoryPath(com.anitsuga.shop.api.meli.model.Category category, Attribute leafCategory) {
+        List<Category> nubeCategories = new ArrayList<>(categories.get(category.getName()));
+
+        Category cat = createNubeCategory(category,leafCategory);
+        nubeCategories.add(cat);
+
+        categories.put(leafCategory.getValue_name(),nubeCategories);
+    }
+
+
+    private Category createNubeCategory( com.anitsuga.shop.api.meli.model.Category parent, Attribute leafCategory ) {
+
+        Category nubeCategory = new Category();
+
+        Map<String,String> name = new HashMap<>();
+        name.put(LanguageConfig.getDefaultLanguage(),leafCategory.getValue_name());
+        nubeCategory.setName(name);
+
+        if(parent!=null){
+            List<Category> categoryPath = categories.get(parent.getName());
+            Category parentCategory = categoryPath.get(categoryPath.size()-1);
+            Long parentId = parentCategory.getId();
+            nubeCategory.setParent(parentId);
+        }
+
+        nubeCategory = nubeClient.createCategory(nubeCategory);
+
+        return nubeCategory;
     }
 
     private void createNubeCategoryPath(com.anitsuga.shop.api.meli.model.Category category) {

@@ -31,5 +31,5 @@ public class Variant {
     private String cost;
     private Boolean visible;
     private List<InventoryLevel> inventory_levels;
-
+    private boolean success;
 }
