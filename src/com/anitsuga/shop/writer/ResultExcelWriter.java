@@ -28,7 +28,8 @@ public class ResultExcelWriter {
     private String[] fields = new String[] {
        "Listing Id",
        "Title",
-       "Result"
+       "Result",
+       "Duration"
     };
     
     
@@ -95,6 +96,7 @@ public class ResultExcelWriter {
                     writeField(row,listing.getId(),columnCount++);
                     writeField(row,listing.getTitle(),columnCount++);
                     writeField(row,listing.getResult(),columnCount++);
+                    writeField(row,String.valueOf(listing.getDuration()),columnCount++);
                 } 
             } catch (Exception e) {
                 LOGGER.error(e.getMessage());

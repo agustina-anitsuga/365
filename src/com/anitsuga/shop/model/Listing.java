@@ -13,7 +13,9 @@ public class Listing {
     
     private String result;
     
-    
+    private long duration;
+
+
     public String getId() {
         return id;
     }
@@ -42,6 +44,13 @@ public class Listing {
     public void setResult(String result) {
         this.result = result;
     }
-    
-    
+
+
+    public void setDuration(long duration) {
+        this.duration = duration;
+    }
+
+    public long getDuration() {
+        return duration;
+    }
 }

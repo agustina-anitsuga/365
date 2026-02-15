@@ -16,6 +16,8 @@ import com.anitsuga.shop.writer.ResultExcelWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.*;
 
 public class ShopSynchronizer {
@@ -76,9 +78,13 @@ public class ShopSynchronizer {
         int total = listings.size();
         for (Listing listing : listings) {
             LOGGER.info("Synchronizing list item "+listing.getId()+ " ["+(++count)+"/"+total+"]");
+            Instant start = Instant.now();
             String result = processListing(listing);
+            Duration duration = Duration.between(start, Instant.now());
             listing.setResult(result);
+            listing.setDuration(duration.toMillis());
             LOGGER.info(result);
+            LOGGER.info("Duration:"+duration.toMillis());
             LOGGER.info("---");
         }
 
@@ -286,6 +292,7 @@ public class ShopSynchronizer {
         ret.add("GTIN");
         ret.add("IMPORT_DUTY");
         ret.add("VALUE_ADDED_TAX");
+        ret.add("MANUFACTURING_TIME");
         return ret;
     }
 
