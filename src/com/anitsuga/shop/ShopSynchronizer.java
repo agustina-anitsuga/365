@@ -203,7 +203,7 @@ public class ShopSynchronizer {
             result = nubeClient.patchProductStockPrice(productToPatch);
             if( !product.getPublished() ) {
                 // also need to reactivate product
-                reactivateProduct(product); // TODO this can be enhanced to do a full update
+                result = reactivateProduct(product); // TODO this can be enhanced to do a full update
             }
         } else {
             // If listing does not exist, create it
