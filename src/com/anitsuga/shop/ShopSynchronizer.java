@@ -74,7 +74,7 @@ public class ShopSynchronizer {
         int total = listings.size();
         for (Listing listing : listings) {
             LOGGER.info("Synchronizing list item "+listing.getId()+ " ["+(++count)+"/"+total+"]");
-            String result = synch(listing);
+            String result = processListing(listing);
             listing.setResult(result);
             LOGGER.info(result);
             LOGGER.info("---");
@@ -104,9 +104,9 @@ public class ShopSynchronizer {
     }
 
     /**
-     * synch
+     * processListing
      */
-    private String synch(Listing listing) {
+    private String processListing(Listing listing) {
         String ret = "";
         try {
 
@@ -120,25 +120,11 @@ public class ShopSynchronizer {
 
             // Look up listing in tienda nube
             Product product = nubeClient.getProductBySKU(item.getId());
-            Product resultingProduct = null;
 
-            // is publication is not active in MELI
-            if( !ACTIVE.equals(item.getStatus()) ){
-                // but it is active in tienda nueba
-                if( product.getPublished() ) {
-                    // inactivate product in tienda nube
-                    resultingProduct = inactivateProduct(product);
-                } else {
-                    // product is inactive in both systems, update can be ignored
-                    ret = "Product is inactive in both systems";
-                    return ret;
-                }
-            } else {
-                // publication is active in MELI, so it should be created or update in tienda nueba
-                resultingProduct = createOrUpdateProduct(item, product);
-            }
+            // Synchronize Products
+            Product resultingProduct = synchronizeProduct(item, product);
 
-            // verify creation/update - TODO
+            // verify synchronization - TODO improve
             if (resultingProduct != null) {
                 ret = String.valueOf(resultingProduct.getId());
             } else {
@@ -149,6 +135,28 @@ public class ShopSynchronizer {
             ret = e.getMessage();
         }
         return ret;
+    }
+
+    private Product synchronizeProduct( Item item, Product product ) throws Exception {
+
+        Product resultingProduct = null;
+
+        // is publication is not active in MELI
+        if( !ACTIVE.equals(item.getStatus()) ){
+            // but it is active in tienda nube
+            if( product.getPublished() ) {
+                // inactivate product in tienda nube
+                resultingProduct = inactivateProduct(product);
+            } else {
+                // product is inactive in both systems, update can be ignored
+                throw new Exception( "Product is inactive in both systems" );
+            }
+        } else {
+            // publication is active in MELI, so it should be created or update in tienda nueba
+            resultingProduct = createOrUpdateProduct(item, product);
+        }
+
+        return resultingProduct;
     }
 
     private Product inactivateProduct(Product product) {
@@ -247,7 +255,7 @@ public class ShopSynchronizer {
         return att.isPresent() ? att.get() : null ;
     }
 
-    private String buildDescription(Item item, ItemDescription description) {
+    private String buildDescription(Item item, ItemDescription description) {  // TODO use thymeleaf templates
         StringBuffer ret = new StringBuffer();
 
         ret.append("<p class=\"text-md-left\">");
