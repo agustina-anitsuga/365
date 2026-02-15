@@ -67,7 +67,7 @@ public class CategorySynchronizer {
         List<Category> nubeCategories = new ArrayList<>(categories.get(category.getName()));
 
         Category cat = createNubeCategory(category,leafCategory);
-        nubeCategories.add(cat);
+        nubeCategories.add(0,cat);
 
         categories.put(leafCategory.getValue_name(),nubeCategories);
     }
@@ -83,7 +83,7 @@ public class CategorySynchronizer {
 
         if(parent!=null){
             List<Category> categoryPath = categories.get(parent.getName());
-            Category parentCategory = categoryPath.get(categoryPath.size()-1);
+            Category parentCategory = categoryPath.get(0);
             Long parentId = parentCategory.getId();
             nubeCategory.setParent(parentId);
         }

@@ -251,7 +251,7 @@ public class ShopSynchronizer {
     }
 
     private Attribute getLeafCategoryAttribute(Item item) {
-        Optional<Attribute> att = item.getAttributes().stream().filter(a -> a.getId().equals("BRAND") ).findFirst();
+        Optional<Attribute> att = item.getAttributes().stream().filter(a -> a.getId().equals("MOVIE_FORMAT") ).findFirst();
         return att.isPresent() ? att.get() : null ;
     }
 
