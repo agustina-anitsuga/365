@@ -110,7 +110,7 @@ public class RestClient {
         try {
             CloseableHttpClient httpClient = HttpClients.createDefault();
             HttpPost httpPost = new HttpPost(url); // http get request
-            System.out.println("Url: "+url);
+            //System.out.println("Url: "+url);
 
             // add header
             for (Map.Entry<String, String> entry : headerMap.entrySet()) {
@@ -129,10 +129,10 @@ public class RestClient {
             int statusCode = closeableHttpResponse.getStatusLine().getStatusCode();
 
             // check response
-            System.out.println("Status code: "+statusCode);
+            //System.out.println("Status code: "+statusCode);
             if( statusCode == 200 ) {
                 String responseString = EntityUtils.toString(closeableHttpResponse.getEntity(), "UTF-8");
-                System.out.println("Response: "+responseString);
+                //System.out.println("Response: "+responseString);
                 ret = responseString;
             }
             if(statusCode == 400){
@@ -150,7 +150,7 @@ public class RestClient {
         try {
             CloseableHttpClient httpClient = HttpClients.createDefault();
             HttpPatch httpPatch = new HttpPatch(url); // http patch request
-            System.out.println("Url: "+url);
+            //System.out.println("Url: "+url);
 
             // add header
             for (Map.Entry<String, String> entry : headerMap.entrySet()) {
@@ -166,7 +166,7 @@ public class RestClient {
             int statusCode = closeableHttpResponse.getStatusLine().getStatusCode();
 
             // check response
-            System.out.println("Status code: "+statusCode);
+            //System.out.println("Status code: "+statusCode);
             if( statusCode == 200 ) {
                 String responseString = EntityUtils.toString(closeableHttpResponse.getEntity(), "UTF-8");
                 //System.out.println("Response: "+responseString);
@@ -188,7 +188,7 @@ public class RestClient {
         try {
             CloseableHttpClient httpClient = HttpClients.createDefault();
             HttpPut httpPut = new HttpPut(url); // http put request
-            System.out.println("Url: "+url);
+            //System.out.println("Url: "+url);
 
             // add header
             for (Map.Entry<String, String> entry : headerMap.entrySet()) {
@@ -204,7 +204,7 @@ public class RestClient {
             int statusCode = closeableHttpResponse.getStatusLine().getStatusCode();
 
             // check response
-            System.out.println("Status code: "+statusCode);
+            //System.out.println("Status code: "+statusCode);
             if( statusCode == 200 ) {
                 String responseString = EntityUtils.toString(closeableHttpResponse.getEntity(), "UTF-8");
                 //System.out.println("Response: "+responseString);

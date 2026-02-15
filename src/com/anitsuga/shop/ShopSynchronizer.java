@@ -1,6 +1,7 @@
 package com.anitsuga.shop;
 
 import com.anitsuga.fwk.utils.AppProperties;
+import com.anitsuga.fwk.utils.FileUtils;
 import com.anitsuga.shop.api.meli.MeliRestClient;
 import com.anitsuga.shop.api.meli.model.Attribute;
 import com.anitsuga.shop.api.meli.model.Item;
@@ -11,6 +12,7 @@ import com.anitsuga.shop.api.nube.NubeRestClient;
 import com.anitsuga.shop.api.nube.model.*;
 import com.anitsuga.shop.model.Listing;
 import com.anitsuga.shop.reader.InputDataReader;
+import com.anitsuga.shop.writer.ResultExcelWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -87,13 +89,11 @@ public class ShopSynchronizer {
      * writeResults TODO
      */
     private void writeResults(List<Listing> listings) {
-        /*
         String localPath = FileUtils.getLocalPath();
         String filename = localPath + outputFilePrefix();
         ResultExcelWriter writer = new ResultExcelWriter();
-        writer.write(filename, sales);
+        writer.write(filename, listings);
         System.out.println("Finished invoicing job");
-        */
     }
 
     /**
