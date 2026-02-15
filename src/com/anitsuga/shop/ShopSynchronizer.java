@@ -3,10 +3,7 @@ package com.anitsuga.shop;
 import com.anitsuga.fwk.utils.AppProperties;
 import com.anitsuga.fwk.utils.FileUtils;
 import com.anitsuga.shop.api.meli.MeliRestClient;
-import com.anitsuga.shop.api.meli.model.Attribute;
-import com.anitsuga.shop.api.meli.model.Item;
-import com.anitsuga.shop.api.meli.model.ItemDescription;
-import com.anitsuga.shop.api.meli.model.Picture;
+import com.anitsuga.shop.api.meli.model.*;
 import com.anitsuga.shop.api.nube.LanguageConfig;
 import com.anitsuga.shop.api.nube.NubeRestClient;
 import com.anitsuga.shop.api.nube.model.*;
@@ -147,15 +144,15 @@ public class ShopSynchronizer {
 
         Product resultingProduct = null;
 
-        // is publication is not active in MELI
-        if( !ACTIVE.equals(item.getStatus()) ){
+        // if publication is not active in MELI OR it does not have immediate availability
+        if( !productIsActive(item) || !stockIsImmediatelyAvailable(item) ){
             // but it is active in tienda nube
-            if( product.getPublished() ) {
+            if(productIsActive(product)) {
                 // inactivate product in tienda nube
                 resultingProduct = inactivateProduct(product);
             } else {
                 // product is inactive in both systems, update can be ignored
-                throw new Exception( "Product is inactive in both systems" );
+                throw new Exception( "Product is inactive in both systems (or does not exist in tiendanube)" );
             }
         } else {
             // publication is active in MELI, so it should be created or update in tienda nueba
@@ -163,6 +160,24 @@ public class ShopSynchronizer {
         }
 
         return resultingProduct;
+    }
+
+    private boolean productIsActive(Product product) {
+        return (product != null) && product.getPublished();
+    }
+
+    private boolean productIsActive(Item item) {
+        return ACTIVE.equals(item.getStatus());
+    }
+
+    private boolean stockIsImmediatelyAvailable(Item item) {
+        boolean ret = true;
+        Optional<SaleTerm> saleTerms = item.getSale_terms().stream().filter(s -> "MANUFACTURING_TIME".equals(s.getId()) ).findFirst();
+        if( saleTerms.isPresent() ){
+            SaleTerm saleTerm = saleTerms.get();
+            ret = !(saleTerm.getValue_struct().getNumber() > 0);
+        }
+        return ret;
     }
 
     private Product inactivateProduct(Product product) {
@@ -293,6 +308,12 @@ public class ShopSynchronizer {
         ret.add("IMPORT_DUTY");
         ret.add("VALUE_ADDED_TAX");
         ret.add("MANUFACTURING_TIME");
+        ret.add("SELLER_PACKAGE_HEIGHT");
+        ret.add("SELLER_PACKAGE_LENGTH");
+        ret.add("SELLER_PACKAGE_TYPE");
+        ret.add("SELLER_PACKAGE_WEIGHT");
+        ret.add("SELLER_PACKAGE_WIDTH");
+        ret.add("PRODUCTION_COMPANY");
         return ret;
     }
 
