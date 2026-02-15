@@ -2,9 +2,10 @@ package com.anitsuga.shop.api.nube;
 
 import com.anitsuga.fwk.utils.AppProperties;
 import com.anitsuga.fwk.utils.RestClient;
-import com.anitsuga.shop.api.nube.model.Category;
-import com.anitsuga.shop.api.nube.model.NewProduct;
 import com.anitsuga.shop.api.nube.model.Product;
+import com.anitsuga.shop.api.nube.model.Category;
+import com.anitsuga.shop.api.nube.model.WritableProduct;
+import com.anitsuga.shop.api.nube.model.ReadableProduct;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -25,8 +26,8 @@ public class NubeRestClient {
     private static final RestClient restClient = new RestClient();
 
 
-    public Product getProductById(String productId ){
-        Product ret = null;
+    public ReadableProduct getProductById(String productId ){
+        ReadableProduct ret = null;
         String url = String.format(
                 "%s/products/%s",
                 API_TIENDA_NUBE,
@@ -34,13 +35,13 @@ public class NubeRestClient {
         );
         String response = restClient.get(url, buildHeader() );
         if (response != null) {
-            ret = new Gson().fromJson(response, Product.class);
+            ret = new Gson().fromJson(response, ReadableProduct.class);
         }
         return ret;
     }
 
-    public Product getProductBySKU(String productSKU ){
-        Product ret = null;
+    public ReadableProduct getProductBySKU(String productSKU ){
+        ReadableProduct ret = null;
         String url = String.format(
                 "%s/products/sku/%s",
                 API_TIENDA_NUBE,
@@ -48,13 +49,13 @@ public class NubeRestClient {
         );
         String response = restClient.get(url, buildHeader() );
         if (response != null) {
-            ret = new Gson().fromJson(response, Product.class);
+            ret = new Gson().fromJson(response, ReadableProduct.class);
         }
         return ret;
     }
 
-    public Product createProduct( NewProduct product) {
-        Product ret = null;
+    public ReadableProduct createProduct(WritableProduct product) {
+        ReadableProduct ret = null;
         String url = String.format(
                 "%s/products/",
                 API_TIENDA_NUBE
@@ -62,13 +63,13 @@ public class NubeRestClient {
         String body = new Gson().toJson(product);
         String response = restClient.postJson(url, buildHeader(), body);
         if (response != null) {
-            ret = new Gson().fromJson(response, Product.class);
+            ret = new Gson().fromJson(response, ReadableProduct.class);
         }
         return ret;
     }
 
-    public Product patchProductStockPrice(Product product) {
-        Product ret = null;
+    public ReadableProduct patchProductStockPrice(WritableProduct product) {
+        ReadableProduct ret = null;
         String url = String.format(
                 "%s/products/stock-price",
                 API_TIENDA_NUBE
@@ -76,9 +77,24 @@ public class NubeRestClient {
         String body = new Gson().toJson(List.of(product));
         String response = restClient.patchJson(url, buildHeader(), body);
         if (response != null) {
-            Type productListType = new TypeToken<List<Product>>() {}.getType();
-            List<Product> responseObject = new Gson().fromJson(response, productListType);
+            Type productListType = new TypeToken<List<ReadableProduct>>() {}.getType();
+            List<ReadableProduct> responseObject = new Gson().fromJson(response, productListType);
             ret = responseObject.get(0);
+        }
+        return ret;
+    }
+
+    public Product updateProduct(WritableProduct product) {
+        Product ret = null;
+        String url = String.format(
+                "%s/products/%s",
+                API_TIENDA_NUBE,
+                product.getId()
+        );
+        String body = new Gson().toJson(product);
+        String response = restClient.putJson(url, buildHeader(), body);
+        if (response != null) {
+            ret = new Gson().fromJson(response, Product.class);
         }
         return ret;
     }

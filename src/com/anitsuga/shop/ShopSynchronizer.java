@@ -29,19 +29,24 @@ public class ShopSynchronizer {
     private static final Logger LOGGER = LoggerFactory.getLogger(ShopSynchronizer.class.getName());
 
     /**
+     * Active status in Meli
+     */
+    private static final String ACTIVE = "active";
+
+    /**
      * Nube Category Service
      */
-    CategorySynchronizer categorySynchronizer;
+    private final CategorySynchronizer categorySynchronizer;
 
     /**
      * Client to Meli
      */
-    MeliRestClient meliClient;
+    private final MeliRestClient meliClient;
 
     /**
      * Client to Nube
      */
-    NubeRestClient nubeClient;
+    private final NubeRestClient nubeClient;
 
 
     public ShopSynchronizer(){
@@ -108,25 +113,34 @@ public class ShopSynchronizer {
             // Get data from MercadoLibre
             Item item = meliClient.getItemById(listing.getId());
 
-            // Look up listing in tienda nube
-            String sku = item.getId();
-            BaseProduct product = nubeClient.getProductBySKU(sku);
+            // is publication was not found, throw an error
+            if( item==null ){
+                throw new Exception("Publication not found.");
+            }
 
-            BaseProduct result;
-            if( product!=null ){
-                // If listing exists, update price and stock
-                product = patchProductFromListing(item, (Product) product);
-                result = nubeClient.patchProductStockPrice( (Product) product);
+            // Look up listing in tienda nube
+            Product product = nubeClient.getProductBySKU(item.getId());
+            Product resultingProduct = null;
+
+            // is publication is not active in MELI
+            if( !ACTIVE.equals(item.getStatus()) ){
+                // but it is active in tienda nueba
+                if( product.getPublished() ) {
+                    // inactivate product in tienda nube
+                    resultingProduct = inactivateProduct(product);
+                } else {
+                    // product is inactive in both systems, update can be ignored
+                    ret = "Product is inactive in both systems";
+                    return ret;
+                }
             } else {
-                // If listing does not exist, create it
-                ItemDescription description = meliClient.getItemDescriptionById(item.getId());
-                product = createProductFromListing(item,description,item.getCategory_id());
-                result = nubeClient.createProduct( (NewProduct) product);
+                // publication is active in MELI, so it should be created or update in tienda nueba
+                resultingProduct = createOrUpdateProduct(item, product);
             }
 
             // verify creation/update - TODO
-            if(result!=null) {
-                ret = String.valueOf(result.getId());
+            if (resultingProduct != null) {
+                ret = String.valueOf(resultingProduct.getId());
             } else {
                 ret = "Error";
             }
@@ -137,11 +151,45 @@ public class ShopSynchronizer {
         return ret;
     }
 
-    private Product patchProductFromListing(Item item, Product product) {
+    private Product inactivateProduct(Product product) {
+        return setProductStatus(product,false);
+    }
+
+    private Product reactivateProduct(Product product) {
+        return setProductStatus(product,true);
+    }
+
+    private Product setProductStatus(Product product, boolean active ){
+        WritableProduct prodToUpdate = new WritableProduct();
+        prodToUpdate.setId(product.getId());
+        prodToUpdate.setPublished(active);
+        return nubeClient.updateProduct(prodToUpdate);
+    }
+
+    private Product createOrUpdateProduct(Item item, Product product) {
+        Product result;
+        if (product != null) {
+            // If listing exists, update price and stock
+            WritableProduct productToPatch = patchProductFromListing(item, (ReadableProduct) product);
+            result = nubeClient.patchProductStockPrice(productToPatch);
+            if( !product.getPublished() ) {
+                // also need to reactivate product
+                reactivateProduct(product); // TODO this can be enhanced to do a full update
+            }
+        } else {
+            // If listing does not exist, create it
+            ItemDescription description = meliClient.getItemDescriptionById(item.getId());
+            product = createProductFromListing(item, description, item.getCategory_id());
+            result = nubeClient.createProduct((WritableProduct) product);
+        }
+        return result;
+    }
+
+    private WritableProduct patchProductFromListing(Item item, ReadableProduct product) {
 
         Variant existingVariant = product.getVariants().get(0);
 
-        Product ret = new Product();
+        WritableProduct ret = new WritableProduct();
         ret.setId(product.getId());
 
         Long variantId = existingVariant.getId();
@@ -158,8 +206,8 @@ public class ShopSynchronizer {
         return ret;
     }
 
-    private NewProduct createProductFromListing(Item item, ItemDescription description, String categoryId) {
-        NewProduct ret = new NewProduct();
+    private WritableProduct createProductFromListing(Item item, ItemDescription description, String categoryId) {
+        WritableProduct ret = new WritableProduct();
         String language = LanguageConfig.getDefaultLanguage();
 
         Map<String, String> title = new HashMap<>();

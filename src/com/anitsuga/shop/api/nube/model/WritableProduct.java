@@ -5,6 +5,6 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public class NewProduct extends BaseProduct {
+public class WritableProduct extends Product {
     List<Long> categories;
 }
