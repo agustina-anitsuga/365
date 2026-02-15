@@ -2,10 +2,7 @@ package com.anitsuga.fwk.utils;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPatch;
-import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.*;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -152,7 +149,7 @@ public class RestClient {
         String ret = null;
         try {
             CloseableHttpClient httpClient = HttpClients.createDefault();
-            HttpPatch httpPatch = new HttpPatch(url); // http get request
+            HttpPatch httpPatch = new HttpPatch(url); // http patch request
             System.out.println("Url: "+url);
 
             // add header
@@ -166,6 +163,44 @@ public class RestClient {
 
             // execute patch
             CloseableHttpResponse closeableHttpResponse = httpClient.execute(httpPatch);
+            int statusCode = closeableHttpResponse.getStatusLine().getStatusCode();
+
+            // check response
+            System.out.println("Status code: "+statusCode);
+            if( statusCode == 200 ) {
+                String responseString = EntityUtils.toString(closeableHttpResponse.getEntity(), "UTF-8");
+                //System.out.println("Response: "+responseString);
+                ret = responseString;
+            }
+            if(statusCode == 400){
+                throw new RuntimeException("Bad request.");
+            }
+        } catch(Exception e){
+            ret = null;
+            LOGGER.error(e.getMessage(),e.getStackTrace());
+        }
+        return ret;
+    }
+
+
+    public String putJson(String url, Map<String, String> headerMap, String body) {
+        String ret = null;
+        try {
+            CloseableHttpClient httpClient = HttpClients.createDefault();
+            HttpPut httpPut = new HttpPut(url); // http put request
+            System.out.println("Url: "+url);
+
+            // add header
+            for (Map.Entry<String, String> entry : headerMap.entrySet()) {
+                httpPut.addHeader(entry.getKey(), entry.getValue());
+            }
+
+            // add body
+            StringEntity entity = new StringEntity(body, ContentType.APPLICATION_JSON);
+            httpPut.setEntity(entity);
+
+            // execute patch
+            CloseableHttpResponse closeableHttpResponse = httpClient.execute(httpPut);
             int statusCode = closeableHttpResponse.getStatusLine().getStatusCode();
 
             // check response
