@@ -38,7 +38,7 @@ public class InputDataReader {
             String st; 
             while ((st = br.readLine()) != null){
                 Listing product = new Listing();
-                product.setId(st);
+                product.setMeliId(st);
                 ret.add(product);
             } 
         } catch (Exception e) {

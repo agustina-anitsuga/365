@@ -26,10 +26,11 @@ public class ResultExcelWriter {
      * fields
      */
     private String[] fields = new String[] {
-       "Listing Id",
-       "Title",
+       "Meli Id",
+       "Nube Id",
        "Result",
-       "Duration"
+       "Duration",
+       "URL"
     };
     
     
@@ -93,10 +94,11 @@ public class ResultExcelWriter {
                 Row row = sheet.createRow(rowCount++);
                 columnCount = 0;
                 if(listing!=null){
-                    writeField(row,listing.getId(),columnCount++);
-                    writeField(row,listing.getTitle(),columnCount++);
+                    writeField(row,listing.getMeliId(),columnCount++);
+                    writeField(row,listing.getNubeId(),columnCount++);
                     writeField(row,listing.getResult(),columnCount++);
                     writeField(row,String.valueOf(listing.getDuration()),columnCount++);
+                    writeField(row,listing.geProductUrl(),columnCount++);
                 } 
             } catch (Exception e) {
                 LOGGER.error(e.getMessage());

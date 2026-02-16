@@ -75,7 +75,7 @@ public class ShopSynchronizer {
         int count = 0;
         int total = listings.size();
         for (Listing listing : listings) {
-            LOGGER.info("Synchronizing list item "+listing.getId()+ " ["+(++count)+"/"+total+"]");
+            LOGGER.info("Synchronizing list item "+listing.getMeliId()+ " ["+(++count)+"/"+total+"]");
             Instant start = Instant.now();
             String result = processListing(listing);
             Duration duration = Duration.between(start, Instant.now());
@@ -115,7 +115,7 @@ public class ShopSynchronizer {
         try {
 
             // Get data from MercadoLibre
-            Item item = meliClient.getItemById(listing.getId());
+            Item item = meliClient.getItemById(listing.getMeliId());
 
             // is publication was not found, throw an error
             if( item==null ){

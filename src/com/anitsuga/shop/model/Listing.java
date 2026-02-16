@@ -1,5 +1,7 @@
 package com.anitsuga.shop.model;
 
+import java.math.BigInteger;
+
 /**
  * Product
  * @author agustina
@@ -7,34 +9,29 @@ package com.anitsuga.shop.model;
  */
 public class Listing {
 
-    private String id;
+    private String meliId;
 
-    private String title;
-    
     private String result;
     
     private long duration;
 
 
-    public String getId() {
-        return id;
+    public String getMeliId() {
+        return meliId;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setMeliId(String meliId) {
+        this.meliId = meliId;
     }
 
     public String geProductUrl(){
-        String saleUrl = "https://articulo.mercadolibre.com.ar/"+this.getId();
+        String meliId = this.getMeliId().replaceFirst("([A-Z]{3})", "$1-");
+        String saleUrl = "https://articulo.mercadolibre.com.ar/"+meliId;
         return saleUrl;
     }
 
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
+    public String getNubeId() {
+        return getResultIfNumeric();
     }
 
     public String getResult() {
@@ -53,4 +50,21 @@ public class Listing {
     public long getDuration() {
         return duration;
     }
+
+    private String getResultIfNumeric() {
+        return isBigInteger(this.getResult())? this.getResult() : "";
+    }
+
+    private boolean isBigInteger(String str) {
+        if (str == null || str.isBlank()) {
+            return false;
+        }
+        try {
+            new BigInteger(str);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
+
 }
