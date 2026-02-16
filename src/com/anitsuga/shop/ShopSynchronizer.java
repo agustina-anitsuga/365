@@ -13,6 +13,7 @@ import com.anitsuga.shop.writer.ResultExcelWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.*;
@@ -175,7 +176,7 @@ public class ShopSynchronizer {
         Optional<SaleTerm> saleTerms = item.getSale_terms().stream().filter(s -> "MANUFACTURING_TIME".equals(s.getId()) ).findFirst();
         if( saleTerms.isPresent() ){
             SaleTerm saleTerm = saleTerms.get();
-            ret = !(saleTerm.getValue_struct().getNumber() > 0);
+            ret = !(saleTerm.getValue_struct().getNumber().compareTo(BigDecimal.ZERO) > 0);
         }
         return ret;
     }

@@ -8,8 +8,12 @@ public class ApiAccessTokenRetriever {
     public static void main(String[] args) {
         MeliRestClient client = new MeliRestClient();
         Token token = client.getToken();
-        if(token!=null)
+        if(token!=null) {
+            System.out.println("Access token:");
             System.out.println(token.getAccess_token());
+            System.out.println("Refresh token:");
+            System.out.println(token.getRefresh_token());
+        }
     }
 
 }
