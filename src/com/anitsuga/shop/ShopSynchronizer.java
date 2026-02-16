@@ -280,9 +280,11 @@ public class ShopSynchronizer {
     private String buildDescription(Item item, ItemDescription description) {  // TODO use thymeleaf templates
         StringBuffer ret = new StringBuffer();
 
-        ret.append("<p class=\"text-md-left\">");
-        ret.append(description.getPlain_text().replaceAll("\n","<br/>"));
-        ret.append("</p><p>&nbsp;</p>");
+        if( description!=null ) {
+            ret.append("<p class=\"text-md-left\">");
+            ret.append(description.getPlain_text().replaceAll("\n", "<br/>"));
+            ret.append("</p><p>&nbsp;</p>");
+        }
 
         if(!item.getAttributes().isEmpty()) {
             ret.append("<p class=\"text-md-left\"><strong>Especificaciones t&eacute;cnicas</strong></p>");

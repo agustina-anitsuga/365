@@ -207,18 +207,33 @@ public class MeliRestClient {
     }
 
     public Token getToken(){
-        String response = restClient.postJson("https://api.mercadolibre.com/oauth/token", buildOAuthHeader(),buildOAuthParameters());
+        String response = restClient.postJson("https://api.mercadolibre.com/oauth/token", buildOAuthHeader(), buildOAuthLoginParameters());
         Token token = new Gson().fromJson(response,Token.class);
         return token;
     }
 
-    private Map<String, String> buildOAuthParameters() {
+    public Token refreshToken( String refreshToken ){
+        String response = restClient.postJson("https://api.mercadolibre.com/oauth/token", buildOAuthHeader(), buildOAuthRefreshParameters(refreshToken));
+        Token token = new Gson().fromJson(response,Token.class);
+        return token;
+    }
+
+    private Map<String, String> buildOAuthLoginParameters() {
         Map<String,String> params = new HashMap<String,String>();
         params.put("grant_type", "authorization_code");
         params.put("client_id", AppProperties.getInstance().getProperty("api.client_id"));
         params.put("client_secret", AppProperties.getInstance().getProperty("api.client_secret"));
         params.put("code", AppProperties.getInstance().getProperty("api.code"));
         params.put("redirect_uri", AppProperties.getInstance().getProperty("api.redirect_uri"));
+        return params;
+    }
+
+    private Map<String, String> buildOAuthRefreshParameters( String refreshToken ) {
+        Map<String,String> params = new HashMap<String,String>();
+        params.put("grant_type", "refresh_token");
+        params.put("client_id", AppProperties.getInstance().getProperty("api.client_id"));
+        params.put("client_secret", AppProperties.getInstance().getProperty("api.client_secret"));
+        params.put("refresh_token", refreshToken );
         return params;
     }
 

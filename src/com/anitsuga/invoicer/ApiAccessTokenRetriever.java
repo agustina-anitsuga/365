@@ -9,10 +9,15 @@ public class ApiAccessTokenRetriever {
         MeliRestClient client = new MeliRestClient();
         Token token = client.getToken();
         if(token!=null) {
+            Token longToken = client.refreshToken(token.getRefresh_token());
             System.out.println("Access token:");
             System.out.println(token.getAccess_token());
             System.out.println("Refresh token:");
             System.out.println(token.getRefresh_token());
+            System.out.println("Long-lived access token:");
+            System.out.println(longToken.getAccess_token());
+            System.out.println("Long-lived refresh token:");
+            System.out.println(longToken.getRefresh_token());
         }
     }
 
