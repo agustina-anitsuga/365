@@ -100,7 +100,11 @@ public class CategorySynchronizer {
             List<CategoryPath> categoryPaths = category.getPath_from_root();
             Category cat = null;
             for (CategoryPath categoryPath: categoryPaths ) {
-                cat = createNubeCategory(categoryPath,cat);
+                if(!categories.containsKey(categoryPath.getName())) {
+                    cat = createNubeCategory(categoryPath, cat);
+                } else {
+                    cat = categories.get(categoryPath.getName()).get(0);
+                }
                 nubeCategories.add(cat);
             }
         }

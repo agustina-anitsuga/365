@@ -273,8 +273,14 @@ public class ShopSynchronizer {
     }
 
     private Attribute getLeafCategoryAttribute(Item item) {
-        Optional<Attribute> att = item.getAttributes().stream().filter(a -> a.getId().equals("MOVIE_FORMAT") ).findFirst();
-        return att.isPresent() ? att.get() : null ;
+        List<String> leafAttributes = List.of("MOVIE_FORMAT","TV_SERIE_FORMAT");
+        Attribute ret = null;
+        for (String attribute: leafAttributes) {
+            if( ret!=null ) break;
+            Optional<Attribute> att = item.getAttributes().stream().filter(a -> a.getId().equals(attribute)).findFirst();
+            ret = att.isPresent() ? att.get() : null;
+        }
+        return ret;
     }
 
     private String buildDescription(Item item, ItemDescription description) {  // TODO use thymeleaf templates
@@ -292,11 +298,13 @@ public class ShopSynchronizer {
             List<String> excludedIds = getExcludedAttributeIds();
             List<Attribute> attributesToShow = item.getAttributes().stream().filter(a -> !excludedIds.contains(a.getId())).toList();
             for (Attribute attribute: attributesToShow) {
-                ret.append("<ul class=\"text-md-left\"><li><strong>");
-                ret.append(attribute.getName());
-                ret.append(":</strong> " );
-                ret.append(attribute.getValue_name());
-                ret.append("</li></ul>");
+                if( attribute.getValue_name()!= null ) {
+                    ret.append("<ul class=\"text-md-left\"><li><strong>");
+                    ret.append(attribute.getName());
+                    ret.append(":</strong> ");
+                    ret.append(attribute.getValue_name());
+                    ret.append("</li></ul>");
+                }
             }
             ret.append("</p><p>&nbsp;</p><p>&nbsp;</p>");
         }
