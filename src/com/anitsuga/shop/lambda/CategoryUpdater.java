@@ -6,19 +6,20 @@ import com.anitsuga.shop.api.nube.model.WritableProduct;
 
 import java.util.List;
 
-public class CategoryAddition implements NubeLambdaFunction {
+public abstract class CategoryUpdater implements NubeLambdaFunction {
 
-    private static List<Long> categories = List.of(
-                    Long.valueOf(36910106),
-                    Long.valueOf(36864168),
-                    Long.valueOf(36864167),
-                    Long.valueOf(36864169)
-                    );
+    private List<Long> categories ;
 
     /**
      * Client to Nube
      */
     private final NubeRestClient nubeClient = new NubeRestClient();
+
+    public CategoryUpdater(){
+        categories = getCategories();
+    }
+
+    public abstract List<Long> getCategories();
 
     @Override
     public Product apply(Product product) {

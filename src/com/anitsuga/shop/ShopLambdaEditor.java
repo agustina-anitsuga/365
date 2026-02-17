@@ -4,8 +4,9 @@ import com.anitsuga.fwk.utils.AppProperties;
 import com.anitsuga.fwk.utils.FileUtils;
 import com.anitsuga.shop.api.nube.NubeRestClient;
 import com.anitsuga.shop.api.nube.model.*;
-import com.anitsuga.shop.lambda.CategoryAddition;
+import com.anitsuga.shop.lambda.CategoryUpdater;
 import com.anitsuga.shop.lambda.NubeLambdaFunction;
+import com.anitsuga.shop.lambda.SeriesCategoryUpdater;
 import com.anitsuga.shop.model.Listing;
 import com.anitsuga.shop.reader.InputDataReader;
 import com.anitsuga.shop.writer.ResultExcelWriter;
@@ -41,7 +42,7 @@ public class ShopLambdaEditor {
      */
     public static void main(String[] args) {
         ShopLambdaEditor self = new ShopLambdaEditor();
-        self.run(new CategoryAddition());
+        self.run(new SeriesCategoryUpdater());
     }
 
     /**
@@ -76,7 +77,7 @@ public class ShopLambdaEditor {
         String filename = localPath + outputFilePrefix();
         ResultExcelWriter writer = new ResultExcelWriter();
         writer.write(filename, listings);
-        LOGGER.info("Finished invoicing job");
+        LOGGER.info("Finished editing job");
     }
 
     /**
