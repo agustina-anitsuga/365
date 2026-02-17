@@ -135,8 +135,6 @@ public class CategorySynchronizer {
     }
 
     private void createNubeCategoryPath(com.anitsuga.shop.api.meli.model.Category category) {
-        List<Category> nubeCategories = new ArrayList<>();
-
         if(!category.getPath_from_root().isEmpty()){
             List<CategoryPath> categoryPaths = category.getPath_from_root();
             Category cat = null;
