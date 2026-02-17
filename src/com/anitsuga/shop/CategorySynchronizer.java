@@ -7,12 +7,12 @@ import com.anitsuga.shop.api.nube.LanguageConfig;
 import com.anitsuga.shop.api.nube.NubeRestClient;
 import com.anitsuga.shop.api.nube.model.Category;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class CategorySynchronizer {
+
+    public static final String CATEGORY_SEPARATOR = " // ";
 
     private final NubeRestClient nubeClient = new NubeRestClient();
 
@@ -20,12 +20,34 @@ public class CategorySynchronizer {
 
     private final Map<String, List<Category>> categories = new HashMap<>();
 
+    private final List<Category> allNubeCategories = new ArrayList<>();
+
+
+
     public CategorySynchronizer(){
         List<Category> nubeCats = nubeClient.getCategories();
         for (Category category: nubeCats) {
-            String categoryName = category.getName().get(LanguageConfig.getDefaultLanguage());
-            categories.put( categoryName, getCategoryPath(category,nubeCats) );
+            allNubeCategories.add(category);
         }
+        for (Category category: nubeCats) {
+            String categoryKey = getCategoryKey(category);
+            categories.put( categoryKey, getCategoryPath(category,nubeCats) );
+        }
+    }
+
+    private Category getCategoryById(Long id){
+        return (id!=null && id!=0)? allNubeCategories.stream().filter(c -> id.equals(c.getId()) ).findFirst().get() : null;
+    }
+
+    private String getCategoryKey(Category category) {
+        StringBuffer sb = new StringBuffer();
+        Category cat = category;
+        while( cat!=null ) {
+            sb.append(cat.getName().get(LanguageConfig.getDefaultLanguage()));
+            sb.append(CATEGORY_SEPARATOR);
+            cat = getCategoryById(cat.getParent());
+        }
+        return sb.toString();
     }
 
     private List<Category> getCategoryPath(Category category, List<Category> allCategories) {
@@ -47,31 +69,50 @@ public class CategorySynchronizer {
 
         com.anitsuga.shop.api.meli.model.Category category = meliClient.getCategory(categoryId);
 
-        if(!categories.containsKey(category.getName())){
+        if(!categories.containsKey(getCategoryKey(category))){
             createNubeCategoryPath(category);
         }
 
-        if( (leafCategory!=null) && !categories.containsKey(leafCategory.getValue_name())){
+        if( (leafCategory!=null) && !categories.containsKey(getLeafCategoryKey(category,leafCategory))){
             createNubeLeafCategoryPath(category,leafCategory);
         }
 
-        List<Long> ret = categories.get(category.getName()).stream().map(Category::getId).toList();
+        List<Long> ret = categories.get(getCategoryKey(category)).stream().map(Category::getId).toList();
         if( leafCategory!=null ){
-            ret = categories.get(leafCategory.getValue_name()).stream().map(Category::getId).toList();
+            ret = categories.get(getLeafCategoryKey(category,leafCategory)).stream().map(Category::getId).toList();
         }
 
         return ret;
     }
 
+    private String getLeafCategoryKey(com.anitsuga.shop.api.meli.model.Category category, Attribute leafCategory) {
+        String ret = leafCategory.getValue_name() + CATEGORY_SEPARATOR  + getCategoryKey(category) ;
+        return ret;
+    }
+
+    private String getCategoryKey(com.anitsuga.shop.api.meli.model.Category category) {
+        List<CategoryPath> categoryPath = new ArrayList<>(category.getPath_from_root());
+        Collections.reverse(categoryPath);
+        String ret = categoryPath.stream().map(CategoryPath::getName)
+                .collect(Collectors.joining(CATEGORY_SEPARATOR)) + CATEGORY_SEPARATOR;
+        return ret;
+    }
+
+    private String getCategoryKey(CategoryPath categoryPath) { // TODO
+        String meliCatId = categoryPath.getId();
+        com.anitsuga.shop.api.meli.model.Category category = meliClient.getCategory(meliCatId);
+        return getCategoryKey(category);
+    }
+
     private void createNubeLeafCategoryPath(com.anitsuga.shop.api.meli.model.Category category, Attribute leafCategory) {
-        List<Category> nubeCategories = new ArrayList<>(categories.get(category.getName()));
+        List<Category> nubeCategories = new ArrayList<>(categories.get(getCategoryKey(category)));
 
         Category cat = createNubeCategory(category,leafCategory);
         nubeCategories.add(0,cat);
 
-        categories.put(leafCategory.getValue_name(),nubeCategories);
+        categories.put(getLeafCategoryKey(category,leafCategory),nubeCategories);
+        allNubeCategories.add(cat);
     }
-
 
     private Category createNubeCategory( com.anitsuga.shop.api.meli.model.Category parent, Attribute leafCategory ) {
 
@@ -82,7 +123,7 @@ public class CategorySynchronizer {
         nubeCategory.setName(name);
 
         if(parent!=null){
-            List<Category> categoryPath = categories.get(parent.getName());
+            List<Category> categoryPath = categories.get(getCategoryKey(parent));
             Category parentCategory = categoryPath.get(0);
             Long parentId = parentCategory.getId();
             nubeCategory.setParent(parentId);
@@ -100,16 +141,15 @@ public class CategorySynchronizer {
             List<CategoryPath> categoryPaths = category.getPath_from_root();
             Category cat = null;
             for (CategoryPath categoryPath: categoryPaths ) {
-                if(!categories.containsKey(categoryPath.getName())) {
+                if(!categories.containsKey(getCategoryKey(categoryPath))) {
                     cat = createNubeCategory(categoryPath, cat);
+                    allNubeCategories.add(cat);
+                    categories.put(getCategoryKey(cat),getCategoryPath(cat,allNubeCategories));
                 } else {
-                    cat = categories.get(categoryPath.getName()).get(0);
+                    cat = categories.get(getCategoryKey(categoryPath)).get(0);
                 }
-                nubeCategories.add(cat);
             }
         }
-
-        categories.put(category.getName(),nubeCategories);
     }
 
     private Category createNubeCategory( CategoryPath categoryPath, Category parent ) {
