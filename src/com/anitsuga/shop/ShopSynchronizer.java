@@ -122,6 +122,10 @@ public class ShopSynchronizer {
                 throw new Exception("Publication not found.");
             }
 
+            if( item.getVariations()!=null && item.getVariations().size() > 0 ){
+                throw new Exception("Variations not supported.");
+            }
+
             // Look up listing in tienda nube
             Product product = nubeClient.getProductBySKU(item.getId());
 
@@ -236,7 +240,8 @@ public class ShopSynchronizer {
         return ret;
     }
 
-    private WritableProduct createProductFromListing(Item item, ItemDescription description, String categoryId) {
+    private WritableProduct createProductFromListing(Item item, ItemDescription description, String categoryId){
+
         WritableProduct ret = new WritableProduct();
         String language = LanguageConfig.getDefaultLanguage();
 
@@ -317,6 +322,7 @@ public class ShopSynchronizer {
         ret.add("BRAND");
         ret.add("GTIN");
         ret.add("IMPORT_DUTY");
+        ret.add("EMPTY_GTIN_REASON");
         ret.add("VALUE_ADDED_TAX");
         ret.add("MANUFACTURING_TIME");
         ret.add("SELLER_PACKAGE_HEIGHT");
@@ -325,6 +331,7 @@ public class ShopSynchronizer {
         ret.add("SELLER_PACKAGE_WEIGHT");
         ret.add("SELLER_PACKAGE_WIDTH");
         ret.add("PRODUCTION_COMPANY");
+        ret.add("WITH_POSITIVE_IMPACT");
         return ret;
     }
 
