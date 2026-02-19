@@ -219,4 +219,41 @@ public class RestClient {
         }
         return ret;
     }
+
+
+    /**
+     * delete
+     * @param url
+     * @return
+     */
+    public String delete(String url, Map<String, String> headerMap){
+        String ret = null;
+        try {
+            CloseableHttpClient httpClient = HttpClients.createDefault();
+            HttpDelete httpPost = new HttpDelete(url); // http delete request
+
+            // add header
+            for (Map.Entry<String, String> entry : headerMap.entrySet()) {
+                httpPost.addHeader(entry.getKey(), entry.getValue());
+            }
+
+            // execute delete
+            CloseableHttpResponse closeableHttpResponse = httpClient.execute(httpPost); // h
+            int statusCode = closeableHttpResponse.getStatusLine().getStatusCode();
+
+            // check response
+            if( statusCode == 200 ) {
+                String responseString = EntityUtils.toString(closeableHttpResponse.getEntity(), "UTF-8");
+                //System.out.println("Response: "+responseString);
+                ret = responseString;
+            }
+            if(statusCode == 401){
+                throw new RuntimeException("Unauthorized access.");
+            }
+        } catch(Exception e){
+            ret = null;
+            LOGGER.error(e.getMessage(),e.getStackTrace());
+        }
+        return ret;
+    }
 }

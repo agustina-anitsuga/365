@@ -99,6 +99,17 @@ public class NubeRestClient {
         return ret;
     }
 
+
+    public String deleteProduct(Long productId) {
+        String url = String.format(
+                "%s/products/%s",
+                API_TIENDA_NUBE,
+                productId
+        );
+        String ret = restClient.delete(url, buildHeader());
+        return ret;
+    }
+
     public List<Category> getCategories(){
         List<Category> ret = null;
         String url = String.format(
