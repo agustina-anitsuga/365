@@ -319,7 +319,7 @@ public class ShopSynchronizer {
     }
 
     private static List<String> getExcludedAttributeIds() {
-        List<String> ret = new ArrayList<>();
+        List<String> ret = new ArrayList<>(); // TODO move out to a file
         ret.add("BRAND");
         ret.add("GTIN");
         ret.add("IMPORT_DUTY");
@@ -333,6 +333,15 @@ public class ShopSynchronizer {
         ret.add("SELLER_PACKAGE_WIDTH");
         ret.add("PRODUCTION_COMPANY");
         ret.add("WITH_POSITIVE_IMPACT");
+        ret.add("GIFTABLE");
+        ret.add("IS_HIGHLIGHT_BRAND");
+        ret.add("IS_TOM_BRAND");
+        ret.add("PACKAGE_DATA_SOURCE");
+        ret.add("SYI_PYMES_ID");
+        ret.add("TOY_SAFETY_CERTIFICATE_NUMBER");
+        ret.add("WITH_VOID_LABEL");
+        ret.add("FILTRABLE_CHARACTER");
+        ret.add("IS_EMERGING_BRAND");
         return ret;
     }
 
