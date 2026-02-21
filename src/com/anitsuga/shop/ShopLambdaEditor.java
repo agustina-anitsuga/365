@@ -6,6 +6,7 @@ import com.anitsuga.shop.api.nube.NubeRestClient;
 import com.anitsuga.shop.api.nube.model.*;
 import com.anitsuga.shop.lambda.CategoryUpdater;
 import com.anitsuga.shop.lambda.NubeLambdaFunction;
+import com.anitsuga.shop.lambda.ProductEraser;
 import com.anitsuga.shop.lambda.SeriesCategoryUpdater;
 import com.anitsuga.shop.model.Listing;
 import com.anitsuga.shop.reader.InputDataReader;
@@ -42,7 +43,7 @@ public class ShopLambdaEditor {
      */
     public static void main(String[] args) {
         ShopLambdaEditor self = new ShopLambdaEditor();
-        self.run(new SeriesCategoryUpdater());
+        self.run(new ProductEraser());
     }
 
     /**

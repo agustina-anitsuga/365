@@ -141,6 +141,7 @@ public class ShopSynchronizer {
 
         } catch (Exception e) {
             ret = e.getMessage();
+            LOGGER.error(e.getMessage(),e);
         }
         return ret;
     }
@@ -212,8 +213,7 @@ public class ShopSynchronizer {
             }
         } else {
             // If listing does not exist, create it
-            ItemDescription description = meliClient.getItemDescriptionById(item.getId());
-            product = createProductFromListing(item, description, item.getCategory_id());
+            product = createProductFromListing(item);
             result = nubeClient.createProduct((WritableProduct) product);
         }
         return result;
@@ -240,7 +240,7 @@ public class ShopSynchronizer {
         return ret;
     }
 
-    private WritableProduct createProductFromListing(Item item, ItemDescription description, String categoryId){
+    private WritableProduct createProductFromListing(Item item){
 
         WritableProduct ret = new WritableProduct();
         String language = LanguageConfig.getDefaultLanguage();
@@ -250,6 +250,7 @@ public class ShopSynchronizer {
         ret.setName(title);
 
         Map<String, String> desc = new HashMap<>();
+        ItemDescription description = meliClient.getItemDescriptionById(item.getId());
         String nubeDesc = buildDescription(item,description);
         desc.put(language,nubeDesc);
         ret.setDescription(desc);
@@ -268,7 +269,7 @@ public class ShopSynchronizer {
         variant.setVisible(true);
         ret.setVariants(List.of(variant));
 
-        List<Long> categories = categorySynchronizer.mapToCategories(categoryId,getLeafCategoryAttribute(item));
+        List<Long> categories = categorySynchronizer.mapToCategories(item.getCategory_id(),getLeafCategoryAttribute(item));
         ret.setCategories(categories);
 
         ret.setRequires_shipping(true);

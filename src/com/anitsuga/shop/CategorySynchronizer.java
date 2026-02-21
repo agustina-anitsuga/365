@@ -6,7 +6,14 @@ import com.anitsuga.shop.api.meli.model.CategoryPath;
 import com.anitsuga.shop.api.nube.LanguageConfig;
 import com.anitsuga.shop.api.nube.NubeRestClient;
 import com.anitsuga.shop.api.nube.model.Category;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.lang.reflect.Type;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -22,13 +29,13 @@ public class CategorySynchronizer {
 
     private final List<Category> allNubeCategories = new ArrayList<>();
 
+    private Map<String,String> categoryMappings = new HashMap<>();
 
 
     public CategorySynchronizer(){
+        loadCategoryMappings();
         List<Category> nubeCats = nubeClient.getCategories();
-        for (Category category: nubeCats) {
-            allNubeCategories.add(category);
-        }
+        allNubeCategories.addAll(nubeCats);
         for (Category category: nubeCats) {
             String categoryKey = getCategoryKey(category);
             categories.put( categoryKey, getCategoryPath(category,nubeCats) );
@@ -47,7 +54,34 @@ public class CategorySynchronizer {
             sb.append(CATEGORY_SEPARATOR);
             cat = getCategoryById(cat.getParent());
         }
-        return sb.toString();
+
+        String categoryKey = sb.toString();
+        return categoryKey;
+    }
+
+    private void loadCategoryMappings() {
+        Gson gson = new Gson();
+        Type mapType = new TypeToken<Map<String, String>>() {}.getType();
+        InputStream inputStream = CategorySynchronizer.class
+                .getClassLoader()
+                .getResourceAsStream("category-mappings.json");
+        if (inputStream == null) {
+            throw new RuntimeException("File category-mappings.json not found in resources");
+        }
+        try (InputStreamReader reader =
+                     new InputStreamReader(inputStream, StandardCharsets.UTF_8)) {
+            categoryMappings = gson.fromJson(reader, mapType);
+        } catch (IOException e) {
+            throw new RuntimeException("Category Mappings cannot be read.");
+        }
+    }
+
+    private String getCategoryMapping(String categoryKey) {
+        return categoryMappings.get(categoryKey);
+    }
+
+    private boolean hasCategoryMapping(String categoryKey) {
+        return categoryMappings.containsKey(categoryKey);
     }
 
     private List<Category> getCategoryPath(Category category, List<Category> allCategories) {
@@ -69,16 +103,29 @@ public class CategorySynchronizer {
 
         com.anitsuga.shop.api.meli.model.Category category = meliClient.getCategory(categoryId);
 
-        if(!categories.containsKey(getCategoryKey(category))){
-            createNubeCategoryPath(category);
+        List<CategoryPath> path = category.getPath_from_root();
+        CategoryPath rootCategory = null;
+        if(path != null && path.size() > 0 ) {
+            rootCategory = path.get(0);
+            if (this.rootCategoryIsMapped(rootCategory)){
+                if (!categories.containsKey(getCategoryKey(rootCategory))) {
+                    this.createRootNubeCategory(rootCategory);
+                }
+            } else if(!categories.containsKey(getCategoryKey(category))){
+                createNubeCategoryPath(category);
+            }
         }
 
         if( (leafCategory!=null) && !categories.containsKey(getLeafCategoryKey(category,leafCategory))){
             createNubeLeafCategoryPath(category,leafCategory);
         }
 
-        List<Long> ret = categories.get(getCategoryKey(category)).stream().map(Category::getId).toList();
-        if( leafCategory!=null ){
+        List<Long> ret = null;
+        if( rootCategory!=null && this.rootCategoryIsMapped(rootCategory) ){
+            ret = categories.get(getCategoryKey(rootCategory)).stream().map(Category::getId).toList();
+        } else if ( leafCategory == null ) {
+            ret = categories.get(getCategoryKey(category)).stream().map(Category::getId).toList();
+        } else {
             ret = categories.get(getLeafCategoryKey(category,leafCategory)).stream().map(Category::getId).toList();
         }
 
@@ -92,13 +139,27 @@ public class CategorySynchronizer {
 
     private String getCategoryKey(com.anitsuga.shop.api.meli.model.Category category) {
         List<CategoryPath> categoryPath = new ArrayList<>(category.getPath_from_root());
-        Collections.reverse(categoryPath);
-        String ret = categoryPath.stream().map(CategoryPath::getName)
-                .collect(Collectors.joining(CATEGORY_SEPARATOR)) + CATEGORY_SEPARATOR;
-        return ret;
+        String categoryKey = null;
+
+        if( categoryPath!=null && categoryPath.size()>0 ) {
+            CategoryPath rootCategory = categoryPath.get(0);
+            if(this.rootCategoryIsMapped(rootCategory)) {
+                categoryKey = this.getCategoryMapping(rootCategory.getName()) + CATEGORY_SEPARATOR;
+            } else {
+                Collections.reverse(categoryPath);
+                categoryKey = categoryPath.stream().map(CategoryPath::getName)
+                        .collect(Collectors.joining(CATEGORY_SEPARATOR)) + CATEGORY_SEPARATOR;
+            }
+        }
+
+        return categoryKey;
     }
 
-    private String getCategoryKey(CategoryPath categoryPath) { // TODO
+    private String getRootCategoryKey(CategoryPath rootCategory) {
+        return rootCategory.getName() + CATEGORY_SEPARATOR;
+    }
+
+    private String getCategoryKey(CategoryPath categoryPath) {
         String meliCatId = categoryPath.getId();
         com.anitsuga.shop.api.meli.model.Category category = meliClient.getCategory(meliCatId);
         return getCategoryKey(category);
@@ -138,16 +199,44 @@ public class CategorySynchronizer {
         if(!category.getPath_from_root().isEmpty()){
             List<CategoryPath> categoryPaths = category.getPath_from_root();
             Category cat = null;
-            for (CategoryPath categoryPath: categoryPaths ) {
-                if(!categories.containsKey(getCategoryKey(categoryPath))) {
-                    cat = createNubeCategory(categoryPath, cat);
-                    allNubeCategories.add(cat);
-                    categories.put(getCategoryKey(cat),getCategoryPath(cat,allNubeCategories));
-                } else {
-                    cat = categories.get(getCategoryKey(categoryPath)).get(0);
+
+            CategoryPath rootCategory = categoryPaths.get(0);
+            if( rootCategoryIsMapped(rootCategory) ){
+                cat = createRootNubeCategory(rootCategory);
+                allNubeCategories.add(cat);
+                categories.put(getCategoryKey(cat), getCategoryPath(cat, allNubeCategories));
+            }
+            else {
+                for (CategoryPath categoryPath : categoryPaths) {
+                    if (!categories.containsKey(getCategoryKey(categoryPath))) {
+                        cat = createNubeCategory(categoryPath, cat);
+                        allNubeCategories.add(cat);
+                        categories.put(getCategoryKey(cat), getCategoryPath(cat, allNubeCategories));
+                    } else {
+                        cat = categories.get(getCategoryKey(categoryPath)).get(0);
+                    }
                 }
             }
         }
+    }
+
+    private boolean rootCategoryIsMapped(CategoryPath rootCategory) {
+        return this.hasCategoryMapping(rootCategory.getName());
+    }
+
+    private Category createRootNubeCategory(CategoryPath categoryPath) {
+
+        Category nubeCategory = new Category();
+
+        Map<String,String> name = new HashMap<>();
+        name.put(LanguageConfig.getDefaultLanguage(),getCategoryMapping(categoryPath.getName()));
+        nubeCategory.setName(name);
+
+        nubeCategory = nubeClient.createCategory(nubeCategory);
+        allNubeCategories.add(nubeCategory);
+        categories.put(getCategoryKey(nubeCategory), getCategoryPath(nubeCategory, allNubeCategories));
+
+        return nubeCategory;
     }
 
     private Category createNubeCategory( CategoryPath categoryPath, Category parent ) {
