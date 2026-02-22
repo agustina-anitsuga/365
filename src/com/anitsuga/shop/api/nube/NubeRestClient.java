@@ -113,7 +113,7 @@ public class NubeRestClient {
     public List<Category> getCategories(){
         List<Category> ret = null;
         String url = String.format(
-                "%s/categories",
+                "%s/categories?page=1&per_page=200",
                 API_TIENDA_NUBE
         );
         String response = restClient.get(url, buildHeader());
