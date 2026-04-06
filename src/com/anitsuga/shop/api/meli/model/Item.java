@@ -3,6 +3,7 @@ package com.anitsuga.shop.api.meli.model;
 import lombok.Data;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -88,6 +89,9 @@ public class Item {
 
     //private OffsetDateTime dateCreated;
     //private OffsetDateTime lastUpdated;
+
+    private Date date_created;
+    private Date last_updated;
 
     private BigDecimal health;
     private Boolean catalog_listing;

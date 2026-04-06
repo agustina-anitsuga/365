@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.*;
@@ -201,15 +202,23 @@ public class ShopSynchronizer {
         return nubeClient.updateProduct(prodToUpdate);
     }
 
-    private Product createOrUpdateProduct(Item item, Product product) {
-        Product result;
+    private Product createOrUpdateProduct(Item item, Product product) throws Exception {
+        Product result = null;
         if (product != null) {
-            // If listing exists, update price and stock
-            WritableProduct productToPatch = patchProductFromListing(item, (ReadableProduct) product);
-            result = nubeClient.patchProductStockPrice(productToPatch);
+            // If listing exists, update price and stock if required
+            if( !item.getPrice().setScale(2, RoundingMode.HALF_UP)
+                    .toPlainString().equals( product.getVariants().get(0).getPrice() ) ||
+                !item.getAvailable_quantity().equals( product.getVariants().get(0).getStock() ) ) {
+                WritableProduct productToPatch = patchProductFromListing(item, (ReadableProduct) product);
+                result = nubeClient.patchProductStockPrice(productToPatch);
+            }
+            // if product is not active, reactivate it
             if( !product.getPublished() ) {
                 // also need to reactivate product
                 result = reactivateProduct(product); // TODO this can be enhanced to do a full update
+            }
+            if( result==null ){
+                throw new Exception("Product does not need updating.");
             }
         } else {
             // If listing does not exist, create it
