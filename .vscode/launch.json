@@ -1,0 +1,47 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "InvoiceStatusChecker",
+            "request": "launch",
+            "mainClass": "com.anitsuga.invoicer.InvoiceStatusChecker",
+            "projectName": "365cine"
+        },
+        {
+            "type": "java",
+            "name": "Invoicer",
+            "request": "launch",
+            "mainClass": "com.anitsuga.invoicer.Invoicer",
+            "projectName": "365cine"
+        },
+        {
+            "type": "java",
+            "name": "ApiAccessTokenRetriever",
+            "request": "launch",
+            "mainClass": "com.anitsuga.invoicer.ApiAccessTokenRetriever",
+            "projectName": "365cine"
+        },
+        {
+            "type": "java",
+            "name": "ShopLambdaEditor",
+            "request": "launch",
+            "mainClass": "com.anitsuga.shop.ShopLambdaEditor",
+            "projectName": "365cine"
+        },
+        {
+            "type": "java",
+            "name": "ShopSynchronizer",
+            "request": "launch",
+            "mainClass": "com.anitsuga.shop.ShopSynchronizer",
+            "projectName": "365cine"
+        },
+        {
+            "type": "java",
+            "name": "MeliListingRetriever",
+            "request": "launch",
+            "mainClass": "com.anitsuga.shop.MeliListingRetriever",
+            "projectName": "365cine"
+        }
+    ]
+}
