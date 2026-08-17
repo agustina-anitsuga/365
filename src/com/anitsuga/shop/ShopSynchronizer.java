@@ -180,9 +180,14 @@ public class ShopSynchronizer {
     private boolean stockIsImmediatelyAvailable(Item item) {
         boolean ret = true;
         Optional<SaleTerm> saleTerms = item.getSale_terms().stream().filter(s -> "MANUFACTURING_TIME".equals(s.getId()) ).findFirst();
+        Optional<Attribute> saleTerms2 = item.getAttributes().stream().filter(s -> "MANUFACTURING_TIME".equals(s.getId()) ).findFirst();
         if( saleTerms.isPresent() ){
             SaleTerm saleTerm = saleTerms.get();
             ret = !(saleTerm.getValue_struct().getNumber().compareTo(BigDecimal.ZERO) > 0);
+        }
+        if( saleTerms2.isPresent() ){
+            Attribute saleTerm = saleTerms2.get();
+            ret = !(saleTerm.getValue_name()!= null && !saleTerm.getValue_name().isEmpty() && !saleTerm.getValue_name().startsWith("0"));
         }
         return ret;
     }
