@@ -28,7 +28,7 @@
 		<selenium-java.version>4.10.0</selenium-java.version>
 		<selenium-remote-driver.version>4.10.0</selenium-remote-driver.version>
 		<selenium-htmlunit-driver.version>4.10.0</selenium-htmlunit-driver.version>
-		<guava.version>32.1.1-jre</guava.version>
+		<guava.version>33.7.1-jre</guava.version>
 
 		<!-- testNG -->
 		<testng.version>6.8.5</testng.version>
